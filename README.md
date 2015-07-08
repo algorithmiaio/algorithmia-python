@@ -29,5 +29,5 @@ import Algorithmia
 
 apiKey = 'XXXXXXXXXX'
 
-print Algorithmia.client(apiKey)algo('util/echo').pipe('echo this string')
+print Algorithmia.client(apiKey).algo('util/echo').pipe('echo this string')
 ```
