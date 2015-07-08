@@ -2,7 +2,7 @@
 
 import Algorithmia
 from Algorithmia.algorithm import algorithm
-from Algorithmia.data import fileref
+from Algorithmia.data import datafile
 
 import json, re, requests
 
@@ -23,7 +23,7 @@ class client:
         return algorithm(self, algoRef)
 
     def file(self, dataUrl):
-        return fileref(self, dataUrl)
+        return datafile(self, dataUrl)
 
     # Used internally to post json to the api and parse json response
     def postJsonHelper(self, url, inputJson):

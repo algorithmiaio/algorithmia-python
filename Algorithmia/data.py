@@ -3,7 +3,7 @@
 import re
 import tempfile
 
-class fileref:
+class datafile:
     def __init__(self, client, dataUrl):
         self.client = client
         # Parse dataUrl
