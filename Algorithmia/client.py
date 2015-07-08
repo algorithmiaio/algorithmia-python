@@ -1,5 +1,4 @@
 'Algorithmia API Client (python)'
-from builtins import object
 
 import Algorithmia
 from Algorithmia.algorithm import algorithm

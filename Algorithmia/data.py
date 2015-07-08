@@ -1,5 +1,4 @@
 'Algorithmia Data API Client (python)'
-from builtins import object
 
 import re
 import json
@@ -53,9 +52,9 @@ class datafile(object):
 
     def putFile(self, path):
         # Post file to data api
-        file = open(path, 'r')
-        self.client.putHelper(self.url, file)
-        return self
+        with open(path, 'r') as f:
+            self.client.putHelper(self.url, f)
+            return self
 
     def delete(self):
         # Delete from data api

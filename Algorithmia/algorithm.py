@@ -1,5 +1,4 @@
 'Algorithmia Algorithm API Client (python)'
-from builtins import object
 
 import re
 
