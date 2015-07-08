@@ -1,4 +1,5 @@
 'Algorithmia API Client (python)'
+from builtins import object
 
 import Algorithmia
 from Algorithmia.algorithm import algorithm
@@ -6,7 +7,7 @@ from Algorithmia.data import datafile
 
 import json, re, requests
 
-class client:
+class client(object):
     'Algorithmia Common Library'
 
     apiKey = None

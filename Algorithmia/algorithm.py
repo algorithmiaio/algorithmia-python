@@ -1,8 +1,9 @@
 'Algorithmia Algorithm API Client (python)'
+from builtins import object
 
 import re
 
-class algorithm:
+class algorithm(object):
     def __init__(self, client, algoRef):
         # Parse algoRef
         algoRegex = re.compile(r"(?:algo://|/|)(\w+/.+)")

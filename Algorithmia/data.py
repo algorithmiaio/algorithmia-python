@@ -1,10 +1,11 @@
 'Algorithmia Data API Client (python)'
+from builtins import object
 
 import re
 import json
 import tempfile
 
-class datafile:
+class datafile(object):
     def __init__(self, client, dataUrl):
         self.client = client
         # Parse dataUrl
