@@ -39,6 +39,10 @@ class datafile(object):
         # Make HTTP get request
         return self.client.getHelper(self.url).json()
 
+    def exists(self):
+        response = self.client.headHelper(self.url)
+        return (response.status_code == 200)
+
     def put(self, data):
         # Post to data api
         self.client.putHelper(self.url, bytes(data))

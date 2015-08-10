@@ -41,6 +41,14 @@ class client(object):
             headers['Authorization'] = self.apiKey
         return requests.get(self.apiAddress + url, headers=headers)
 
+    # Used internally to get http head result
+    def headHelper(self, url):
+        headers = {}
+        if self.apiKey is not None:
+            headers['Authorization'] = self.apiKey
+        return requests.head(self.apiAddress + url, headers=headers)
+
+    # Used internally to http put a file
     def putHelper(self, url, data):
         headers = {}
         if self.apiKey is not None:
