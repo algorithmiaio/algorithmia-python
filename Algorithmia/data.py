@@ -50,8 +50,8 @@ class datafile(object):
 
     def putJson(self, data):
         # Post to data api
-        json = json.dumps(data)
-        self.client.putHelper(self.url, json)
+        jsonElement = json.dumps(data)
+        self.client.putHelper(self.url, jsonElement)
         return self
 
     def putFile(self, path):
