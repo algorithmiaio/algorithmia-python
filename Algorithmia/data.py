@@ -46,7 +46,7 @@ class datafile(object):
     def put(self, data):
         # Post to data api
         result = self.client.putHelper(self.url, bytes(data))
-        if result['error']:
+        if 'error' in result:
             raise Exception(result['error']['message'])
         else:
             return self
@@ -55,7 +55,7 @@ class datafile(object):
         # Post to data api
         jsonElement = json.dumps(data)
         result = self.client.putHelper(self.url, jsonElement)
-        if result['error']:
+        if 'error' in result:
             raise Exception(result['error']['message'])
         else:
             return self
@@ -64,12 +64,15 @@ class datafile(object):
         # Post file to data api
         with open(path, 'r') as f:
             result = self.client.putHelper(self.url, f)
-            if result['error']:
+            if 'error' in result:
                 raise Exception(result['error']['message'])
             else:
                 return self
 
     def delete(self):
         # Delete from data api
-        self.client.deleteHelper(self.url)
-        return True
+        result = self.client.deleteHelper(self.url)
+        if 'error' in result:
+            return False
+        else:
+            return True
