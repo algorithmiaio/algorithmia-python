@@ -1,5 +1,6 @@
 'Algorithmia Algorithm API Client (python)'
 
+import base64
 import re
 
 class algorithm(object):
@@ -19,9 +20,13 @@ class algorithm(object):
         responseJson = self.client.postJsonHelper(self.url, inputJson)
 
         # Parse response JSON
-        if 'error' not in responseJson:
-            # Success
-            return responseJson['result']
-        else:
+        if 'error' in responseJson:
             # Failure
             raise Exception(responseJson['error']['message'])
+        else:
+            # Success, check content_type
+            if responseJson['metadata']['content_type'] == 'binary':
+                # Decode Base64 encoded binary file
+                return base64.b64decode(responseJson['result'])
+            else:
+                return responseJson['result']
