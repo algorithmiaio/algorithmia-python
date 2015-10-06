@@ -73,6 +73,6 @@ class datafile(object):
         # Delete from data api
         result = self.client.deleteHelper(self.url)
         if 'error' in result:
-            return False
+            raise Exception(result['error']['message'])
         else:
             return True
