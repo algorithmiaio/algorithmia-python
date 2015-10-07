@@ -26,12 +26,27 @@ class client(object):
         return datafile(self, dataUrl)
 
     # Used internally to post json to the api and parse json response
-    def postJsonHelper(self, url, inputJson):
+    def postJsonHelper(self, url, input1):
         headers = {'Content-Type': 'application/json'}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
-        data = json.dumps(inputJson)
-        response = requests.post(self.apiAddress + url, data=data, headers=headers)
+
+        input_json = None
+        content_type = "void"
+        if input1 is None:
+            input_json = None
+            content_type = "void"
+        elif isinstance(input1, basestring):
+            input_json = json.dumps(input1)
+            content_type = "text"
+        elif isinstance(input1, bytearray):
+            input_json = base64.b64encode(input1)
+            content_type = "binary"
+        else:
+            input_json = json.dumps(input1)
+            content_type = "json"
+
+        response = requests.post(self.apiAddress + url, data=input_json, headers=headers)
         return response.json()
 
     # Used internally to http get a file

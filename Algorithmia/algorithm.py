@@ -16,8 +16,8 @@ class algorithm(object):
             raise Exception('Invalid algorithm URI: ' + algoRef)
 
     # Pipe an input into this algorithm
-    def pipe(self, inputJson):
-        responseJson = self.client.postJsonHelper(self.url, inputJson)
+    def pipe(self, input1):
+        responseJson = self.client.postJsonHelper(self.url, input1)
 
         # Parse response JSON
         if 'error' in responseJson:
@@ -28,5 +28,7 @@ class algorithm(object):
             if responseJson['metadata']['content_type'] == 'binary':
                 # Decode Base64 encoded binary file
                 return base64.b64decode(responseJson['result'])
+            elif responseJson['metadata']['content_type'] == 'void':
+                return None
             else:
                 return responseJson['result']
