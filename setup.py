@@ -12,6 +12,9 @@ setup(
     author='Algorithmia',
     author_email='support@algorithmia.com',
     packages=['Algorithmia'],
+    install_requires=[
+        'requests'
+    ],
     include_package_data=True,
     classifiers=[
         'Development Status :: 4 - Beta',
