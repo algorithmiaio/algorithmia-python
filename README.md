@@ -9,8 +9,6 @@ Python client library for accessing the Algorithmia API
 pip install algorithmia
 ```
 
-The Algorithmia python client also requires the requests package, which you can install with `pip install requests`.
-
 # Install from source
 
 Build algorithmia client wheel:
