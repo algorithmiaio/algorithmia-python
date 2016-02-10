@@ -16,5 +16,20 @@ class DataDirectoryTest(unittest.TestCase):
         dd = DataDirectory(self.client, "data://.my/this_should_never_be_created")
         self.assertFalse(dd.exists())
 
+    def test_empty_directory_creation_and_deletion(self):
+        dd = DataDirectory(self.client, "data://.my/test_directory_creation")
+
+        if (dd.exists()):
+            dd.delete()
+
+        self.assertFalse(dd.exists())
+
+        dd.create()
+        self.assertTrue(dd.exists())
+
+        # get rid of it
+        dd.delete()
+        self.assertFalse(dd.exists())
+
 if __name__ == '__main__':
     unittest.main()

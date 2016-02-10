@@ -26,7 +26,7 @@ class client(object):
         return datafile(self, dataUrl)
 
     # Used internally to post json to the api and parse json response
-    def postJsonHelper(self, url, input_object):
+    def postJsonHelper(self, url, input_object, parse_response_as_json=True):
         headers = {}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
@@ -47,7 +47,10 @@ class client(object):
             headers['Content-Type'] = 'application/json'
 
         response = requests.post(self.apiAddress + url, data=input_json, headers=headers)
-        return response.json()
+
+        if parse_response_as_json:
+            return response.json()
+        return response
 
     # Used internally to http get a file
     def getHelper(self, url):
