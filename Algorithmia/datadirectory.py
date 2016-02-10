@@ -5,6 +5,9 @@ import os
 import re
 import tempfile
 
+import Algorithmia
+from Algorithmia.data import datafile
+
 def getUrl(path):
     return '/v1/data/' + path
 
@@ -28,13 +31,20 @@ class DataDirectory(object):
         if (response.status_code != 200):
             raise Exception("Directory creation failed: " + str(response.content))
 
-    def delete(self):
+    def delete(self, force):
         # Delete from data api
-        result = self.client.deleteHelper(self.url)
+        url = self.url
+        if force:
+            url += '?force=true'
+
+        result = self.client.deleteHelper(url)
         if 'error' in result:
             raise Exception(result['error']['message'])
         else:
             return True
+
+    def file(self, name):
+        return datafile(self.client, os.path.join(self.path, name))
 
     def getParentAndCurrent(self):
         parent, rest = os.path.split(self.path)
