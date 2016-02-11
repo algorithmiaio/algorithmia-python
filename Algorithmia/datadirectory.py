@@ -46,6 +46,19 @@ class DataDirectory(object):
     def file(self, name):
         return datafile(self.client, os.path.join(self.path, name))
 
+    def files(self):
+        return self._getDirectoryIterator('files')
+
+    def _getDirectoryIterator(self, key):
+        response = self.client.getHelper(self.url)
+        if response.status_code != 200:
+            raise Exception("Directory iteration failed: " + str(response.content))
+
+        content = json.loads(response.content)
+        if content[key]:
+            for f in content[key]:
+                yield datafile(self.client, os.path.join(self.path, f['filename']))
+
     def getParentAndCurrent(self):
         parent, rest = os.path.split(self.path)
         while not rest:

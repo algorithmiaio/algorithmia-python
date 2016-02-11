@@ -56,6 +56,32 @@ class DataDirectoryTest(unittest.TestCase):
         self.assertFalse(dd.exists())
         self.assertFalse(f.exists())
 
+    def test_list_files_small(self):
+        dd = DataDirectory(self.client, "data://.my/test_list_files_small")
+        if (dd.exists()):
+            dd.delete(True)
+
+        dd.create()
+
+        f1 = dd.file('a')
+        f1.put('data')
+
+        f2 = dd.file('b')
+        f2.put('data')
+
+        size = 0
+        all_files = set()
+        for f in dd.files():
+            all_files.add(f.path)
+            size += 1
+            print f.path
+
+        self.assertEqual(2, size)
+        self.assertTrue('.my/test_list_files_small/a' in all_files)
+        self.assertTrue('.my/test_list_files_small/b' in all_files)
+
+        dd.delete(True)
+
 
 if __name__ == '__main__':
     unittest.main()
