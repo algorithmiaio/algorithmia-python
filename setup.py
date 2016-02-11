@@ -13,7 +13,8 @@ setup(
     author_email='support@algorithmia.com',
     packages=['Algorithmia'],
     install_requires=[
-        'requests'
+        'requests',
+        'six'
     ],
     include_package_data=True,
     classifiers=[
