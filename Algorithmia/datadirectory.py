@@ -4,6 +4,7 @@ import json
 import os
 import re
 import tempfile
+import urllib
 
 import Algorithmia
 from Algorithmia.data import datafile
@@ -58,11 +59,24 @@ class DataDirectory(object):
         return self._getDirectoryIterator('folders', 'name')
 
     def _getDirectoryIterator(self, contentKey, elementKey):
-        response = self.client.getHelper(self.url)
-        if response.status_code != 200:
-            raise Exception("Directory iteration failed: " + str(response.content))
+        marker = None
+        first = True
+        while first or (marker is not None and len(marker) > 0):
+            first = False
+            url = self.url
+            if marker:
+                url += '?marker=' + urllib.quote_plus(marker)
+            response = self.client.getHelper(url)
+            if response.status_code != 200:
+                raise Exception("Directory iteration failed: " + str(response.content))
 
-        content = json.loads(response.content)
-        if contentKey in content:
-            for f in content[contentKey]:
-                yield datafile(self.client, os.path.join(self.path, f[elementKey]))
+            content = json.loads(response.content)
+
+            if 'marker' in content:
+                marker = content['marker']
+            else:
+                marker = None
+
+            if contentKey in content:
+                for f in content[contentKey]:
+                    yield datafile(self.client, os.path.join(self.path, f[elementKey]))

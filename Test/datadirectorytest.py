@@ -106,5 +106,32 @@ class DataDirectoryTest(unittest.TestCase):
 
         testDir.delete(True)
 
+    def test_list_files_with_paging(self):
+        NUM_FILES = 1100
+        EXTENSION = '.txt'
+
+        dd = DataDirectory(self.client, 'data://.my/pythonLargeDataDirList')
+        if not dd.exists():
+            dd.create()
+
+            for i in xrange(NUM_FILES):
+                dd.file(str(i) + EXTENSION).put(str(i))
+
+        seenFiles = [False] * NUM_FILES
+        numFiles = 0
+
+        for f in dd.files():
+            numFiles += 1
+            name = f.getName()
+            index = int(name[:-1 * len(EXTENSION)])
+            seenFiles[index] = True
+
+        allSeen = True
+        for cur in seenFiles:
+            allSeen = (allSeen and cur)
+
+        self.assertEqual(NUM_FILES, numFiles)
+        self.assertTrue(allSeen)
+
 if __name__ == '__main__':
     unittest.main()
