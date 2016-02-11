@@ -65,7 +65,8 @@ class DataDirectory(object):
             first = False
             url = self.url
             if marker:
-                url += '?marker=' + urllib.quote_plus(marker)
+                queryParams = { 'marker': marker }
+                url += '?' + urllib.urlencode(queryParams)
             response = self.client.getHelper(url)
             if response.status_code != 200:
                 raise Exception("Directory iteration failed: " + str(response.content))
