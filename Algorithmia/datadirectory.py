@@ -2,12 +2,15 @@
 
 import json
 import re
+import six
 import tempfile
 import urllib
 
 import Algorithmia
 from Algorithmia.data import datafile
 from Algorithmia.util import getParentAndBase, pathJoin
+
+urlencode = urllib.parse.urlencode if six.PY3 else urllib.urlencode
 
 def getUrl(path):
     return '/v1/data/' + path
@@ -65,12 +68,15 @@ class DataDirectory(object):
             url = self.url
             if marker:
                 queryParams = { 'marker': marker }
-                url += '?' + urllib.parse.urlencode(queryParams)
+                url += '?' + urlencode(queryParams)
             response = self.client.getHelper(url)
             if response.status_code != 200:
                 raise Exception("Directory iteration failed: " + str(response.content))
 
-            content = json.loads(response.content.decode(encoding='UTF-8'))
+            if isinstance(response.content, six.binary_type):
+                content = json.loads(response.content.decode(encoding='UTF-8'))
+            else:
+                content = json.loads(response.content)
 
             if 'marker' in content:
                 marker = content['marker']

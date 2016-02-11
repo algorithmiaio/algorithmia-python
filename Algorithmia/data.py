@@ -2,6 +2,7 @@
 
 import re
 import json
+import six
 import tempfile
 
 from Algorithmia.util import getParentAndBase
@@ -49,14 +50,21 @@ class datafile(object):
         response = self.client.headHelper(self.url)
         return (response.status_code == 200)
 
-    # I'm undecided if the encoding should have a default.
-    def put(self, data, encoding='UTF-8'):
+    def put(self, data):
         # Post to data api
-        result = self.client.putHelper(self.url, bytes(data, encoding=encoding))
-        if 'error' in result:
-            raise Exception(result['error']['message'])
+
+        # First turn the data to bytes if we can
+        if isinstance(data, six.string_types):
+            data = bytes(data.encode())
+
+        if isinstance(data, six.binary_type):
+            result = self.client.putHelper(self.url, data)
+            if 'error' in result:
+                raise Exception(result['error']['message'])
+            else:
+                return self
         else:
-            return self
+            raise Exception("Must put strings or binary data. Use putJson instead")
 
     def putJson(self, data):
         # Post to data api

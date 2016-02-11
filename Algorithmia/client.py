@@ -4,7 +4,7 @@ import Algorithmia
 from Algorithmia.algorithm import algorithm
 from Algorithmia.data import datafile
 
-import json, re, requests
+import json, re, requests, six
 
 class client(object):
     'Algorithmia Common Library'
@@ -36,7 +36,7 @@ class client(object):
         if input_object is None:
             input_json = json.dumps(None)
             headers['Content-Type'] = 'application/json'
-        elif isinstance(input_object, str):
+        elif isinstance(input_object, six.string_types):
             input_json = input_object
             headers['Content-Type'] = 'text/plain'
         elif isinstance(input_object, bytearray):
