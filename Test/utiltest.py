@@ -13,9 +13,9 @@ class UtilTest(unittest.TestCase):
         self.assertEqual(('//a//b', 'c'), getParentAndBase('//a//b////c///'))
 
     def test_getParentAndBase_errors(self):
-        self.assertRaises(Exception, getParentAndBase('/'))
-        self.assertRaises(Exception, getParentAndBase(''))
-        self.assertRaises(Exception, getParentAndBase('a/'))
+        self.assertRaises(Exception, getParentAndBase, '/')
+        self.assertRaises(Exception, getParentAndBase, '')
+        self.assertRaises(Exception, getParentAndBase, 'a/')
 
 if __name__ == '__main__':
     unittest.main()
