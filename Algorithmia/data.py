@@ -4,6 +4,8 @@ import re
 import json
 import tempfile
 
+from Algorithmia.util import getParentAndBase
+
 class datafile(object):
     def __init__(self, client, dataUrl):
         self.client = client
@@ -26,6 +28,10 @@ class datafile(object):
                 f.write(block)
             f.flush()
             return open(f.name)
+
+    def getName(self):
+        _, name = getParentAndBase(self.path)
+        return name
 
     def getBytes(self):
         # Make HTTP get request

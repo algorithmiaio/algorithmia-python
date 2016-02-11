@@ -12,6 +12,10 @@ class DataDirectoryTest(unittest.TestCase):
     def setUp(self):
         self.client = client(os.environ['ALGORITHMIA_API_KEY'])
 
+    def test_get_name(self):
+        dd = DataDirectory(self.client, 'data://.my/this/is/a/long/path')
+        self.assertEqual('path', dd.getName())
+
     def test_directory_does_not_exit(self):
         dd = DataDirectory(self.client, "data://.my/this_should_never_be_created")
         self.assertFalse(dd.exists())
@@ -74,7 +78,6 @@ class DataDirectoryTest(unittest.TestCase):
         for f in dd.files():
             all_files.add(f.path)
             size += 1
-            print f.path
 
         self.assertEqual(2, size)
         self.assertTrue('.my/test_list_files_small/a' in all_files)

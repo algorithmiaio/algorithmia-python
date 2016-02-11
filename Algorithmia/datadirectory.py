@@ -7,6 +7,7 @@ import tempfile
 
 import Algorithmia
 from Algorithmia.data import datafile
+from Algorithmia.util import getParentAndBase
 
 def getUrl(path):
     return '/v1/data/' + path
@@ -18,13 +19,17 @@ class DataDirectory(object):
         self.path = re.sub(r'^data://|^/', '', dataUrl)
         self.url = getUrl(self.path)
 
+    def getName(self):
+        _, name = getParentAndBase(self.path)
+        return name
+
     def exists(self):
         # Heading a directory apparently isn't a valid operation
         response = self.client.getHelper(self.url)
         return (response.status_code == 200)
 
     def create(self):
-        parent, name = self.getParentAndCurrent()
+        parent, name = getParentAndBase(self.path)
         json = { 'name': name }
 
         response = self.client.postJsonHelper(getUrl(parent), json, False)
@@ -61,15 +66,3 @@ class DataDirectory(object):
         if contentKey in content:
             for f in content[contentKey]:
                 yield datafile(self.client, os.path.join(self.path, f[elementKey]))
-
-    def getParentAndCurrent(self):
-        parent, rest = os.path.split(self.path)
-        while not rest:
-            if not parent:
-                raise Exception('Invalid directory path')
-            parent, rest = os.path.split(parent)
-
-        if not parent:
-                raise Exception('Invalid directory path')
-
-        return parent, rest
