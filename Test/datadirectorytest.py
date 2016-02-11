@@ -57,7 +57,7 @@ class DataDirectoryTest(unittest.TestCase):
         self.assertFalse(f.exists())
 
     def test_list_files_small(self):
-        dd = DataDirectory(self.client, "data://.my/test_list_files_small")
+        dd = DataDirectory(self.client, 'data://.my/test_list_files_small')
         if (dd.exists()):
             dd.delete(True)
 
@@ -82,6 +82,26 @@ class DataDirectoryTest(unittest.TestCase):
 
         dd.delete(True)
 
+    def test_list_folders(self):
+        dd = DataDirectory(self.client, 'data://.my/')
+
+        dirName = '.my/test_list_directory'
+        testDir = DataDirectory(self.client, 'data://' + dirName)
+        if testDir.exists():
+            testDir.delete(True)
+
+        all_folders = set()
+        for f in dd.dirs():
+            all_folders.add(f.path)
+        self.assertFalse(dirName in all_folders)
+
+        testDir.create()
+        all_folders = set()
+        for f in dd.dirs():
+            all_folders.add(f.path)
+        self.assertTrue(dirName in all_folders)
+
+        testDir.delete(True)
 
 if __name__ == '__main__':
     unittest.main()
