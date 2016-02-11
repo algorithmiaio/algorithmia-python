@@ -65,12 +65,12 @@ class DataDirectory(object):
             url = self.url
             if marker:
                 queryParams = { 'marker': marker }
-                url += '?' + urllib.urlencode(queryParams)
+                url += '?' + urllib.parse.urlencode(queryParams)
             response = self.client.getHelper(url)
             if response.status_code != 200:
                 raise Exception("Directory iteration failed: " + str(response.content))
 
-            content = json.loads(response.content)
+            content = json.loads(response.content.decode(encoding='UTF-8'))
 
             if 'marker' in content:
                 marker = content['marker']

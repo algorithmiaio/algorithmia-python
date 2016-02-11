@@ -120,7 +120,7 @@ class DataDirectoryTest(unittest.TestCase):
         if not dd.exists():
             dd.create()
 
-            for i in xrange(NUM_FILES):
+            for i in range(NUM_FILES):
                 dd.file(str(i) + EXTENSION).put(str(i))
 
         seenFiles = [False] * NUM_FILES

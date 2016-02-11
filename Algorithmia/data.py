@@ -49,9 +49,10 @@ class datafile(object):
         response = self.client.headHelper(self.url)
         return (response.status_code == 200)
 
-    def put(self, data):
+    # I'm undecided if the encoding should have a default.
+    def put(self, data, encoding='UTF-8'):
         # Post to data api
-        result = self.client.putHelper(self.url, bytes(data))
+        result = self.client.putHelper(self.url, bytes(data, encoding=encoding))
         if 'error' in result:
             raise Exception(result['error']['message'])
         else:

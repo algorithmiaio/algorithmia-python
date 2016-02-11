@@ -5,7 +5,7 @@ def getParentAndBase(path):
 
     base = None
     parent = None
-    for index in xrange(len(pieces)):
+    for index in range(len(pieces)):
         cur = pieces[len(pieces) - (index + 1)]
 
         if base is None:

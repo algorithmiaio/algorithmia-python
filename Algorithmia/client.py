@@ -36,7 +36,7 @@ class client(object):
         if input_object is None:
             input_json = json.dumps(None)
             headers['Content-Type'] = 'application/json'
-        elif isinstance(input_object, basestring):
+        elif isinstance(input_object, str):
             input_json = input_object
             headers['Content-Type'] = 'text/plain'
         elif isinstance(input_object, bytearray):
