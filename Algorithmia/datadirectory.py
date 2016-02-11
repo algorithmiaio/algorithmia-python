@@ -1,14 +1,13 @@
 'Algorithmia Data API Client (python)'
 
 import json
-import os
 import re
 import tempfile
 import urllib
 
 import Algorithmia
 from Algorithmia.data import datafile
-from Algorithmia.util import getParentAndBase
+from Algorithmia.util import getParentAndBase, pathJoin
 
 def getUrl(path):
     return '/v1/data/' + path
@@ -50,7 +49,7 @@ class DataDirectory(object):
             return True
 
     def file(self, name):
-        return datafile(self.client, os.path.join(self.path, name))
+        return datafile(self.client, pathJoin(self.path, name))
 
     def files(self):
         return self._getDirectoryIterator('files', 'filename')
@@ -80,4 +79,4 @@ class DataDirectory(object):
 
             if contentKey in content:
                 for f in content[contentKey]:
-                    yield datafile(self.client, os.path.join(self.path, f[elementKey]))
+                    yield datafile(self.client, pathJoin(self.path, f[elementKey]))

@@ -60,8 +60,8 @@ class DataDirectoryTest(unittest.TestCase):
         self.assertFalse(dd.exists())
         self.assertFalse(f.exists())
 
-    def test_list_files_small(self):
-        dd = DataDirectory(self.client, 'data://.my/test_list_files_small')
+    def list_files_small(self, collectionName):
+        dd = DataDirectory(self.client, collectionName)
         if (dd.exists()):
             dd.delete(True)
 
@@ -84,6 +84,12 @@ class DataDirectoryTest(unittest.TestCase):
         self.assertTrue('.my/test_list_files_small/b' in all_files)
 
         dd.delete(True)
+
+    def test_list_files_small_without_trailing_slash(self):
+        self.list_files_small('data://.my/test_list_files_small')
+
+    def test_list_files_small_with_trailing_slash(self):
+        self.list_files_small('data://.my/test_list_files_small/')
 
     def test_list_folders(self):
         dd = DataDirectory(self.client, 'data://.my/')

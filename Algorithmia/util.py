@@ -21,3 +21,8 @@ def getParentAndBase(path):
         raise Exception('Invalid path')
 
     return parent, base
+
+def pathJoin(parent, base):
+    if parent.endswith('/'):
+        return parent + base
+    return parent + '/' + base

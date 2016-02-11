@@ -4,7 +4,7 @@ sys.path.append("../")
 import unittest
 
 import Algorithmia
-from Algorithmia.util import getParentAndBase
+from Algorithmia.util import getParentAndBase, pathJoin
 
 class UtilTest(unittest.TestCase):
     def test_getParentAndBase(self):
@@ -16,6 +16,11 @@ class UtilTest(unittest.TestCase):
         self.assertRaises(Exception, getParentAndBase, '/')
         self.assertRaises(Exception, getParentAndBase, '')
         self.assertRaises(Exception, getParentAndBase, 'a/')
+
+    def test_pathJoin(self):
+        self.assertEqual('/a/b/c/d', pathJoin('/a/b/c/', 'd'))
+        self.assertEqual('/a/b/c/d', pathJoin('/a/b/c', 'd'))
+        self.assertEqual('/a//b/c///d', pathJoin('/a//b/c//', '/d'))
 
 if __name__ == '__main__':
     unittest.main()
