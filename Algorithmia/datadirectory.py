@@ -73,10 +73,11 @@ class DataDirectory(object):
             if response.status_code != 200:
                 raise Exception("Directory iteration failed: " + str(response.content))
 
-            if isinstance(response.content, six.binary_type):
-                content = json.loads(response.content.decode(encoding='UTF-8'))
-            else:
-                content = json.loads(response.content)
+            responseContent = response.content
+            if isinstance(responseContent, six.binary_type):
+                responseContent = responseContent.decode()
+
+            content = json.loads(responseContent)
 
             if 'marker' in content:
                 marker = content['marker']
