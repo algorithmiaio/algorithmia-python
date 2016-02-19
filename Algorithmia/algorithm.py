@@ -4,7 +4,7 @@ import base64
 import re
 
 class algorithm(object):
-    def __init__(self, client, algoRef):
+    def __init__(self, client, algoRef, **query_parameters):
         # Parse algoRef
         algoRegex = re.compile(r"(?:algo://|/|)(\w+/.+)")
         m = algoRegex.match(algoRef)
@@ -12,12 +12,13 @@ class algorithm(object):
             self.client = client
             self.path = m.group(1)
             self.url = '/v1/algo/' + self.path
+            self.query_parameters = query_parameters
         else:
             raise Exception('Invalid algorithm URI: ' + algoRef)
 
     # Pipe an input into this algorithm
     def pipe(self, input1):
-        responseJson = self.client.postJsonHelper(self.url, input1)
+        responseJson = self.client.postJsonHelper(self.url, input1, **self.query_parameters)
 
         # Parse response JSON
         if 'error' in responseJson:

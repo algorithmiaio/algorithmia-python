@@ -19,14 +19,14 @@ class client(object):
         else:
             self.apiAddress = Algorithmia.getApiAddress()
 
-    def algo(self, algoRef):
-        return algorithm(self, algoRef)
+    def algo(self, algoRef, **query_parameters):
+        return algorithm(self, algoRef, **query_parameters)
 
     def file(self, dataUrl):
         return datafile(self, dataUrl)
 
     # Used internally to post json to the api and parse json response
-    def postJsonHelper(self, url, input_object, parse_response_as_json=True):
+    def postJsonHelper(self, url, input_object, parse_response_as_json=True, **query_parameters):
         headers = {}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
@@ -46,7 +46,7 @@ class client(object):
             input_json = json.dumps(input_object)
             headers['Content-Type'] = 'application/json'
 
-        response = requests.post(self.apiAddress + url, data=input_json, headers=headers)
+        response = requests.post(self.apiAddress + url, data=input_json, headers=headers, params=query_parameters)
 
         if parse_response_as_json:
             return response.json()
