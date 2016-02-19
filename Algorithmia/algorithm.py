@@ -2,6 +2,7 @@
 
 import base64
 import re
+from async_response import AsyncResponse
 
 class algorithm(object):
     def __init__(self, client, algoRef, **query_parameters):
@@ -23,6 +24,8 @@ class algorithm(object):
     def pipe(self, input1):
         if self.output == 'raw':
             return self.__postRawOutput(input1)
+        elif self.output == 'void':
+            return self.__postVoidOutput(input1)
         else:
             responseJson = self.client.postJsonHelper(self.url, input1, **self.query_parameters)
 
@@ -51,3 +54,10 @@ class algorithm(object):
                 raise Exception(response.text)
             else:
                 return response.text
+
+    def __postVoidOutput(self, input1):
+            responseJson = self.client.postJsonHelper(self.url, input1, **self.query_parameters)
+            if 'error' in responseJson:
+                raise Exception(responseJson['error']['message'])
+            else:
+                return AsyncResponse(responseJson)
