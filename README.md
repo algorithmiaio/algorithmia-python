@@ -27,9 +27,19 @@ pip install --user --upgrade dist/algorithmia-*.whl
 ```python
 import Algorithmia
 
-apiKey = 'XXXXXXXXXX'
+apiKey = '{{Your API key here}}'
 
 print Algorithmia.client(apiKey).algo('util/echo').pipe('echo this string')
 ```
 
 See full docs at: https://algorithmia.com/docs/clients/python/
+
+
+# Running tests
+
+```bash
+export ALGORITHMIA_API_KEY={{Your API key here}}
+cd Test
+python datadirectorytest.py
+python util.py
+```

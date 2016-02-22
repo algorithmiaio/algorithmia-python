@@ -14,6 +14,9 @@ def algo(algoRef):
 def file(dataUrl):
     return getDefaultClient().file(dataUrl)
 
+def dir(dataUrl):
+    return getDefaultClient().dir(dataUrl)
+
 # The default client to use, assuming the user does not want to construct their own
 defaultClient = None
 
