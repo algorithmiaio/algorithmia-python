@@ -20,6 +20,7 @@ class DataDirectoryTest(unittest.TestCase):
         dd = DataDirectory(self.client, "data://.my/this_should_never_be_created")
         self.assertFalse(dd.exists())
 
+    def test_alternate_directory_syntax(self):
         # Check alternate dir syntax
         dd = self.client.dir("data://.my/this_should_never_be_created")
         self.assertFalse(dd.exists())
