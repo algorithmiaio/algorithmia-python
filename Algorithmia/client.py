@@ -2,7 +2,7 @@
 
 import Algorithmia
 from Algorithmia.algorithm import algorithm
-from Algorithmia.data import datafile
+from Algorithmia.datafile import DataFile
 
 import json, re, requests, six
 
@@ -23,7 +23,7 @@ class client(object):
         return algorithm(self, algoRef, **query_parameters)
 
     def file(self, dataUrl):
-        return datafile(self, dataUrl)
+        return DataFile(self, dataUrl)
 
     # Used internally to post json to the api and parse json response
     def postJsonHelper(self, url, input_object, parse_response_as_json=True, **query_parameters):
@@ -53,11 +53,11 @@ class client(object):
         return response
 
     # Used internally to http get a file
-    def getHelper(self, url):
+    def getHelper(self, url, **query_parameters):
         headers = {}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
-        return requests.get(self.apiAddress + url, headers=headers)
+        return requests.get(self.apiAddress + url, headers=headers, params=query_parameters)
 
     # Used internally to get http head result
     def headHelper(self, url):

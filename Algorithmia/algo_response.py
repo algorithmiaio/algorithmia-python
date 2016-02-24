@@ -11,7 +11,7 @@ class AlgoResponse(object):
         # Parse response JSON
         if 'error' in responseJson:
             # Failure
-            raise AlgoException(responseJson['error']['message'])
+            raise AlgoException(responseJson['error'])
         else:
             metadata = Metadata(responseJson['metadata'])
             # Success, check content_type
@@ -25,8 +25,11 @@ class AlgoResponse(object):
 
 
 class AlgoException(Exception):
-    def __init__(self, message):
-        self.message = message
+    def __init__(self, error):
+        self.message = error['message']
+        self.stacktrace = None
+        if 'stacktrace' in error:
+            self.stacktrace = error['stacktrace']
 
     def __str__(self):
         return self.message

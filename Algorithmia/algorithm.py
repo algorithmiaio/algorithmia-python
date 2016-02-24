@@ -32,13 +32,13 @@ class algorithm(object):
     def pipe(self, input1):
 
         if self.output_type == OutputType.raw:
-            return self.__postRawOutput(input1)
+            return self._postRawOutput(input1)
         elif self.output_type == OutputType.void:
-            return self.__postVoidOutput(input1)
+            return self._postVoidOutput(input1)
         else:
             return AlgoResponse.create_algo_response(self.client.postJsonHelper(self.url, input1, **self.query_parameters))
 
-    def __postRawOutput(self, input1):
+    def _postRawOutput(self, input1):
             # Don't parse response as json
             self.query_parameters['output'] = 'raw'
             response = self.client.postJsonHelper(self.url, input1, parse_response_as_json=False, **self.query_parameters)
@@ -51,7 +51,7 @@ class algorithm(object):
             else:
                 return response.text
 
-    def __postVoidOutput(self, input1):
+    def _postVoidOutput(self, input1):
             self.query_parameters['output'] = 'void'
             responseJson = self.client.postJsonHelper(self.url, input1, **self.query_parameters)
             if 'error' in responseJson:

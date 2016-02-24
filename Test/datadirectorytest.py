@@ -6,6 +6,7 @@ import unittest
 import Algorithmia
 from Algorithmia import client
 from Algorithmia.datadirectory import DataDirectory
+from Algorithmia.data import DataObjectType
 import os
 
 class DataDirectoryTest(unittest.TestCase):
@@ -138,6 +139,12 @@ class DataDirectoryTest(unittest.TestCase):
 
         self.assertEqual(NUM_FILES, numFiles)
         self.assertTrue(allSeen)
+
+    def test_data_object(self):
+        dd = DataDirectory(self.client, 'data://foo')
+        self.assertTrue(dd.is_dir())
+        self.assertFalse(dd.is_file())
+        self.assertTrue(dd.get_type() is DataObjectType.directory)
 
 if __name__ == '__main__':
     unittest.main()
