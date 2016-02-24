@@ -11,10 +11,17 @@ class Acl(object):
         else:
             raise Exception('Response does not contain read ACL')
 
+    def to_api_param(self):
+        read_acl_string = self.read_acl.acl_string
+        if read_acl_string is None:
+            return {'read':[]}
+        return {'read':[read_acl_string]}
+
 class AclInner(object):
     def __init__(self, pseudonym, acl_string):
-        self.acl_string = acl_string
         self.pseudonym = pseudonym
+        self.acl_string = acl_string
+
     def __repr__(self):
         return 'AclType(pseudonym=%s,acl_string=%s)' % (self.pseudonym, self.acl_string)
 

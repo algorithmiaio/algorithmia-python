@@ -7,6 +7,7 @@ import Algorithmia
 from Algorithmia import client
 from Algorithmia.datadirectory import DataDirectory
 from Algorithmia.data import DataObjectType
+from Algorithmia.acl import Acl, AclType
 import os
 
 class DataDirectoryTest(unittest.TestCase):

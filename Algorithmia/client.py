@@ -59,6 +59,13 @@ class client(object):
             headers['Authorization'] = self.apiKey
         return requests.get(self.apiAddress + url, headers=headers, params=query_parameters)
 
+    def patchHelper(self, url, params):
+        headers = {}
+        if self.apiKey is not None:
+            headers['Authorization'] = self.apiKey
+        print self.apiAddress + url, params
+        return requests.patch(self.apiAddress + url, headers=headers, json=params)
+
     # Used internally to get http head result
     def headHelper(self, url):
         headers = {}

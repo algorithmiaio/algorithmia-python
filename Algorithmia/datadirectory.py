@@ -9,6 +9,7 @@ import Algorithmia
 from Algorithmia.datafile import DataFile
 from Algorithmia.data import DataObject, DataObjectType
 from Algorithmia.util import getParentAndBase, pathJoin
+from Algorithmia.acl import Acl
 
 class DataDirectory(DataObject):
     def __init__(self, client, dataUrl):
@@ -35,10 +36,12 @@ class DataDirectory(DataObject):
         response = self.client.getHelper(self.url)
         return (response.status_code == 200)
 
-    def create(self):
+    def create(self, acl=None):
+        '''Creates a directory, optionally include Acl argument to set permissions'''
         parent, name = getParentAndBase(self.path)
         json = { 'name': name }
-
+        if acl is not None:
+            json['acl'] = acl.to_api_param()
         response = self.client.postJsonHelper(DataDirectory._getUrl(parent), json, False)
         if (response.status_code != 200):
             raise Exception("Directory creation failed: " + str(response.content))
@@ -66,6 +69,20 @@ class DataDirectory(DataObject):
 
     def list(self):
         return self._get_directory_iterator()
+
+    def get_permissions(self):
+        response = self.client.getHelper(self.url, acl='true')
+        if response.status_code != 200:
+            raise Exception('Unable to get permissions:' + str(response.content))
+        content = json.loads(response.content)
+        return Acl.from_acl_response(content['acl'])
+
+    def update_permissions(self, acl):
+        params = {'acl':acl.to_api_param()}
+        response = self.client.patchHelper(self.url, params)
+        if response.status_code != 200:
+            raise Exception('Unable to update permissions:' + str(response.content))
+        return True
 
     def _get_directory_iterator(self, type_filter=None):
         marker = None
