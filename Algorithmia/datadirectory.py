@@ -22,6 +22,9 @@ class DataDirectory(DataObject):
     def _getUrl(path):
         return '/v1/data/' + path
 
+    def set_attributes(self, response_json):
+        # Nothing to set for now
+        pass
 
     def getName(self):
         _, name = getParentAndBase(self.path)
@@ -56,12 +59,15 @@ class DataDirectory(DataObject):
         return DataFile(self.client, pathJoin(self.path, name))
 
     def files(self):
-        return self._getDirectoryIterator('files', 'filename')
+        return self._get_directory_iterator(DataObjectType.file)
 
     def dirs(self):
-        return self._getDirectoryIterator('folders', 'name')
+        return self._get_directory_iterator(DataObjectType.directory)
 
-    def _getDirectoryIterator(self, contentKey, elementKey):
+    def list(self):
+        return self._get_directory_iterator()
+
+    def _get_directory_iterator(self, type_filter=None):
         marker = None
         first = True
         while first or (marker is not None and len(marker) > 0):
@@ -84,6 +90,27 @@ class DataDirectory(DataObject):
             else:
                 marker = None
 
-            if contentKey in content:
-                for f in content[contentKey]:
-                    yield DataFile(self.client, pathJoin(self.path, f[elementKey]))
+            if type_filter is DataObjectType.directory or type_filter is None:
+                for d in self._iterate_directories(content):
+                    yield d
+            if type_filter is DataObjectType.file or type_filter is None:
+                for f in self._iterate_files(content):
+                    yield f
+
+    def _iterate_directories(self, content):
+        directories = []
+        if 'folders' in content:
+            for dir_info in content['folders']:
+                d = DataDirectory(self.client, pathJoin(self.path, dir_info['name']))
+                d.set_attributes(dir_info)
+                directories.append(d)
+        return directories
+
+    def _iterate_files(self, content):
+        files = []
+        if 'files' in content:
+            for file_info in content['files']:
+                f = DataFile(self.client, pathJoin(self.path, file_info['filename']))
+                f.set_attributes(file_info)
+                files.append(f)
+        return files

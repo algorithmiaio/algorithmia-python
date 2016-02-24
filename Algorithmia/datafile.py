@@ -4,6 +4,7 @@ import re
 import json
 import six
 import tempfile
+from datetime import datetime
 
 from Algorithmia.util import getParentAndBase
 from data import DataObject, DataObjectType
@@ -15,6 +16,12 @@ class DataFile(DataObject):
         # Parse dataUrl
         self.path = re.sub(r'^data://|^/', '', dataUrl)
         self.url = '/v1/data/' + self.path
+        self.last_modified = None
+        self.size = None
+
+    def set_attributes(self, attributes):
+        self.last_modified = datetime.strptime(attributes['last_modified'],'%Y-%m-%dT%H:%M:%S.000Z')
+        self.size = attributes['size']
 
     # Deprecated:
     def get(self):
