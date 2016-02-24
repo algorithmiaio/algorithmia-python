@@ -44,3 +44,8 @@ class AclType(object):
                     return t
             else:
                 raise Exception('Invalid acl string %s' % (acl_list[0]))
+
+class ReadAcl(object):
+    public = Acl(AclType.public)
+    private = Acl(AclType.private)
+    my_algos = Acl(AclType.my_algos)

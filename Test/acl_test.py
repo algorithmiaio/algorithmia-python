@@ -3,7 +3,7 @@ sys.path.append("../")
 
 import unittest
 
-from Algorithmia.acl import AclType, Acl
+from Algorithmia.acl import AclType, Acl, ReadAcl
 from Algorithmia.datadirectory import DataDirectory
 from Algorithmia import client
 import os
@@ -25,12 +25,12 @@ class AclTypeTest(unittest.TestCase):
         dd = DataDirectory(c, 'data://.my/privatePermissions')
         if dd.exists():
             dd.delete(True)
-        dd.create(Acl(AclType.private))
+        dd.create(ReadAcl.private)
 
         dd_perms = DataDirectory(c, 'data://.my/privatePermissions').get_permissions()
         self.assertEquals(dd_perms.read_acl, AclType.private)
 
-        dd.update_permissions(Acl(AclType.public))
+        dd.update_permissions(ReadAcl.public)
         dd_perms = DataDirectory(c, 'data://.my/privatePermissions').get_permissions()
         self.assertEquals(dd_perms.read_acl, AclType.public)
 

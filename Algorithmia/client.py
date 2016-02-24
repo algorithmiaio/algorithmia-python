@@ -63,7 +63,6 @@ class client(object):
         headers = {}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
-        print self.apiAddress + url, params
         return requests.patch(self.apiAddress + url, headers=headers, json=params)
 
     # Used internally to get http head result
