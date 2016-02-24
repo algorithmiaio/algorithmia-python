@@ -3,9 +3,13 @@
 import base64
 import re
 from async_response import AsyncResponse
+from algo_response import AlgoResponse
+from enum import Enum
+
+OutputType = Enum('OutputType','default raw void')
 
 class algorithm(object):
-    def __init__(self, client, algoRef, **query_parameters):
+    def __init__(self, client, algoRef):
         # Parse algoRef
         algoRegex = re.compile(r"(?:algo://|/|)(\w+/.+)")
         m = algoRegex.match(algoRef)
@@ -13,38 +17,30 @@ class algorithm(object):
             self.client = client
             self.path = m.group(1)
             self.url = '/v1/algo/' + self.path
-            self.query_parameters = query_parameters
-            self.output = None
-            if 'output' in query_parameters:
-                self.output = query_parameters['output']
+            self.query_parameters = {}
+            self.output_type = OutputType.default
         else:
             raise Exception('Invalid algorithm URI: ' + algoRef)
 
+    def set_options(self, timeout=300, stdout=False, output=OutputType.default, **query_parameters):
+        self.query_parameters = {'timeout':timeout, 'stdout':stdout}
+        self.output_type = output
+        self.query_parameters.update(query_parameters)
+        return self
+
     # Pipe an input into this algorithm
     def pipe(self, input1):
-        if self.output == 'raw':
+
+        if self.output_type == OutputType.raw:
             return self.__postRawOutput(input1)
-        elif self.output == 'void':
+        elif self.output_type == OutputType.void:
             return self.__postVoidOutput(input1)
         else:
-            responseJson = self.client.postJsonHelper(self.url, input1, **self.query_parameters)
-
-            # Parse response JSON
-            if 'error' in responseJson:
-                # Failure
-                raise Exception(responseJson['error']['message'])
-            else:
-                # Success, check content_type
-                if responseJson['metadata']['content_type'] == 'binary':
-                    # Decode Base64 encoded binary file
-                    return base64.b64decode(responseJson['result'])
-                elif responseJson['metadata']['content_type'] == 'void':
-                    return None
-                else:
-                    return responseJson['result']
+            return AlgoResponse.create_algo_response(self.client.postJsonHelper(self.url, input1, **self.query_parameters))
 
     def __postRawOutput(self, input1):
             # Don't parse response as json
+            self.query_parameters['output'] = 'raw'
             response = self.client.postJsonHelper(self.url, input1, parse_response_as_json=False, **self.query_parameters)
             # Check HTTP code and throw error as needed
             if response.status_code == 400:
@@ -56,6 +52,7 @@ class algorithm(object):
                 return response.text
 
     def __postVoidOutput(self, input1):
+            self.query_parameters['output'] = 'void'
             responseJson = self.client.postJsonHelper(self.url, input1, **self.query_parameters)
             if 'error' in responseJson:
                 raise Exception(responseJson['error']['message'])
