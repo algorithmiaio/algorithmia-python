@@ -1,3 +1,16 @@
+class Acl(object):
+    def __init__(self, read_acl):
+        self.read_acl = read_acl
+
+    @staticmethod
+    def from_acl_response(acl_response):
+        '''Takes JSON response from API and converts to ACL object'''
+        if 'read' in acl_response:
+            read_acl = AclType.from_acl_response(acl_response['read'])
+            return Acl(read_acl)
+        else:
+            raise Exception('Response does not contain read ACL')
+
 class AclInner(object):
     def __init__(self, pseudonym, acl_string):
         self.acl_string = acl_string
@@ -22,3 +35,5 @@ class AclType(object):
             for t in AclType.types:
                 if t.acl_string == acl_string:
                     return t
+            else:
+                raise Exception('Invalid acl string %s' % (acl_list[0]))
