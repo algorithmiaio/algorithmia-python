@@ -29,6 +29,9 @@ class client(object):
     def dir(self, dataUrl):
         return DataDirectory(self, dataUrl)
 
+    def dir(self, dataUrl):
+        return DataDirectory(self, dataUrl)
+
     # Used internally to post json to the api and parse json response
     def postJsonHelper(self, url, input_object, parse_response_as_json=True, **query_parameters):
         headers = {}

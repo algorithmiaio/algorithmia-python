@@ -28,7 +28,7 @@ First create an Algorithmia client:
 ```python
 import Algorithmia
 
-apiKey = 'XXXXXXXXXX'
+apiKey = '{{Your API key here}}'
 
 client = Algorithmia.client(apiKey)
 ```
@@ -106,3 +106,12 @@ print result.metadata   # content_type, duration etc
 ```
 
 Aside from that you should be able to drop in the newest version of the client.  Another advantage of using the newest client is full access to the entire Data API specification.
+
+# Running tests
+
+```bash
+export ALGORITHMIA_API_KEY={{Your API key here}}
+cd Test
+python datadirectorytest.py
+python util.py
+```
