@@ -7,7 +7,7 @@ import tempfile
 from datetime import datetime
 
 from Algorithmia.util import getParentAndBase
-from data import DataObject, DataObjectType
+from Algorithmia.data import DataObject, DataObjectType
 
 class DataFile(DataObject):
     def __init__(self, client, dataUrl):

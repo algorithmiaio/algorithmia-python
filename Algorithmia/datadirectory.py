@@ -74,7 +74,7 @@ class DataDirectory(DataObject):
         response = self.client.getHelper(self.url, acl='true')
         if response.status_code != 200:
             raise Exception('Unable to get permissions:' + str(response.content))
-        content = json.loads(response.content)
+        content = response.json()
         return Acl.from_acl_response(content['acl'])
 
     def update_permissions(self, acl):

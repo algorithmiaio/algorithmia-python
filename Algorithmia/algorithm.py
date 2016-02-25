@@ -2,8 +2,8 @@
 
 import base64
 import re
-from async_response import AsyncResponse
-from algo_response import AlgoResponse
+from Algorithmia.async_response import AsyncResponse
+from Algorithmia.algo_response import AlgoResponse
 from enum import Enum
 
 OutputType = Enum('OutputType','default raw void')

@@ -29,9 +29,6 @@ class Client(object):
     def dir(self, dataUrl):
         return DataDirectory(self, dataUrl)
 
-    def dir(self, dataUrl):
-        return DataDirectory(self, dataUrl)
-
     # Used internally to post json to the api and parse json response
     def postJsonHelper(self, url, input_object, parse_response_as_json=True, **query_parameters):
         headers = {}
@@ -67,10 +64,10 @@ class Client(object):
         return requests.get(self.apiAddress + url, headers=headers, params=query_parameters)
 
     def patchHelper(self, url, params):
-        headers = {}
+        headers = {'content-type': 'application/json'}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
-        return requests.patch(self.apiAddress + url, headers=headers, json=params)
+        return requests.patch(self.apiAddress + url, headers=headers, data=json.dumps(params))
 
     # Used internally to get http head result
     def headHelper(self, url):
