@@ -71,17 +71,24 @@ class DataDirectory(DataObject):
         return self._get_directory_iterator()
 
     def get_permissions(self):
+        '''
+        Returns permissions for this directory or None if it's a special collection such as
+        .session or .algo
+        '''
         response = self.client.getHelper(self.url, acl='true')
         if response.status_code != 200:
             raise Exception('Unable to get permissions:' + str(response.content))
         content = response.json()
-        return Acl.from_acl_response(content['acl'])
+        if 'acl' in conent:
+            return Acl.from_acl_response(content['acl'])
+        else:
+            return None
 
     def update_permissions(self, acl):
         params = {'acl':acl.to_api_param()}
         response = self.client.patchHelper(self.url, params)
         if response.status_code != 200:
-            raise Exception('Unable to update permissions:' + str(response.content))
+            raise Exception('Unable to update permissions: ' + response.json()['error']['message'])
         return True
 
     def _get_directory_iterator(self, type_filter=None):
