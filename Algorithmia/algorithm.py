@@ -8,7 +8,7 @@ from enum import Enum
 
 OutputType = Enum('OutputType','default raw void')
 
-class algorithm(object):
+class Algorithm(object):
     def __init__(self, client, algoRef):
         # Parse algoRef
         algoRegex = re.compile(r"(?:algo://|/|)(\w+/.+)")

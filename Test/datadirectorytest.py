@@ -4,7 +4,6 @@ sys.path.append("../")
 import unittest
 
 import Algorithmia
-from Algorithmia import client
 from Algorithmia.datadirectory import DataDirectory
 from Algorithmia.data import DataObjectType
 from Algorithmia.acl import Acl, AclType
@@ -12,7 +11,7 @@ import os
 
 class DataDirectoryTest(unittest.TestCase):
     def setUp(self):
-        self.client = client(os.environ['ALGORITHMIA_API_KEY'])
+        self.client = Algorithmia.client(os.environ['ALGORITHMIA_API_KEY'])
 
     def test_get_name(self):
         dd = DataDirectory(self.client, 'data://.my/this/is/a/long/path')

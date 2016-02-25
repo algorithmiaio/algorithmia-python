@@ -1,13 +1,13 @@
 'Algorithmia API Client (python)'
 
 import Algorithmia
-from Algorithmia.algorithm import algorithm
+from Algorithmia.algorithm import Algorithm
 from Algorithmia.datafile import DataFile
 from Algorithmia.datadirectory import DataDirectory
 
 import json, re, requests, six
 
-class client(object):
+class Client(object):
     'Algorithmia Common Library'
 
     apiKey = None
@@ -20,8 +20,8 @@ class client(object):
         else:
             self.apiAddress = Algorithmia.getApiAddress()
 
-    def algo(self, algoRef, **query_parameters):
-        return algorithm(self, algoRef, **query_parameters)
+    def algo(self, algoRef):
+        return Algorithm(self, algoRef)
 
     def file(self, dataUrl):
         return DataFile(self, dataUrl)

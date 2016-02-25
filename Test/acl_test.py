@@ -2,10 +2,9 @@ import sys
 sys.path.append("../")
 
 import unittest
-
+import Algorithmia
 from Algorithmia.acl import AclType, Acl, ReadAcl
 from Algorithmia.datadirectory import DataDirectory
-from Algorithmia import client
 import os
 
 class AclTypeTest(unittest.TestCase):
@@ -21,7 +20,7 @@ class AclTypeTest(unittest.TestCase):
         self.assertEquals(AclType.from_acl_response(['user://*']), AclType.public)
 
     def test_create_acl(self):
-        c = client(os.environ['ALGORITHMIA_API_KEY'])
+        c = Algorithmia.client(os.environ['ALGORITHMIA_API_KEY'])
         dd = DataDirectory(c, 'data://.my/privatePermissions')
         if dd.exists():
             dd.delete(True)
