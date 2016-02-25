@@ -2,6 +2,7 @@ Algorithmia Common Library (python)
 ===================================
 
 Python client library for accessing the Algorithmia API
+For API documentation, see the [PythonDocs](https://algorithmia.com/docs/lang/python)
 
 
 # Install from PyPi
@@ -23,13 +24,69 @@ pip install --user --upgrade dist/algorithmia-*.whl
 
 
 # Use
-
+First create an Algorithmia client:
 ```python
 import Algorithmia
 
 apiKey = 'XXXXXXXXXX'
 
-print Algorithmia.client(apiKey).algo('util/echo').pipe('echo this string')
+client = Algorithmia.client(apiKey)
 ```
 
-See full docs at: https://algorithmia.com/docs/clients/python/
+Now you can call an algorithm:
+```python
+result = client.algo('util/echo').pipe('Hello, world!')
+```
+
+The result of a call is either an AlgoException (indicating an error) or an AlgoResponse:
+```python
+print result.result    # Hello, world!
+print result.metadata  # Metadata(content_type='text',duration=0.0002127)
+print result.metadata.duration # 0.0002127
+client.algo('util/whoopsWrongAlgo').pipe('Hello, world!')  # Algorithmia.algo_response.AlgoException: algorithm algo://util/whoopsWrongAlgo not found
+```
+
+You can also set options (query paramters in the spec):
+```python
+from Algorithmia.algorithm import OutputType
+client.algo('util/echo').set_options(timeout=60, stdout=False, output=OutputType.raw)
+```
+
+# Working with data
+After creating a client you can store data within Algorithmia as well
+```python
+# Create a directory "foo"
+foo = client.dir("data://.my/foo")
+foo.create();
+
+# You can also set the ACL for the directory on creation or update it
+from Algorithmia.acl import ReadAcl, AclType
+foo.create(ReadAcl.public)   # ReadAcl.public is a wrapper for Acl(AclType.public) to make things easier
+
+acl = foo.get_permissions()  # Acl object
+acl.read_acl == AclType.public  # True
+
+foo.update_permissions(ReadAcl.private)
+foo.get_permissions().read_acl == AclType.private # True
+
+
+# Upload files to "foo" directory
+foo.file("sample.txt").put("sample text contents")
+foo.file("binary_file").put(some_binary_data)
+foo.putFile(open("/path/to/myfile"))
+
+# List files in "foo"
+for file in foo.files():
+    print file.path " at URL: " + file.url + " last modified " + file.last_modified
+
+# Note nested directories are not currently supported by the API, but there are an analogous .dirs and .list methods
+
+# Get contents of files
+sampleText = foo.file("sample.txt").getString()  # String object
+binaryContent = foo.file("binary_file").getBytes()  # Binary data
+tempFile = foo.file("myfile").getFile()   # Open file descriptor
+
+# Delete files and directories
+foo.file("sample.txt").delete()
+foo.delete(true) // true implies force deleting the directory and its contents
+```

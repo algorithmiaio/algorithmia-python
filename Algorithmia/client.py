@@ -3,6 +3,7 @@
 import Algorithmia
 from Algorithmia.algorithm import algorithm
 from Algorithmia.datafile import DataFile
+from Algorithmia.datadirectory import DataDirectory
 
 import json, re, requests, six
 
@@ -24,6 +25,9 @@ class client(object):
 
     def file(self, dataUrl):
         return DataFile(self, dataUrl)
+
+    def dir(self, dataUrl):
+        return DataDirectory(self, dataUrl)
 
     # Used internally to post json to the api and parse json response
     def postJsonHelper(self, url, input_object, parse_response_as_json=True, **query_parameters):
