@@ -90,3 +90,19 @@ tempFile = foo.file("myfile").getFile()   # Open file descriptor
 foo.file("sample.txt").delete()
 foo.delete(true) // true implies force deleting the directory and its contents
 ```
+
+# Upgrading from 0.9.x
+The main backwards incompatibility between 0.9.x and 1.0.0 is the result of an algorithm call.
+In 0.9.x the result of an algorithm call is just the algorithm's output (which is not the full spec returned by the API)
+```python
+result = client.algo('util/echo').pipe('Hello, world!')
+print result   # Hello, world!
+```
+In 1.0.x the result of an algorithm matches the API specification.  The algorithm's output is nested in an attribute 'result', and metadata can be accessed via the 'metadata' attribute.
+```python
+result = client.algo('util/echo').pipe('Hello, world!')
+print result.result     # Hello, world!
+print result.metadata   # content_type, duration etc
+```
+
+Aside from that you should be able to drop in the newest version of the client.  Another advantage of using the newest client is full access to the entire Data API specification.
