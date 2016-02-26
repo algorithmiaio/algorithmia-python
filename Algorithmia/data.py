@@ -1,93 +1,23 @@
-'Algorithmia Data API Client (python)'
+from enum import Enum
 
-import re
-import json
-import six
-import tempfile
+DataObjectType = Enum('DataObjectType','file directory')
 
-from Algorithmia.util import getParentAndBase
+class DataObject(object):
+    def __init__(self, data_object_type):
+        self.data_object_type = data_object_type
 
-class datafile(object):
-    def __init__(self, client, dataUrl):
-        self.client = client
-        # Parse dataUrl
-        self.path = re.sub(r'^data://|^/', '', dataUrl)
-        self.url = '/v1/data/' + self.path
+    def is_file(self):
+        '''Returns whether object is a file'''
+        return self.data_object_type is DataObjectType.file
 
-    # Deprecated:
-    def get(self):
-        return self.client.getHelper(self.url)
+    def is_dir(self):
+        '''Returns whether object is a directory'''
+        return self.data_object_type is DataObjectType.directory
 
-    # Get file from the data api
-    def getFile(self):
-        # Make HTTP get request
-        response = self.client.getHelper(self.url)
-        with tempfile.NamedTemporaryFile(delete = False) as f:
-            for block in response.iter_content(1024):
-                if not block:
-                    break;
-                f.write(block)
-            f.flush()
-            return open(f.name)
+    def get_type(self):
+        '''Returns type of this DataObject'''
+        return self.data_object_type
 
-    def getName(self):
-        _, name = getParentAndBase(self.path)
-        return name
-
-    def getBytes(self):
-        # Make HTTP get request
-        return self.client.getHelper(self.url).content
-
-    def getString(self):
-        # Make HTTP get request
-        return self.client.getHelper(self.url).text
-
-    def getJson(self):
-        # Make HTTP get request
-        return self.client.getHelper(self.url).json()
-
-    def exists(self):
-        response = self.client.headHelper(self.url)
-        return (response.status_code == 200)
-
-    def put(self, data):
-        # Post to data api
-
-        # First turn the data to bytes if we can
-        if isinstance(data, six.string_types):
-            data = bytes(data.encode())
-
-        if isinstance(data, six.binary_type):
-            result = self.client.putHelper(self.url, data)
-            if 'error' in result:
-                raise Exception(result['error']['message'])
-            else:
-                return self
-        else:
-            raise Exception("Must put strings or binary data. Use putJson instead")
-
-    def putJson(self, data):
-        # Post to data api
-        jsonElement = json.dumps(data)
-        result = self.client.putHelper(self.url, jsonElement)
-        if 'error' in result:
-            raise Exception(result['error']['message'])
-        else:
-            return self
-
-    def putFile(self, path):
-        # Post file to data api
-        with open(path, 'r') as f:
-            result = self.client.putHelper(self.url, f)
-            if 'error' in result:
-                raise Exception(result['error']['message'])
-            else:
-                return self
-
-    def delete(self):
-        # Delete from data api
-        result = self.client.deleteHelper(self.url)
-        if 'error' in result:
-            raise Exception(result['error']['message'])
-        else:
-            return True
+    def set_attributes(self):
+        '''Sets attributes about the directory after querying the Data API'''
+        raise NotImplementedError

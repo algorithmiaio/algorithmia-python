@@ -4,13 +4,14 @@ sys.path.append("../")
 import unittest
 
 import Algorithmia
-from Algorithmia import client
 from Algorithmia.datadirectory import DataDirectory
+from Algorithmia.data import DataObjectType
+from Algorithmia.acl import Acl, AclType
 import os
 
 class DataDirectoryTest(unittest.TestCase):
     def setUp(self):
-        self.client = client(os.environ['ALGORITHMIA_API_KEY'])
+        self.client = Algorithmia.client(os.environ['ALGORITHMIA_API_KEY'])
 
     def test_get_name(self):
         dd = DataDirectory(self.client, 'data://.my/this/is/a/long/path')
@@ -143,6 +144,12 @@ class DataDirectoryTest(unittest.TestCase):
 
         self.assertEqual(NUM_FILES, numFiles)
         self.assertTrue(allSeen)
+
+    def test_data_object(self):
+        dd = DataDirectory(self.client, 'data://foo')
+        self.assertTrue(dd.is_dir())
+        self.assertFalse(dd.is_file())
+        self.assertTrue(dd.get_type() is DataObjectType.directory)
 
 if __name__ == '__main__':
     unittest.main()

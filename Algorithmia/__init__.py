@@ -1,6 +1,6 @@
 'Algorithmia API Client (python)'
 
-from Algorithmia.client import client
+from Algorithmia.client import Client
 import os
 
 apiKey = None
@@ -17,6 +17,9 @@ def file(dataUrl):
 def dir(dataUrl):
     return getDefaultClient().dir(dataUrl)
 
+def client(api_key=None, api_address=None):
+    return Client(api_key, api_address)
+
 # The default client to use, assuming the user does not want to construct their own
 defaultClient = None
 
@@ -26,7 +29,7 @@ def getDefaultClient():
     # Check for default client, and ensure default API key has not changed
     if defaultClient is None or defaultClient.apiKey is not apiKey:
         # Construct default client
-        defaultClient = client(apiKey)
+        defaultClient = Client(apiKey)
     return defaultClient
 
 # Used internally to get default api client
