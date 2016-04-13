@@ -29,6 +29,8 @@ class DataFile(DataObject):
 
     # Get file from the data api
     def getFile(self):
+        if not self.exists():
+            raise Exception('file does not exist - {}'.format(self.path))
         # Make HTTP get request
         response = self.client.getHelper(self.url)
         with tempfile.NamedTemporaryFile(delete = False) as f:
@@ -44,14 +46,20 @@ class DataFile(DataObject):
         return name
 
     def getBytes(self):
+        if not self.exists():
+            raise Exception('file does not exist - {}'.format(self.path))
         # Make HTTP get request
         return self.client.getHelper(self.url).content
 
     def getString(self):
+        if not self.exists():
+            raise Exception('file does not exist - {}'.format(self.path))
         # Make HTTP get request
         return self.client.getHelper(self.url).text
 
     def getJson(self):
+        if not self.exists():
+            raise Exception('file does not exist - {}'.format(self.path))
         # Make HTTP get request
         return self.client.getHelper(self.url).json()
 
