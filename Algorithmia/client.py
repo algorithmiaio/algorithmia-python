@@ -43,8 +43,8 @@ class Client(object):
         elif isinstance(input_object, six.string_types):
             input_json = input_object
             headers['Content-Type'] = 'text/plain'
-        elif isinstance(input_object, bytearray):
-            input_json = input_object.decode('utf-8')
+        elif isinstance(input_object, bytearray) or isinstance(input_object, bytes):
+            input_json = bytes(input_object)
             headers['Content-Type'] = 'application/octet-stream'
         else:
             input_json = json.dumps(input_object)
