@@ -1,3 +1,5 @@
+import base64
+
 class AlgoResponse(object):
     def __init__(self, result, metadata):
         self.result = result

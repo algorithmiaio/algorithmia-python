@@ -44,7 +44,7 @@ class Client(object):
             input_json = input_object
             headers['Content-Type'] = 'text/plain'
         elif isinstance(input_object, bytearray):
-            input_json = input_object
+            input_json = str(input_object)
             headers['Content-Type'] = 'application/octet-stream'
         else:
             input_json = json.dumps(input_object)
