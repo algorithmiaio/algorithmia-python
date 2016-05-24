@@ -64,6 +64,9 @@ class DataDirectory(DataObject):
     def files(self):
         return self._get_directory_iterator(DataObjectType.file)
 
+    def dir(self, name):
+        return DataDirectory(self.client, pathJoin(self.path, name))
+
     def dirs(self):
         return self._get_directory_iterator(DataObjectType.directory)
 
