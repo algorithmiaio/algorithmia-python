@@ -82,7 +82,7 @@ class DataDirectory(DataObject):
         if response.status_code != 200:
             raise Exception('Unable to get permissions:' + str(response.content))
         content = response.json()
-        if 'acl' in conent:
+        if 'acl' in content:
             return Acl.from_acl_response(content['acl'])
         else:
             return None
