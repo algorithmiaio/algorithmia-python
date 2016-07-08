@@ -137,7 +137,7 @@ foo.file("binary_file").put(some_binary_data)
 Note: you can instantiate a `DataFile` by either `client.file(path)` or `client.dir(path).file(filename)`
 
 
-### Download contents of 
+### Download contents of file
 
 Download files by calling `getString`, `getBytes`, `getJson`, or `getFile` on a `DataFile` object:
 
