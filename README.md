@@ -4,6 +4,7 @@ Algorithmia Common Library (python)
 Python client library for accessing the Algorithmia API
 For API documentation, see the [PythonDocs](https://algorithmia.com/docs/lang/python)
 
+[![PyPI](https://img.shields.io/pypi/v/algorithmia.svg?maxAge=2592000)]()
 
 ## Install from PyPi
 
@@ -48,7 +49,7 @@ The following examples of calling algorithms are organized by type of input/outp
 Note: a single algorithm may have different input and output types, or accept multiple types of input,
 so consult the algorithm's description for usage examples specific to that algorithm.
 
-### Text input/output:
+### Text input/output
 
 Call an algorithm with text input by simply passing a string into its `pipe` method.
 If the algorithm output is text, then the `result` field of the response will be a string.
@@ -61,7 +62,7 @@ print response.metadata  # Metadata(content_type='text',duration=0.0002127)
 print response.metadata.duration # 0.0002127
 ```
 
-### JSON input/output:
+### JSON input/output
 
 Call an algorithm with JSON input by simply passing in a type that can be serialized to JSON:
 most notably python dicts and arrays. 
@@ -121,7 +122,8 @@ client.dir("data://.my/foo").create()
 client.dir("dropbox://somefolder").create()
 ```
 
-### Upload files to a directory:
+### Upload files to a directory
+
 Upload files by calling `put` on a `DataFile` object, 
 or by calling `putFile` on a `DataDirectory` object.
 
@@ -135,7 +137,8 @@ foo.file("binary_file").put(some_binary_data)
 Note: you can instantiate a `DataFile` by either `client.file(path)` or `client.dir(path).file(filename)`
 
 
-### Download contents of files
+### Download contents of 
+
 Download files by calling `getString`, `getBytes`, `getJson`, or `getFile` on a `DataFile` object:
 
 ```python
@@ -146,6 +149,7 @@ tempFile = foo.file("myfile").getFile()   # Open file descriptor
 ```
 
 ### Delete files and directories
+
 Delete files and directories by calling `delete` on their respective `DataFile` or `DataDirectory` object.
 DataDirectories take an optional `force` parameter that indicates whether the directory should be deleted
 if it contains files or other directories.
@@ -158,6 +162,7 @@ foo.delete(true) // true implies force deleting the directory and its contents
 
 
 ### List directory contents
+
 Iterate over the contents of a directory using the iterated returned by calling `list`, `files`, or `dirs` 
 on a `DataDirectory` object:
 
@@ -178,6 +183,7 @@ for entry in foo.list():
 ```
 
 ### Manage directory permissions
+
 Directory permissions may be set when creating a directory, or may be updated on already existing directories.
 
 ```python
@@ -194,6 +200,7 @@ foo.get_permissions().read_acl == AclType.private # True
 ```
 
 ## Upgrading from 0.9.x
+
 The main backwards incompatibility between 0.9.x and 1.0.0 is the result of an algorithm call.
 In 0.9.x the result of an algorithm call is just the algorithm's output (which is not the full spec returned by the API)
 
