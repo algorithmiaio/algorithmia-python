@@ -7,6 +7,9 @@ For API documentation, see the [PythonDocs](https://algorithmia.com/docs/lang/py
 
 # Install from PyPi
 
+The official Algorithmia python client is [available on PyPi](https://pypi.python.org/pypi/algorithmia).
+Install it with pip:
+
 ```bash
 pip install algorithmia
 ```
@@ -29,7 +32,7 @@ pip install --user --upgrade dist/algorithmia-*.whl
 
 ### Authentication
 
-First create an Algorithmia client and authenticate with your API key:
+First, create an Algorithmia client and authenticate with your API key:
 
 ```python
 import Algorithmia
