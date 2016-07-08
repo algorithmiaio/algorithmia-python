@@ -28,9 +28,7 @@ Install a wheel manually:
 pip install --user --upgrade dist/algorithmia-*.whl
 ```
 
-## Calling algorithms
-
-### Authentication
+## Authentication
 
 First, create an Algorithmia client and authenticate with your API key:
 
@@ -41,8 +39,11 @@ apiKey = '{{Your API key here}}'
 client = Algorithmia.client(apiKey)
 ```
 
-Now you're ready to call algorithms. The following examples are organized by type of input/output
-which vary between algorithms. 
+Now you're ready to call algorithms. 
+
+## Calling algorithms
+
+The following examples of calling algorithms are organized by type of input/output which vary between algorithms.
 
 Note: a single algorithm may have different input and output types, or accept multiple types of input,
 so consult the algorithm's description for usage examples specific to that algorithm.
