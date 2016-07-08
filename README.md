@@ -114,7 +114,7 @@ Note: `stdout=True` is only supported if you have access to the algorithm source
 The Algorithmia client also provides a way to manage both Algorithmia hosted data
 and data from Dropbox or S3 accounts that you've connected to you Algorithmia account.
 
-### Create directories:
+### Create directories
 Create directories by instantiating a `DataDirectory` object and calling `create()`:
 
 ```python
