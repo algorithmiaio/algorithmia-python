@@ -5,7 +5,7 @@ Python client library for accessing the Algorithmia API
 For API documentation, see the [PythonDocs](https://algorithmia.com/docs/lang/python)
 
 
-# Install from PyPi
+## Install from PyPi
 
 The official Algorithmia python client is [available on PyPi](https://pypi.python.org/pypi/algorithmia).
 Install it with pip:
@@ -14,7 +14,7 @@ Install it with pip:
 pip install algorithmia
 ```
 
-# Install from source
+## Install from source
 
 Build algorithmia client wheel:
 
@@ -28,7 +28,7 @@ Install a wheel manually:
 pip install --user --upgrade dist/algorithmia-*.whl
 ```
 
-# Calling algorithms
+## Calling algorithms
 
 ### Authentication
 
@@ -108,7 +108,7 @@ print response.metadata.stdout
 Note: `stdout=True` is only supported if you have access to the algorithm source.
 
 
-# Working with data
+## Working with data
 The Algorithmia client also provides a way to manage both Algorithmia hosted data
 and data from Dropbox or S3 accounts that you've connected to you Algorithmia account.
 
@@ -192,7 +192,7 @@ foo.update_permissions(ReadAcl.private)
 foo.get_permissions().read_acl == AclType.private # True
 ```
 
-# Upgrading from 0.9.x
+## Upgrading from 0.9.x
 The main backwards incompatibility between 0.9.x and 1.0.0 is the result of an algorithm call.
 In 0.9.x the result of an algorithm call is just the algorithm's output (which is not the full spec returned by the API)
 
@@ -211,7 +211,7 @@ print result.metadata   # content_type, duration etc
 
 Aside from that you should be able to drop in the newest version of the client.  Another advantage of using the newest client is full access to the entire Data API specification.
 
-# Running tests
+## Running tests
 
 ```bash
 export ALGORITHMIA_API_KEY={{Your API key here}}
