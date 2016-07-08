@@ -22,9 +22,11 @@ Install a wheel manually:
 pip install --user --upgrade dist/algorithmia-*.whl
 ```
 
+# Calling algorithms
 
-# Getting started
-First create an Algorithmia client:
+### Authentication
+
+First create an Algorithmia client and authenticate with your API key:
 ```python
 import Algorithmia
 
@@ -32,7 +34,16 @@ apiKey = '{{Your API key here}}'
 client = Algorithmia.client(apiKey)
 ```
 
-Now you can call an algorithm:
+Now you're ready to call algorithms. The following examples are organized by type of input/output
+which vary between algorithms. 
+
+Note: a single algorithm may have different input and output types, or accept multiple types of input,
+so consult the algorithm's description for usage examples specific to that algorithm.
+
+### Text input/output:
+
+Call an algorithm with text input by simply passing a string into its `pipe` method.
+If the algorithm output is text, then the `result` field of the response will be a string.
 ```python
 algo = client.algo('demo/Hello/0.1.1')
 response = algo.pipe("HAL 9000")
@@ -41,8 +52,12 @@ print response.metadata  # Metadata(content_type='text',duration=0.0002127)
 print response.metadata.duration # 0.0002127
 ```
 
-In addition to string input and output, algorithms can receive and return JSON or binary data.
-For JSON input/output, you can simply work with native python types like arrays and dicts:
+### JSON input/output:
+
+Call an algorithm with JSON input by simply passing in a type that can be serialized to JSON:
+most notably python dicts and arrays. 
+For algorithms that return JSON, the `result` field of the response will be the appropriate
+deserialized type.
 
 ```python
 algo = client.algo('WebPredict/ListAnagrams/0.1.0')
@@ -50,26 +65,36 @@ result = algo.pipe(["transformer", "terraforms", "retransform"]).result
 # -> ["transformer","retransform"]
 ```
 
-For binary input/output, you can work directly with byte arrays:
+### Binary input/output
 
+Call an algorithm with Binary input by passing a byte array into the `pipe` method.
+Similarly, if the algorithm response if binary data, then the `result` field of the response
+will be a byte array.
 ```python
 input = bytearray(open("/path/to/bender.png", "rb").read())
 result = client.algo("opencv/SmartThumbnail/0.1").pipe(input).result
 # -> [binary byte sequence]
 ```
 
-This client also provides w
+### Error handling
+
+API errors and Algorithm exceptions will result in calls to `pipe` throwing an `AlgoException`:
 ```
 client.algo('util/whoopsWrongAlgo').pipe('Hello, world!')  
 # Algorithmia.algo_response.AlgoException: algorithm algo://util/whoopsWrongAlgo not found
 ```
 
-You can configure the request with options defined in the API spec:
+### Request options
+
+The client exposes options that can configure algorithm requests.
+This includes support for changing the timeout or indicating that the API should include stdout in the response.
+
 ```python
 from Algorithmia.algorithm import OutputType
-client.algo('util/echo').set_options(timeout=60, stdout=False)
+response = client.algo('util/echo').set_options(timeout=60, stdout=False)
+print response.metadata.stdout
 ```
-(note: `stdout=True` is only supported if you have access to the algorithm source)
+Note: `stdout=True` is only supported if you have access to the algorithm source.
 
 
 # Working with data
