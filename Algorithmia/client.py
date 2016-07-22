@@ -36,7 +36,6 @@ class Client(object):
             headers['Authorization'] = self.apiKey
 
         input_json = None
-        content_type = "void"
         if input_object is None:
             input_json = json.dumps(None)
             headers['Content-Type'] = 'application/json'
