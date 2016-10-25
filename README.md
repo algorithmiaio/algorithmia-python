@@ -224,6 +224,9 @@ Aside from that you should be able to drop in the newest version of the client. 
 ```bash
 export ALGORITHMIA_API_KEY={{Your API key here}}
 cd Test
+python acl_test.py
+python algo_test.py
 python datadirectorytest.py
-python util.py
+python datafile_test.py
+python utiltest.py
 ```
