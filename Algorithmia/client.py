@@ -37,16 +37,16 @@ class Client(object):
 
         input_json = None
         if input_object is None:
-            input_json = json.dumps(None)
+            input_json = json.dumps(None).encode('utf-8')
             headers['Content-Type'] = 'application/json'
         elif isinstance(input_object, six.string_types):
-            input_json = input_object
+            input_json = input_object.encode('utf-8')
             headers['Content-Type'] = 'text/plain'
         elif isinstance(input_object, bytearray) or isinstance(input_object, bytes):
             input_json = bytes(input_object)
             headers['Content-Type'] = 'application/octet-stream'
         else:
-            input_json = json.dumps(input_object)
+            input_json = json.dumps(input_object).encode('utf-8')
             headers['Content-Type'] = 'application/json'
 
         response = requests.post(self.apiAddress + url, data=input_json, headers=headers, params=query_parameters)
