@@ -5,10 +5,14 @@ PREFIX = re.compile(r'([^:]+://)(/)?(.+)')   # Check for a prefix like data://
 def getParentAndBase(path):
     match = PREFIX.match(path)
     if match is None:
-        base = FNAME_MATCH.search(path)
+        if path.endswith('/'):
+            stripped_path = path[:-1]
+        else:
+            stripped_path = path
+        base = FNAME_MATCH.search(stripped_path)
         if base is None:
             raise Exception('Invalid path')
-        parent = FNAME_MATCH.sub('', path)
+        parent = FNAME_MATCH.sub('', stripped_path)
         return parent, base.group(1)
     else:
         prefix, leading_slash, uri = match.groups()
