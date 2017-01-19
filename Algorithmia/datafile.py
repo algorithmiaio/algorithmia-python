@@ -94,7 +94,7 @@ class DataFile(DataObject):
 
     def putFile(self, path):
         # Post file to data api
-        with open(path, 'r') as f:
+        with open(path, 'rb') as f:
             result = self.client.putHelper(self.url, f)
             if 'error' in result:
                 raise Exception(result['error']['message'])
