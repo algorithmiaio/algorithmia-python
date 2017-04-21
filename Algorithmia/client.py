@@ -6,6 +6,7 @@ from Algorithmia.datafile import DataFile
 from Algorithmia.datadirectory import DataDirectory
 
 import json, re, requests, six
+import os
 
 class Client(object):
     'Algorithmia Common Library'
@@ -14,6 +15,9 @@ class Client(object):
     apiAddress = None
 
     def __init__(self, apiKey = None, apiAddress = None):
+        # Override apiKey with environment variable
+        if apiKey is None and 'ALGORITHMIA_API_KEY' in os.environ:
+            apiKey = os.environ['ALGORITHMIA_API_KEY']
         self.apiKey = apiKey
         if apiAddress is not None:
             self.apiAddress = apiAddress

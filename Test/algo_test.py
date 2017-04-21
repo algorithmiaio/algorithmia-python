@@ -4,11 +4,10 @@ sys.path.append("../")
 import unittest
 
 import Algorithmia
-import os
 
 class AlgoTest(unittest.TestCase):
     def setUp(self):
-        self.client = Algorithmia.client(os.environ['ALGORITHMIA_API_KEY'])
+        self.client = Algorithmia.client()
 
     def test_call_binary(self):
         result = self.client.algo('util/Echo').pipe(bytearray('foo','utf-8'))
