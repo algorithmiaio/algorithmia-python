@@ -8,6 +8,7 @@ import tempfile
 import Algorithmia
 from Algorithmia.datafile import DataFile
 from Algorithmia.data import DataObject, DataObjectType
+from Algorithmia.errors import DataApiError
 from Algorithmia.util import getParentAndBase, pathJoin
 from Algorithmia.acl import Acl
 
@@ -44,7 +45,7 @@ class DataDirectory(DataObject):
             json['acl'] = acl.to_api_param()
         response = self.client.postJsonHelper(DataDirectory._getUrl(parent), json, False)
         if (response.status_code != 200):
-            raise Exception("Directory creation failed: " + str(response.content))
+            raise DataApiError("Directory creation failed: " + str(response.content))
 
     def delete(self, force=False):
         # Delete from data api
@@ -54,7 +55,7 @@ class DataDirectory(DataObject):
 
         result = self.client.deleteHelper(url)
         if 'error' in result:
-            raise Exception(result['error']['message'])
+            raise DataApiError(result['error']['message'])
         else:
             return True
 
@@ -80,7 +81,7 @@ class DataDirectory(DataObject):
         '''
         response = self.client.getHelper(self.url, acl='true')
         if response.status_code != 200:
-            raise Exception('Unable to get permissions:' + str(response.content))
+            raise DataApiError('Unable to get permissions:' + str(response.content))
         content = response.json()
         if 'acl' in content:
             return Acl.from_acl_response(content['acl'])
@@ -91,7 +92,7 @@ class DataDirectory(DataObject):
         params = {'acl':acl.to_api_param()}
         response = self.client.patchHelper(self.url, params)
         if response.status_code != 200:
-            raise Exception('Unable to update permissions: ' + response.json()['error']['message'])
+            raise DataApiError('Unable to update permissions: ' + response.json()['error']['message'])
         return True
 
     def _get_directory_iterator(self, type_filter=None):
@@ -105,7 +106,7 @@ class DataDirectory(DataObject):
                 query_params['marker'] = marker
             response = self.client.getHelper(url, **query_params)
             if response.status_code != 200:
-                raise Exception("Directory iteration failed: " + str(response.content))
+                raise DataApiError("Directory iteration failed: " + str(response.content))
 
             responseContent = response.content
             if isinstance(responseContent, six.binary_type):

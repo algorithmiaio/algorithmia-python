@@ -11,7 +11,7 @@ def getParentAndBase(path):
             stripped_path = path
         base = FNAME_MATCH.search(stripped_path)
         if base is None:
-            raise Exception('Invalid path')
+            raise ValueError('Invalid path')
         parent = FNAME_MATCH.sub('', stripped_path)
         return parent, base.group(1)
     else:
