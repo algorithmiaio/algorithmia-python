@@ -29,8 +29,9 @@ class DataFile(DataObject):
 
     # Get file from the data api
     def getFile(self):
-        if not self.exists():
-            raise Exception('file does not exist - {}'.format(self.path))
+        exists, error = self.existsWithError()
+        if not exists:
+            raise Exception('unable to get file {} - {}'.format(self.path, error))
         # Make HTTP get request
         response = self.client.getHelper(self.url)
         with tempfile.NamedTemporaryFile(delete = False) as f:
@@ -46,26 +47,38 @@ class DataFile(DataObject):
         return name
 
     def getBytes(self):
-        if not self.exists():
-            raise Exception('file does not exist - {}'.format(self.path))
+        exists, error = self.existsWithError()
+        if not exists:
+            raise Exception('unable to get file {} - {}'.format(self.path, error))
         # Make HTTP get request
         return self.client.getHelper(self.url).content
 
     def getString(self):
-        if not self.exists():
-            raise Exception('file does not exist - {}'.format(self.path))
+        exists, error = self.existsWithError()
+        if not exists:
+            raise Exception('unable to get file {} - {}'.format(self.path, error))
         # Make HTTP get request
         return self.client.getHelper(self.url).text
 
     def getJson(self):
-        if not self.exists():
-            raise Exception('file does not exist - {}'.format(self.path))
+        exists, error = self.existsWithError()
+        if not exists:
+            raise Exception('unable to get file {} - {}'.format(self.path, error))
         # Make HTTP get request
         return self.client.getHelper(self.url).json()
 
     def exists(self):
+        # In order to not break backward compatability keeping this method to only return
+        # a boolean
+        exists, error = self.existsWithError()
+        return exists
+
+    def existsWithError(self):
         response = self.client.headHelper(self.url)
-        return (response.status_code == 200)
+        error = None
+        if 'X-Error-Message' in response.headers:
+            error = response.headers['X-Error-Message']
+        return (response.status_code == 200, error)
 
     def put(self, data):
         # Post to data api
