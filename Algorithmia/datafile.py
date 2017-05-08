@@ -8,6 +8,7 @@ from datetime import datetime
 
 from Algorithmia.util import getParentAndBase
 from Algorithmia.data import DataObject, DataObjectType
+from Algorithmia.errors import DataApiError
 
 class DataFile(DataObject):
     def __init__(self, client, dataUrl):
@@ -31,7 +32,7 @@ class DataFile(DataObject):
     def getFile(self):
         exists, error = self.existsWithError()
         if not exists:
-            raise Exception('unable to get file {} - {}'.format(self.path, error))
+            raise DataApiError('unable to get file {} - {}'.format(self.path, error))
         # Make HTTP get request
         response = self.client.getHelper(self.url)
         with tempfile.NamedTemporaryFile(delete = False) as f:
@@ -49,21 +50,21 @@ class DataFile(DataObject):
     def getBytes(self):
         exists, error = self.existsWithError()
         if not exists:
-            raise Exception('unable to get file {} - {}'.format(self.path, error))
+            raise DataApiError('unable to get file {} - {}'.format(self.path, error))
         # Make HTTP get request
         return self.client.getHelper(self.url).content
 
     def getString(self):
         exists, error = self.existsWithError()
         if not exists:
-            raise Exception('unable to get file {} - {}'.format(self.path, error))
+            raise DataApiError('unable to get file {} - {}'.format(self.path, error))
         # Make HTTP get request
         return self.client.getHelper(self.url).text
 
     def getJson(self):
         exists, error = self.existsWithError()
         if not exists:
-            raise Exception('unable to get file {} - {}'.format(self.path, error))
+            raise DataApiError('unable to get file {} - {}'.format(self.path, error))
         # Make HTTP get request
         return self.client.getHelper(self.url).json()
 
@@ -90,18 +91,18 @@ class DataFile(DataObject):
         if isinstance(data, six.binary_type):
             result = self.client.putHelper(self.url, data)
             if 'error' in result:
-                raise Exception(result['error']['message'])
+                raise DataApiError(result['error']['message'])
             else:
                 return self
         else:
-            raise Exception("Must put strings or binary data. Use putJson instead")
+            raise TypeError("Must put strings or binary data. Use putJson instead")
 
     def putJson(self, data):
         # Post to data api
         jsonElement = json.dumps(data)
         result = self.client.putHelper(self.url, jsonElement)
         if 'error' in result:
-            raise Exception(result['error']['message'])
+            raise DataApiError(result['error']['message'])
         else:
             return self
 
@@ -110,7 +111,7 @@ class DataFile(DataObject):
         with open(path, 'rb') as f:
             result = self.client.putHelper(self.url, f)
             if 'error' in result:
-                raise Exception(result['error']['message'])
+                raise DataApiError(result['error']['message'])
             else:
                 return self
 
@@ -118,6 +119,6 @@ class DataFile(DataObject):
         # Delete from data api
         result = self.client.deleteHelper(self.url)
         if 'error' in result:
-            raise Exception(result['error']['message'])
+            raise DataApiError(result['error']['message'])
         else:
             return True

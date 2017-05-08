@@ -9,7 +9,7 @@ class Acl(object):
             read_acl = AclType.from_acl_response(acl_response['read'])
             return Acl(read_acl)
         else:
-            raise Exception('Response does not contain read ACL')
+            raise ValueError('Response does not contain read ACL')
 
     def to_api_param(self):
         read_acl_string = self.read_acl.acl_string
@@ -43,7 +43,7 @@ class AclType(object):
                 if t.acl_string == acl_string:
                     return t
             else:
-                raise Exception('Invalid acl string %s' % (acl_list[0]))
+                raise ValueError('Invalid acl string %s' % (acl_list[0]))
 
 class ReadAcl(object):
     public = Acl(AclType.public)

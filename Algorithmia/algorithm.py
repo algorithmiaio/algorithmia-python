@@ -4,6 +4,7 @@ import base64
 import re
 from Algorithmia.async_response import AsyncResponse
 from Algorithmia.algo_response import AlgoResponse
+from Algorithmia.errors import ApiError, ApiInternalError
 from enum import Enum
 
 OutputType = Enum('OutputType','default raw void')
@@ -20,7 +21,7 @@ class Algorithm(object):
             self.query_parameters = {}
             self.output_type = OutputType.default
         else:
-            raise Exception('Invalid algorithm URI: ' + algoRef)
+            raise ValueError('Invalid algorithm URI: ' + algoRef)
 
     def set_options(self, timeout=300, stdout=False, output=OutputType.default, **query_parameters):
         self.query_parameters = {'timeout':timeout, 'stdout':stdout}
@@ -45,9 +46,9 @@ class Algorithm(object):
             # Check HTTP code and throw error as needed
             if response.status_code == 400:
                 # Bad request
-                raise Exception(response.text)
+                raise ApiError(response.text)
             elif response.status_code == 500:
-                raise Exception(response.text)
+                raise ApiInternalError(response.text)
             else:
                 return response.text
 
@@ -55,6 +56,6 @@ class Algorithm(object):
             self.query_parameters['output'] = 'void'
             responseJson = self.client.postJsonHelper(self.url, input1, **self.query_parameters)
             if 'error' in responseJson:
-                raise Exception(responseJson['error']['message'])
+                raise ApiError(responseJson['error']['message'])
             else:
                 return AsyncResponse(responseJson)
