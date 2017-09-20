@@ -33,11 +33,11 @@ def parse_exception(error):
         stacktrace = error['stacktrace']
     else:
         stacktrace = None
-    if 'errorType' in error:
-        errorType = error['errorType']
+    if 'error_type' in error:
+        error_type = error['error_type']
     else:
-        errorType = None
-    e = AlgorithmException(message=message, errorType=errorType)
+        error_type = None
+    e = AlgorithmException(message=message, error_type=error_type)
     e.stacktrace = stacktrace
     return e
 
