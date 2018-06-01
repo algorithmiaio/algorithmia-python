@@ -6,8 +6,11 @@ class AlgoResponse(object):
         self.result = result
         self.metadata = metadata
 
-    def __repr__(self):
+    def __unicode__(self):
         return 'AlgoResponse(result=%s,metadata=%s)' % (self.result, self.metadata)
+
+    def __repr__(self):
+        return self.__unicode__().encode('utf-8')
 
     @staticmethod
     def create_algo_response(responseJson):
