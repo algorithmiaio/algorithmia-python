@@ -40,7 +40,7 @@ apiKey = '{{Your API key here}}'
 client = Algorithmia.client(apiKey)
 ```
 
-Now you're ready to call algorithms. 
+Now you're ready to call algorithms.
 
 ## Calling algorithms
 
@@ -65,7 +65,7 @@ print response.metadata.duration # 0.0002127
 ### JSON input/output
 
 Call an algorithm with JSON input by simply passing in a type that can be serialized to JSON:
-most notably python dicts and arrays. 
+most notably python dicts and arrays.
 For algorithms that return JSON, the `result` field of the response will be the appropriate
 deserialized type.
 
@@ -92,7 +92,7 @@ result = client.algo("opencv/SmartThumbnail/0.1").pipe(input).result
 API errors and Algorithm exceptions will result in calls to `pipe` throwing an `AlgoException`:
 
 ```python
-client.algo('util/whoopsWrongAlgo').pipe('Hello, world!')  
+client.algo('util/whoopsWrongAlgo').pipe('Hello, world!')
 # Algorithmia.algo_response.AlgoException: algorithm algo://util/whoopsWrongAlgo not found
 ```
 
@@ -124,12 +124,12 @@ client.dir("dropbox://somefolder").create()
 
 ### Upload files to a directory
 
-Upload files by calling `put` on a `DataFile` object, 
+Upload files by calling `put` on a `DataFile` object,
 or by calling `putFile` on a `DataDirectory` object.
 
 ```python
 foo = client.dir("data://.my/foo")
-foo.putFile(open("/path/to/myfile"))
+foo.file("remote_file").putFile("/path/to/myfile")
 foo.file("sample.txt").put("sample text contents")
 foo.file("binary_file").put(some_binary_data)
 ```
@@ -163,7 +163,7 @@ foo.delete(true) // true implies force deleting the directory and its contents
 
 ### List directory contents
 
-Iterate over the contents of a directory using the iterated returned by calling `list`, `files`, or `dirs` 
+Iterate over the contents of a directory using the iterated returned by calling `list`, `files`, or `dirs`
 on a `DataDirectory` object:
 
 ```python
@@ -190,7 +190,7 @@ Directory permissions may be set when creating a directory, or may be updated on
 from Algorithmia.acl import ReadAcl, AclType
 foo = client.dir("data://.my/foo")
 # ReadAcl.public is a wrapper for Acl(AclType.public) to make things easier
-foo.create(ReadAcl.public)   
+foo.create(ReadAcl.public)
 
 acl = foo.get_permissions()  # Acl object
 acl.read_acl == AclType.public  # True
