@@ -1,0 +1,3 @@
+[submodule "Algorithmia/templates"]
+	path = Algorithmia/templates
+	url = git@github.com:algorithmiaio/templates.git

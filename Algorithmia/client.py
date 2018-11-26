@@ -2,6 +2,8 @@
 
 import Algorithmia
 from Algorithmia.algorithm import Algorithm
+from Algorithmia.algorithm_publisher import AlgorithmPublisher
+from Algorithmia.template_based_algorithm import TemplateBasedAlgorithm
 from Algorithmia.datafile import DataFile
 from Algorithmia.datadirectory import DataDirectory
 
@@ -26,6 +28,12 @@ class Client(object):
 
     def algo(self, algoRef):
         return Algorithm(self, algoRef)
+
+    def algo_publisher(self):
+        return AlgorithmPublisher.login()
+
+    def algo_template(self):
+        return TemplateBasedAlgorithm(algorithm_publisher=AlgorithmPublisher.login())
 
     def file(self, dataUrl):
         return DataFile(self, dataUrl)
