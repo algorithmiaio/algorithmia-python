@@ -11,6 +11,9 @@ def algo(algoRef):
     # Return algorithm reference using default client
     return getDefaultClient().algo(algoRef)
 
+def algo_template():
+    return getDefaultClient().algo_template()
+
 def file(dataUrl):
     return getDefaultClient().file(dataUrl)
 

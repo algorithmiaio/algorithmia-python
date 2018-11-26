@@ -15,7 +15,9 @@ setup(
     install_requires=[
         'requests',
         'six',
-        'enum34'
+        'enum34',
+        'Jinja2>=2.10',
+        'GitPython>=2.1.11'
     ],
     include_package_data=True,
     classifiers=[
