@@ -1,14 +1,15 @@
 import os
 import json
+import templates
 from os.path import join
 from os.path import abspath
 from enum import Enum
 from jinja2 import FileSystemLoader, Environment
 from shutil import rmtree, copytree, copy
 from tempfile import mkdtemp
+import templates
 
 DEFAULT_TEMPLATE_BASE_PATH = "{}/templates".format(os.path.split(__file__)[0])
-DEFAULT_SUPPORTED_TEMPLATES = ["fastai/imageclassifier", "mlflow/model_runner", "scikit-learn/digitrecognizer", "tensorflow/mnist"]
 
 class TemplateBasedAlgorithm:
   def __init__(self, algorithm_publisher=None, template_location=None):
@@ -16,7 +17,9 @@ class TemplateBasedAlgorithm:
     self.template_location = template_location
 
   def list(self):
-    return DEFAULT_SUPPORTED_TEMPLATES
+    if self.template_location is None:
+      return templates.list_available_templates()
+    return []
 
   class ExportMode(Enum):
     LOCAL=1,
@@ -24,10 +27,10 @@ class TemplateBasedAlgorithm:
     PUBLISH=3
 
   def export(self, template, algo_name, mode=ExportMode.LOCAL, context=None, build_location=None):
-    if template not in DEFAULT_SUPPORTED_TEMPLATES:
+    if template not in self.list():
       raise Exception("Template: {} is not supported. Supported templates are {}".format(template, DEFAULT_SUPPORTED_TEMPLATES))
 
-    template_path = os.path.join(DEFAULT_TEMPLATE_BASE_PATH, template)
+    template_path = templates.get_template_path(template)
 
     env = Environment(loader=FileSystemLoader(template_path))
 
