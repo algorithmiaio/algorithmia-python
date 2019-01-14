@@ -21,7 +21,7 @@ class DataFile(DataObject):
         self.size = None
 
     def set_attributes(self, attributes):
-        self.last_modified = datetime.strptime(attributes['last_modified'],'%Y-%m-%dT%H:%M:%S.000Z')
+        self.last_modified = datetime.strptime(attributes['last_modified'],'%Y-%m-%dT%H:%M:%S.%fZ')
         self.size = attributes['size']
 
     # Deprecated:
