@@ -171,15 +171,15 @@ foo = client.dir("data://.my/foo")
 
 # List files in "foo"
 for file in foo.files():
-    print file.path " at URL: " + file.url + " last modified " + file.last_modified
+    print file.path + " at URL: " + file.url + " last modified " + file.last_modified
 
 # List directories in "foo"
 for file in foo.dirs():
-    print dir.path " at URL: " + file.url
+    print dir.path + " at URL: " + file.url
 
 # List everything in "foo"
 for entry in foo.list():
-    print entry.path " at URL: " + entry.url
+    print entry.path + " at URL: " + entry.url
 ```
 
 ### Manage directory permissions
