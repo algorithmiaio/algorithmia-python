@@ -86,7 +86,7 @@ class Algorithm(object):
         try:
             # Get Algorithm
             api_response = self.client.manageApi.get_algorithm(self.username, self.algoname)
-            pprint(api_response)
+            print(api_response)
             return api_response
         except ApiException as e:
             print("Exception when calling DefaultApi->get_algorithm: %s\n" % e)
