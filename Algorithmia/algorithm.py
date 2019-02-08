@@ -46,7 +46,6 @@ class Algorithm(object):
         try:
             # Create Algorithm
             api_response = self.client.manageApi.create_algorithm(self.username, create_request)
-            print(api_response)
             return api_response
         except ApiException as e:
             print("Exception when calling DefaultApi->create_algorithm: %s\n" % e)
@@ -61,7 +60,6 @@ class Algorithm(object):
         try:
             # Update Algorithm
             api_response = self.client.manageApi.update_algorithm(self.username, self.algoname, update_request)
-            print(api_response)
             return api_response
         except ApiException as e:
             print("Exception when calling DefaultApi->update_algorithm: %s\n" % e)
@@ -76,7 +74,6 @@ class Algorithm(object):
         try:
             # Publish Algorithm
             api_response = self.client.manageApi.publish_algorithm(self.username, self.algoname, version_request)
-            print(api_response)
             return api_response
         except ApiException as e:
             print("Exception when calling DefaultApi->publish_algorithm: %s\n" % e)
@@ -86,7 +83,6 @@ class Algorithm(object):
         try:
             # Get Algorithm
             api_response = self.client.manageApi.get_algorithm(self.username, self.algoname)
-            print(api_response)
             return api_response
         except ApiException as e:
             print("Exception when calling DefaultApi->get_algorithm: %s\n" % e)
