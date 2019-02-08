@@ -48,7 +48,7 @@ class Algorithm(object):
             api_response = self.client.manageApi.create_algorithm(self.username, create_request)
             return api_response
         except ApiException as e:
-            print("Exception when calling DefaultApi->create_algorithm: %s\n" % e)
+            raise ApiError("Exception when calling DefaultApi->create_algorithm: %s\n" % e)
 
     # Update the settings in an algorithm
     def update(self, details, settings, version_info):
@@ -62,7 +62,7 @@ class Algorithm(object):
             api_response = self.client.manageApi.update_algorithm(self.username, self.algoname, update_request)
             return api_response
         except ApiException as e:
-            print("Exception when calling DefaultApi->update_algorithm: %s\n" % e)
+            raise ApiError("Exception when calling DefaultApi->update_algorithm: %s\n" % e)
 
     # Publish an algorithm
     def publish(self, details, settings, version_info):
@@ -76,7 +76,7 @@ class Algorithm(object):
             api_response = self.client.manageApi.publish_algorithm(self.username, self.algoname, version_request)
             return api_response
         except ApiException as e:
-            print("Exception when calling DefaultApi->publish_algorithm: %s\n" % e)
+            raise ApiError("Exception when calling DefaultApi->publish_algorithm: %s\n" % e)
 
     # Get info on an algorithm
     def getInfo(self):
@@ -85,7 +85,7 @@ class Algorithm(object):
             api_response = self.client.manageApi.get_algorithm(self.username, self.algoname)
             return api_response
         except ApiException as e:
-            print("Exception when calling DefaultApi->get_algorithm: %s\n" % e)
+            raise ApiError("Exception when calling DefaultApi->get_algorithm: %s\n" % e)
 
     # Pipe an input into this algorithm
     def pipe(self, input1):
