@@ -37,7 +37,7 @@ class Algorithm(object):
         return self
 
     # Create a new algorithm
-    def create(self, details, settings, version_info):
+    def create(self, details={}, settings={}, version_info={}):
         detailsObj = Details(**details)
         settingsObj = SettingsMandatory(**settings)
         createRequestVersionInfoObj = CreateRequestVersionInfo(**version_info)
@@ -51,7 +51,7 @@ class Algorithm(object):
             raise ApiError("Exception when calling DefaultApi->create_algorithm: %s\n" % e)
 
     # Update the settings in an algorithm
-    def update(self, details, settings, version_info):
+    def update(self, details={}, settings={}, version_info={}):
         detailsObj = Details(**details)
         settingsObj = Settings(**settings)
         createRequestVersionInfoObj = CreateRequestVersionInfo(**version_info)
