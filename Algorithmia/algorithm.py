@@ -8,7 +8,7 @@ from Algorithmia.errors import ApiError, ApiInternalError
 from enum import Enum
 from algorithmia_api_client.rest import ApiException
 from algorithmia_api_client import CreateRequest, UpdateRequest, VersionRequest, Details, Settings, SettingsMandatory, SettingsPublish, \
-    CreateRequestVersionInfo, VersionInfo
+    CreateRequestVersionInfo, VersionInfo, VersionInfoPublish
 
 OutputType = Enum('OutputType','default raw void')
 
@@ -68,7 +68,7 @@ class Algorithm(object):
     def publish(self, details, settings, version_info):
         detailsObj = Details(**details)
         settingsObj = SettingsPublish(**settings)
-        versionRequestObj = VersionInfo(**version_info)
+        versionRequestObj = VersionInfoPublish(**version_info)
         publish_parameters = {"details": detailsObj, "settings": settingsObj, "version_info": versionRequestObj}
         version_request = VersionRequest(**publish_parameters) # VersionRequest | Publish Version Request
         try:
