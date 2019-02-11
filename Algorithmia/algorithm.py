@@ -87,6 +87,15 @@ class Algorithm(object):
         except ApiException as e:
             raise ApiError("Exception when calling DefaultApi->get_algorithm: %s\n" % e)
 
+    # Compile an algorithm
+    def compile(self):
+        try:
+            # Compile algorithm
+            api_response = self.client.manageApi.algorithms_username_algoname_compile_post(self.username, self.algoname)
+            return api_response
+        except ApiException as e:
+            print("Exception when calling DefaultApi->algorithms_username_algoname_compile_post: %s\n" % e)
+
     # Pipe an input into this algorithm
     def pipe(self, input1):
 
