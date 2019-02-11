@@ -65,7 +65,7 @@ class Algorithm(object):
             raise ApiError("Exception when calling DefaultApi->update_algorithm: %s\n" % e)
 
     # Publish an algorithm
-    def publish(self, details, settings, version_info):
+    def publish(self, details={}, settings={}, version_info={}):
         detailsObj = Details(**details)
         settingsObj = SettingsPublish(**settings)
         versionRequestObj = VersionInfoPublish(**version_info)
