@@ -26,6 +26,7 @@ class Client(object):
             self.apiAddress = Algorithmia.getApiAddress()
         config = Configuration()
         config.api_key['Authorization'] = self.apiKey
+        config.host = "{}/v1".format(self.apiAddress)
         self.manageApi = DefaultApi(ApiClient(config))
 
     def algo(self, algoRef):
