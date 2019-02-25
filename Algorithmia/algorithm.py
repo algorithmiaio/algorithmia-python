@@ -91,10 +91,19 @@ class Algorithm(object):
             raise ApiError("Exception when calling DefaultApi->get_algorithm: %s\n" % e)
 
     # Get all versions of the algorithm, with the given filters
-    def versions(self, limit=10, marker=None, published=True, callable=True):
+    def versions(self, limit=None, marker=None, published=None, callable=None):
+        kwargs = {}
+        if limit:
+            kwargs["limit"] = limit
+        if marker:
+            kwargs["marker"] = marker
+        if published:
+            kwargs["published"] = published
+        if callable:
+            kwargs["callable"] = callable
         try:
             # Get Algorithm versions
-            api_response = self.client.manageApi.get_algorithm_versions(self.username, self.algoname, limit=limit, marker=marker, published=published, callable=callable)
+            api_response = self.client.manageApi.get_algorithm_versions(self.username, self.algoname, **kwargs)
             return api_response
         except ApiException as e:
             raise ApiError("Exception when calling DefaultApi->get_algorithm_versions: %s\n" % e)
