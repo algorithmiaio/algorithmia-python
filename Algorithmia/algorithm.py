@@ -103,12 +103,12 @@ class Algorithm(object):
         if marker:
             kwargs["marker"] = marker
         if published:
-            if str(published) == "True":
+            if str(published) in ["True", "False"]:
                 kwargs["published"] = str(published).lower()
             else:
                 kwargs["published"] = published
         if callable:
-            if str(callable) == "True":
+            if str(callable) in ["True", "False"]:
                 kwargs["callable"] = str(callable).lower()
             else:
                 kwargs["callable"] = callable
