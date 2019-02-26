@@ -98,20 +98,17 @@ class Algorithm(object):
     # Get all versions of the algorithm, with the given filters
     def versions(self, limit=None, marker=None, published=None, callable=None):
         kwargs = {}
+        bools = ["True", "False"]
         if limit:
             kwargs["limit"] = limit
         if marker:
             kwargs["marker"] = marker
         if published:
-            if str(published) in ["True", "False"]:
-                kwargs["published"] = str(published).lower()
-            else:
-                kwargs["published"] = published
+            p = published
+            kwargs["published"] = str(p).lower() if str(p) in bools else p
         if callable:
-            if str(callable) in ["True", "False"]:
-                kwargs["callable"] = str(callable).lower()
-            else:
-                kwargs["callable"] = callable
+            c = callable
+            kwargs["callable"] = str(c).lower() if str(c) in bools else c
         try:
             # Get Algorithm versions
             api_response = self.client.manageApi.get_algorithm_versions(self.username, self.algoname, **kwargs)
