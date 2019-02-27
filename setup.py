@@ -15,7 +15,8 @@ setup(
     install_requires=[
         'requests',
         'six',
-        'enum34'
+        'enum34',
+        'algorithmia-api-client>=1.0.0,<2.0'
     ],
     include_package_data=True,
     classifiers=[

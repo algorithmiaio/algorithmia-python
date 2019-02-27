@@ -4,6 +4,7 @@ import Algorithmia
 from Algorithmia.algorithm import Algorithm
 from Algorithmia.datafile import DataFile
 from Algorithmia.datadirectory import DataDirectory
+from algorithmia_api_client import Configuration, DefaultApi, ApiClient
 
 import json, re, requests, six
 import os
@@ -23,6 +24,10 @@ class Client(object):
             self.apiAddress = apiAddress
         else:
             self.apiAddress = Algorithmia.getApiAddress()
+        config = Configuration()
+        config.api_key['Authorization'] = self.apiKey
+        config.host = "{}/v1".format(self.apiAddress)
+        self.manageApi = DefaultApi(ApiClient(config))
 
     def algo(self, algoRef):
         return Algorithm(self, algoRef)
