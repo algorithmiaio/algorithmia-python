@@ -22,7 +22,7 @@ class DataDirectoryTest(unittest.TestCase):
     def test_get_str(self):
         df = self.client.file('data://.my/nonexistant/nonreal')
         try:
-            print df.getString()
+            print(df.getString())
             retrieved_file = True
         except Exception as e:
             retrieved_file = False
