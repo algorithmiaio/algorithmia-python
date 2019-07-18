@@ -1,6 +1,4 @@
 import sys
-
-sys.path.append("../")
 import json
 import unittest
 import os
@@ -14,7 +12,7 @@ class HandlerTest(unittest.TestCase):
     def setUp(self):
         try:
             os.mkfifo(self.fifo_pipe_path, mode=0o644)
-        except Exception as e:
+        except Exception:
             pass
 
     def tearDown(self):
@@ -27,7 +25,6 @@ class HandlerTest(unittest.TestCase):
 
     def open_pipe(self):
         self.fifo_pipe = os.open(self.fifo_pipe_path, os.O_RDONLY | os.O_NONBLOCK)
-
 
     def execute_example(self, input, apply, load):
         self.open_pipe()
