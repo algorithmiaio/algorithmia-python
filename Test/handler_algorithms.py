@@ -13,7 +13,6 @@ def apply_input_or_context(input, context=None):
         return "hello " + input
 
 
-
 # -- Loading functions --- #
 def loading_text():
     context = dict()
@@ -23,6 +22,7 @@ def loading_text():
 
 def loading_exception():
     raise Exception("This exception was thrown in loading")
+
 
 def loading_file_from_algorithmia():
     context = dict()
