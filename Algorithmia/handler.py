@@ -15,15 +15,14 @@ class Handler(object):
         else:
             self.load_func = lambda: None
 
-
     def load(self):
         if self.load_func:
             output = self.load_func()
         else:
             output = None
-        sys.stdout.flush("PIPE_INIT_COMPLETE")
+        print('PIPE_INIT_COMPLETE')
+        sys.stdout.flush()
         return output
-
 
     def format_data(self, request):
         if request['content_type'] in ['text', 'json']:
