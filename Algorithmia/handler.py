@@ -7,18 +7,23 @@ import six
 
 class Handler(object):
 
-    def __init__(self, apply, load=None):
-        self.apply = apply
+    def __init__(self, apply_func, load_func=None):
+        self.apply_func = apply_func
         self.FIFO_PATH = "/tmp/algoout"
-        if load:
-            self.load = load
+        if load_func:
+            self.load_func = load_func
         else:
-            self.load = lambda: None
+            self.load_func = lambda: None
+
 
     def load(self):
-        load_result = self.load()
-        sys.stdout.flush("PIPE_INIT_COMPLETE")
-        return load_result
+        if self.load_func:
+            sys.stdout.flush("PIPE_INIT_COMPLETE")
+            output = self.load_func()
+        else:
+            output = None
+        return output
+
 
     def format_data(self, request):
         if request['content_type'] in ['text', 'json']:
