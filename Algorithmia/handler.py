@@ -18,10 +18,10 @@ class Handler(object):
 
     def load(self):
         if self.load_func:
-            sys.stdout.flush("PIPE_INIT_COMPLETE")
             output = self.load_func()
         else:
             output = None
+        sys.stdout.flush("PIPE_INIT_COMPLETE")
         return output
 
 
