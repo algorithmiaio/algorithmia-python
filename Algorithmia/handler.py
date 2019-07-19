@@ -77,9 +77,9 @@ class Handler(object):
                 request = json.loads(line)
                 formatted_input = self.format_data(request)
                 if load_result:
-                    apply_result = self.apply(formatted_input, load_result)
+                    apply_result = self.apply_func(formatted_input, load_result)
                 else:
-                    apply_result = self.apply(formatted_input)
+                    apply_result = self.apply_func(formatted_input)
                 formatted_response = self.format_response(apply_result)
                 self.write_to_pipe(formatted_response)
         except Exception as e:
