@@ -34,6 +34,9 @@ class HandlerTest(unittest.TestCase):
         output = self.read_from_pipe()
         return output
 
+
+# ----- Tests ----- #
+
     def test_basic(self):
         input = {'content_type': 'json', 'data': 'Algorithmia'}
         expected_output = {"metadata":
@@ -45,6 +48,19 @@ class HandlerTest(unittest.TestCase):
         input = [str(json.dumps(input))]
         actual_output = self.execute_example(input, apply_input_or_context, None)
         self.assertEqual(expected_output, actual_output)
+
+    def test_basic_2(self):
+        input = {'content_type': 'json', 'data': 'Algorithmia'}
+        expected_output = {"metadata":
+            {
+                "content_type": "text"
+            },
+            "result": "hello Algorithmia"
+        }
+        input = [str(json.dumps(input))]
+        actual_output = self.execute_example(input, apply_basic, None)
+        self.assertEqual(expected_output, actual_output)
+
 
     def test_algorithm_loading_basic(self):
         input = {'content_type': 'json', 'data': 'ignore me'}
@@ -87,3 +103,4 @@ class HandlerTest(unittest.TestCase):
         # we're going to assume it's setup correctly and remove it from our equality check
         actual_output["error"]["stacktrace"] = ''
         self.assertEqual(expected_output, actual_output)
+

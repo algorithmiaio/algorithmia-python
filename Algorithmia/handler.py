@@ -65,7 +65,6 @@ class Handler(object):
 
     def write_to_pipe(self, data_string):
         sys.stdout.flush()
-
         with open(self.FIFO_PATH, 'w') as f:
             f.write(data_string)
             f.write('\n')
