@@ -28,7 +28,8 @@ class Handler(object):
             data = self.wrap_binary_data(request['data'])
         else:
             raise Exception("Invalid content_type: {}".format(request['content_type']))
-        print("internal representation of input: {}".format(str(request)))
+        print("internal representation of request: {}".format(str(request)))
+        print("internal representation of input: {}".format(str(data)))
         return data
 
     def is_binary(self, arg):
