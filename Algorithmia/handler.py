@@ -21,8 +21,6 @@ class Handler(object):
             output = self.load_func()
         else:
             output = None
-        print(self.apply_func_basic)
-        print(self.apply_func_advanced)
         print('PIPE_INIT_COMPLETE')
         sys.stdout.flush()
         return output
@@ -77,6 +75,8 @@ class Handler(object):
         try:
             load_result = self.load()
             for line in sys.stdin:
+                print(self.apply_func_basic)
+                print(self.apply_func_advanced)
                 request = json.loads(line)
                 formatted_input = self.format_data(request)
                 if load_result:
