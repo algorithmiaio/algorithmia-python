@@ -21,6 +21,8 @@ class Handler(object):
             output = self.load_func()
         else:
             output = None
+        print(self.apply_func_basic)
+        print(self.apply_func_advanced)
         print('PIPE_INIT_COMPLETE')
         sys.stdout.flush()
         return output
