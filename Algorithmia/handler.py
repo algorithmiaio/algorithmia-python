@@ -9,18 +9,14 @@ class Handler(object):
 
     def __init__(self, apply_func, load_func=None):
         self.FIFO_PATH = "/tmp/algoout"
+        self.apply_func = apply_func
         if load_func:
-            self.apply_func_advanced = apply_func
             self.load_func = load_func
         else:
-            self.apply_func_basic = apply_func
             self.load_func = lambda: None
 
     def load(self):
-        if self.load_func:
-            output = self.load_func()
-        else:
-            output = None
+        output = self.load_func()
         print('PIPE_INIT_COMPLETE')
         sys.stdout.flush()
         return output
@@ -32,6 +28,7 @@ class Handler(object):
             data = self.wrap_binary_data(request['data'])
         else:
             raise Exception("Invalid content_type: {}".format(request['content_type']))
+        print("internal representation of input: {}".format(str(request)))
         return data
 
     def is_binary(self, arg):
@@ -75,14 +72,12 @@ class Handler(object):
         try:
             load_result = self.load()
             for line in sys.stdin:
-                print(self.apply_func_basic)
-                print(self.apply_func_advanced)
                 request = json.loads(line)
                 formatted_input = self.format_data(request)
                 if load_result:
-                    apply_result = self.apply_func_advanced(formatted_input, load_result)
+                    apply_result = self.apply_func(formatted_input, load_result)
                 else:
-                    apply_result = self.apply_func_basic(formatted_input)
+                    apply_result = self.apply_func(formatted_input)
                 formatted_response = self.format_response(apply_result)
                 self.write_to_pipe(formatted_response)
         except Exception as e:
