@@ -8,6 +8,11 @@ import six
 class Handler(object):
 
     def __init__(self, apply_func, load_func=None):
+        """
+        Creates the handler object
+        :param apply_func: A required function that can have an arity of 1-2, depending on if loading occurs
+        :param load_func: An optional supplier function used if load time events are required, has an arity of 0.
+        """
         self.FIFO_PATH = "/tmp/algoout"
         self.apply_func = apply_func
         if load_func:
@@ -28,8 +33,6 @@ class Handler(object):
             data = self.wrap_binary_data(request['data'])
         else:
             raise Exception("Invalid content_type: {}".format(request['content_type']))
-        print("internal representation of request: {}".format(str(request)))
-        print("internal representation of input: {}".format(str(data)))
         return data
 
     def is_binary(self, arg):
@@ -54,7 +57,6 @@ class Handler(object):
             content_type = 'text'
         else:
             content_type = 'json'
-        print("result value: {}".format(response))
         response_string = json.dumps({
             'result': response,
             'metadata': {
