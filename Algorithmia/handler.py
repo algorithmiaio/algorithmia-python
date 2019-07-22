@@ -55,6 +55,7 @@ class Handler(object):
             content_type = 'text'
         else:
             content_type = 'json'
+        print("result value: {}".format(response))
         response_string = json.dumps({
             'result': response,
             'metadata': {
@@ -64,10 +65,10 @@ class Handler(object):
         return response_string
 
     def write_to_pipe(self, data_string):
-        sys.stdout.flush()
         with open(self.FIFO_PATH, 'w') as f:
             f.write(data_string)
             f.write('\n')
+        sys.stdout.flush()
 
     def serve(self):
         try:
@@ -79,6 +80,7 @@ class Handler(object):
                     apply_result = self.apply_func(formatted_input, load_result)
                 else:
                     apply_result = self.apply_func(formatted_input)
+                print("result to apply {}".format(apply_result))
                 formatted_response = self.format_response(apply_result)
                 self.write_to_pipe(formatted_response)
         except Exception as e:
