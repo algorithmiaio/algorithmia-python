@@ -8,11 +8,12 @@ import six
 class Handler(object):
 
     def __init__(self, apply_func, load_func=None):
-        self.apply_func = apply_func
         self.FIFO_PATH = "/tmp/algoout"
         if load_func:
+            self.apply_func_advanced = apply_func
             self.load_func = load_func
         else:
+            self.apply_func_basic = apply_func
             self.load_func = lambda: None
 
     def load(self):
@@ -77,10 +78,9 @@ class Handler(object):
                 request = json.loads(line)
                 formatted_input = self.format_data(request)
                 if load_result:
-                    apply_result = self.apply_func(formatted_input, load_result)
+                    apply_result = self.apply_func_advanced(formatted_input, load_result)
                 else:
-                    apply_result = self.apply_func(formatted_input)
-                print("result to apply {}".format(apply_result))
+                    apply_result = self.apply_func_basic(formatted_input)
                 formatted_response = self.format_response(apply_result)
                 self.write_to_pipe(formatted_response)
         except Exception as e:
