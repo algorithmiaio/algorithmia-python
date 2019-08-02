@@ -2,23 +2,27 @@ import sys
 import json
 import base64
 import traceback
+import inspect
 import six
 
 
 class Handler(object):
 
-    def __init__(self, apply_func, load_func=None):
+    def __init__(self, apply_func, load_func=lambda: None):
         """
         Creates the handler object
         :param apply_func: A required function that can have an arity of 1-2, depending on if loading occurs
         :param load_func: An optional supplier function used if load time events are required, has an arity of 0.
         """
         self.FIFO_PATH = "/tmp/algoout"
+        apply_args, _, _, apply_defaults = inspect.getargspec(apply_func)
+        load_args, _, _, _ = inspect.getargspec(load_func)
+        if len(load_args) > 0:
+            raise Exception("load function must not have parameters")
+        if len(apply_args) > 2 or len(apply_args) == 0:
+            raise Exception("apply function may have between 1 and 2 parameters, not {}".format(len(apply_args)))
         self.apply_func = apply_func
-        if load_func:
-            self.load_func = load_func
-        else:
-            self.load_func = lambda: None
+        self.load_func = load_func
 
     def load(self):
         output = self.load_func()
