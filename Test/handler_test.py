@@ -26,7 +26,7 @@ class HandlerTest(unittest.TestCase):
     def open_pipe(self):
         self.fifo_pipe = os.open(self.fifo_pipe_path, os.O_RDONLY | os.O_NONBLOCK)
 
-    def execute_example(self, input, apply, load):
+    def execute_example(self, input, apply, load=lambda: None):
         self.open_pipe()
         algo = Algorithmia.handler(apply, load)
         sys.stdin = input
@@ -46,7 +46,7 @@ class HandlerTest(unittest.TestCase):
             "result": "hello Algorithmia"
         }
         input = [str(json.dumps(input))]
-        actual_output = self.execute_example(input, apply_input_or_context, None)
+        actual_output = self.execute_example(input, apply_input_or_context)
         self.assertEqual(expected_output, actual_output)
 
     def test_basic_2(self):
@@ -58,7 +58,7 @@ class HandlerTest(unittest.TestCase):
             "result": "hello Algorithmia"
         }
         input = [str(json.dumps(input))]
-        actual_output = self.execute_example(input, apply_basic, None)
+        actual_output = self.execute_example(input, apply_basic)
         self.assertEqual(expected_output, actual_output)
 
 

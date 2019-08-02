@@ -23,12 +23,12 @@ class Handler(object):
             raise Exception("apply function may have between 1 and 2 parameters, not {}".format(len(apply_args)))
         self.apply_func = apply_func
         self.load_func = load_func
+        self.load_result = None
 
     def load(self):
-        output = self.load_func()
+        self.load_result = self.load_func()
         print('PIPE_INIT_COMPLETE')
         sys.stdout.flush()
-        return output
 
     def format_data(self, request):
         if request['content_type'] in ['text', 'json']:
@@ -77,26 +77,40 @@ class Handler(object):
 
     def serve(self):
         try:
-            load_result = self.load()
-            for line in sys.stdin:
-                request = json.loads(line)
-                formatted_input = self.format_data(request)
-                if load_result:
-                    apply_result = self.apply_func(formatted_input, load_result)
-                else:
-                    apply_result = self.apply_func(formatted_input)
-                formatted_response = self.format_response(apply_result)
-                self.write_to_pipe(formatted_response)
+            self.load()
         except Exception as e:
             if hasattr(e, 'error_type'):
                 error_type = e.error_type
             else:
                 error_type = 'AlgorithmError'
-            response_string = json.dumps({
+            load_error_string = json.dumps({
                 'error': {
                     'message': str(e),
                     'stacktrace': traceback.format_exc(),
                     'error_type': error_type
                 }
             })
-            self.write_to_pipe(response_string)
+            return self.write_to_pipe(load_error_string)
+        for line in sys.stdin:
+            try:
+                request = json.loads(line)
+                formatted_input = self.format_data(request)
+                if self.load_result:
+                    apply_result = self.apply_func(formatted_input, self.load_result)
+                else:
+                    apply_result = self.apply_func(formatted_input)
+                response_string = self.format_response(apply_result)
+            except Exception as e:
+                if hasattr(e, 'error_type'):
+                    error_type = e.error_type
+                else:
+                    error_type = 'AlgorithmError'
+                response_string = json.dumps({
+                    'error': {
+                        'message': str(e),
+                        'stacktrace': traceback.format_exc(),
+                        'error_type': error_type
+                    }
+                })
+            finally:
+                self.write_to_pipe(response_string)
