@@ -1,6 +1,7 @@
 'Algorithmia API Client (python)'
 
 from Algorithmia.client import Client
+from Algorithmia.handler import Handler
 import os
 
 apiKey = None
@@ -19,6 +20,9 @@ def dir(dataUrl):
 
 def client(api_key=None, api_address=None):
     return Client(api_key, api_address)
+
+def handler(apply_func, load_func=None):
+    return Handler(apply_func, load_func)
 
 # The default client to use, assuming the user does not want to construct their own
 defaultClient = None
