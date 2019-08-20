@@ -1,5 +1,7 @@
 import sys
-sys.path.append("../")
+# look in ../ BEFORE trying to import Algorithmia.  If you append to the
+# you will load the version installed on the computer.
+sys.path = ['../'] + sys.path
 
 import unittest
 import Algorithmia
