@@ -84,10 +84,10 @@ class DataFile(DataObject):
         return (response.status_code == 200, error)
 
     def put(self, data):
+        # Post to data api
         # First turn the data to bytes if we can
         if isinstance(data, six.string_types) and not isinstance(data, six.binary_type):
             data = bytes(data.encode())
-        # Post to data api
         if isinstance(data, six.binary_type):
             result = self.client.putHelper(self.url, data)
             if 'error' in result:
