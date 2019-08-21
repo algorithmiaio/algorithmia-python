@@ -14,7 +14,7 @@ from Algorithmia.errors import DataApiError
 
 class DataFile(DataObject):
     def __init__(self, client, dataUrl):
-        #super(DataFile, self).__init__(DataObjectType.file)
+        super(DataFile, self).__init__(DataObjectType.file)
         self.client = client
         # Parse dataUrl
         self.path = re.sub(r'^data://|^/', '', dataUrl)
@@ -127,7 +127,7 @@ class LocalDataFile():
     def __init__(self, client, filePath):
         self.client = client
         # Parse dataUrl
-        self.path = filePath.replace('file://', '')#re.sub(r'^data://|^/', '', filePath)
+        self.path = filePath.replace('file://', '')
         self.url = '/v1/data/' + self.path
         self.last_modified = None
         self.size = None
