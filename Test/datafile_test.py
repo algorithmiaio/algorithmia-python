@@ -7,7 +7,7 @@ sys.path = ['../'] + sys.path
 import unittest, os, uuid
 
 import Algorithmia
-from Algorithmia.datafile import DataFile
+from Algorithmia.datafile import DataFile, LocalDataFile
 
 class DataDirectoryTest(unittest.TestCase):
     def setUp(self):
@@ -58,6 +58,9 @@ class LocalFileTest(unittest.TestCase):
     def tearDown(self):
         os.remove(self.EXISTING_FILE.replace('file://', ''))
         if os.path.isfile(self.DUMMY_FILE): os.remove(self.DUMMY_FILE.replace('file://', ''))
+    def test_local_remote(self):
+        self.assertTrue(isinstance(self.client.file(self.DUMMY_FILE), LocalDataFile))
+        self.assertTrue(isinstance(self.client.file('data://foo'), DataFile))
     def test_exists_or_not(self):
         self.assertTrue(self.client.file(self.EXISTING_FILE).exists())
         self.assertFalse(self.client.file(self.DUMMY_FILE).exists())
