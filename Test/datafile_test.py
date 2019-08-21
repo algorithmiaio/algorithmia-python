@@ -48,22 +48,19 @@ class LocalFileTest(unittest.TestCase):
     def setUp(self):
         self.client = Algorithmia.client()
         # Make a file that DOES exist and has contents,
-        self.EXISTING_FILE = str(uuid.uuid1())+'.txt'
-        f = open(self.EXISTING_FILE, 'w')
+        self.EXISTING_FILE = 'file://'+str(uuid.uuid1())+'.txt'
+        f = open(self.EXISTING_FILE.replace('file://', ''), 'w')
         f.write(self.EXISTING_TEXT)
         f.close()
         # We need a dummy file that doesnt currently exist
-        self.DUMMY_FILE = str(uuid.uuid1())+'.txt'
+        self.DUMMY_FILE = 'file://'+str(uuid.uuid1())+'.txt'
         if os.path.isfile(self.DUMMY_FILE): os.remove(self.DUMMY_FILE)
     def tearDown(self):
-        os.remove(self.EXISTING_FILE)
-        if os.path.isfile(self.DUMMY_FILE): os.remove(self.DUMMY_FILE)
+        os.remove(self.EXISTING_FILE.replace('file://', ''))
+        if os.path.isfile(self.DUMMY_FILE): os.remove(self.DUMMY_FILE.replace('file://', ''))
     def test_exists_or_not(self):
         self.assertTrue(self.client.file(self.EXISTING_FILE).exists())
         self.assertFalse(self.client.file(self.DUMMY_FILE).exists())
-    def test_local_or_not(self):
-        self.assertTrue(self.client.file(self.EXISTING_FILE).is_local)
-        self.assertFalse(self.client.file('data://.my/foo').is_local)
     def test_get_nonexistant(self):
         df = self.client.file(self.DUMMY_FILE)
         try:
@@ -74,7 +71,6 @@ class LocalFileTest(unittest.TestCase):
         self.assertFalse(retrieved_file)
     def test_put_and_read_and_delete(self):
         f = self.client.file(self.DUMMY_FILE)
-        assert(f.is_local)
         f.put(self.DUMMY_TEXT)
         # Check getString
         txt = self.client.file(self.DUMMY_FILE).getString()

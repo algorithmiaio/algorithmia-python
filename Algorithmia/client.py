@@ -2,7 +2,7 @@
 
 import Algorithmia
 from Algorithmia.algorithm import Algorithm
-from Algorithmia.datafile import DataFile
+from Algorithmia.datafile import DataFile, LocalDataFile
 from Algorithmia.datadirectory import DataDirectory
 from algorithmia_api_client import Configuration, DefaultApi, ApiClient
 
@@ -33,7 +33,8 @@ class Client(object):
         return Algorithm(self, algoRef)
 
     def file(self, dataUrl):
-        return DataFile(self, dataUrl)
+        if dataUrl.startswith('file://'): return LocalDataFile(self, dataUrl)
+        else: return DataFile(self, dataUrl)
 
     def dir(self, dataUrl):
         return DataDirectory(self, dataUrl)
