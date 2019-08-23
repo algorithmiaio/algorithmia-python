@@ -16,9 +16,10 @@ class Handler(object):
         """
         self.FIFO_PATH = "/tmp/algoout"
         apply_args, _, _, apply_defaults = inspect.getargspec(apply_func)
-        load_args, _, _, _ = inspect.getargspec(load_func)
-        if len(load_args) > 0:
-            raise Exception("load function must not have parameters")
+        if load_func:
+            load_args, _, _, _ = inspect.getargspec(load_func)
+            if len(load_args) > 0:
+                raise Exception("load function must not have parameters")
         if len(apply_args) > 2 or len(apply_args) == 0:
             raise Exception("apply function may have between 1 and 2 parameters, not {}".format(len(apply_args)))
         self.apply_func = apply_func
