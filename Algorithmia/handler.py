@@ -8,7 +8,7 @@ import six
 
 class Handler(object):
 
-    def __init__(self, apply_func, load_func=lambda: None):
+    def __init__(self, apply_func, load_func):
         """
         Creates the handler object
         :param apply_func: A required function that can have an arity of 1-2, depending on if loading occurs
@@ -16,10 +16,9 @@ class Handler(object):
         """
         self.FIFO_PATH = "/tmp/algoout"
         apply_args, _, _, apply_defaults = inspect.getargspec(apply_func)
-        if load_func:
-            load_args, _, _, _ = inspect.getargspec(load_func)
-            if len(load_args) > 0:
-                raise Exception("load function must not have parameters")
+        load_args, _, _, _ = inspect.getargspec(load_func)
+        if len(load_args) > 0:
+            raise Exception("load function must not have parameters")
         if len(apply_args) > 2 or len(apply_args) == 0:
             raise Exception("apply function may have between 1 and 2 parameters, not {}".format(len(apply_args)))
         self.apply_func = apply_func

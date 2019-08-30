@@ -34,6 +34,15 @@ class HandlerTest(unittest.TestCase):
         output = self.read_from_pipe()
         return output
 
+    def execute_without_load(self, input, apply):
+        self.open_pipe()
+        algo = Algorithmia.handler(apply)
+        sys.stdin = input
+        algo.serve()
+        output = self.read_from_pipe()
+        return output
+
+
 
 # ----- Tests ----- #
 
@@ -58,7 +67,7 @@ class HandlerTest(unittest.TestCase):
             "result": "hello Algorithmia"
         }
         input = [str(json.dumps(input))]
-        actual_output = self.execute_example(input, apply_basic)
+        actual_output = self.execute_without_load(input, apply_basic)
         self.assertEqual(expected_output, actual_output)
 
 
