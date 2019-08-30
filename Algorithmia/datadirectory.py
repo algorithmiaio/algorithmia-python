@@ -2,6 +2,7 @@
 
 import json
 import re
+import os
 import six
 import tempfile
 
@@ -142,3 +143,43 @@ class DataDirectory(DataObject):
                 f.set_attributes(file_info)
                 files.append(f)
         return files
+
+
+class LocalDataDirectory():
+    def __init__(self, client, dataUrl):
+        #super(DataDirectory, self).__init__(DataObjectType.directory)
+        self.client = client
+        # Parse dataUrl
+        self.path = dataUrl.replace('local://', '')
+
+    def set_attributes(self, response_json):
+        raise NotImplementedError
+
+    def getName(self):
+        raise NotImplementedError
+
+    def exists(self):
+        return os.path.isdir(self.path)
+
+    def create(self):
+        os.mkdir(self.path)
+
+    def delete(self, force=False):
+        os.rmdir(self.path)
+
+    def file(self, name):
+        return LocalDataFile(self.client, 'local://' + pathJoin(self.path, name))
+
+    def dir(self, name):
+        raise NotImplementedError
+
+    def list(self):
+        for x in os.listdir(self.path): yield x
+
+    def dirs(self, content):
+        for x in os.listdir(self.path):
+            if os.path.isdir(self.path+'/'+x): yield x
+
+    def files(self, content):
+        for x in os.listdir(self.path):
+            if os.path.isfile(self.path+'/'+x): yield x
