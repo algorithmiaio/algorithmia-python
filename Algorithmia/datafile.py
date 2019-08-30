@@ -85,7 +85,7 @@ class DataFile(DataObject):
 
     def put(self, data):
         # Post to data api
-        
+
         # First turn the data to bytes if we can
         if isinstance(data, six.string_types) and not isinstance(data, six.binary_type):
             data = bytes(data.encode())
@@ -128,7 +128,7 @@ class LocalDataFile():
     def __init__(self, client, filePath):
         self.client = client
         # Parse dataUrl
-        self.path = filePath.replace('file://', '')
+        self.path = filePath.replace('local://', '')
         self.url = '/v1/data/' + self.path
         self.last_modified = None
         self.size = None
