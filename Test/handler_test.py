@@ -11,7 +11,7 @@ class HandlerTest(unittest.TestCase):
 
     def setUp(self):
         try:
-            os.mkfifo(self.fifo_pipe_path, mode=0o644)
+            os.mkfifo(self.fifo_pipe_path)
         except Exception:
             pass
 
