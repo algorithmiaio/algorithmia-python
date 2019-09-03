@@ -19,7 +19,10 @@ class HandlerTest(unittest.TestCase):
         os.remove(self.fifo_pipe_path)
 
     def read_from_pipe(self):
-        actual_output = json.loads(str(os.read(self.fifo_pipe, 10000)))
+        read_obj = os.read(self.fifo_pipe, 10000)
+        if isinstance(read_obj, bytes):
+            read_obj = read_obj.decode("utf-8")
+        actual_output = json.loads(read_obj)
         os.close(self.fifo_pipe)
         return actual_output
 
