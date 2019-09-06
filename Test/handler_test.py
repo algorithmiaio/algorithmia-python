@@ -11,7 +11,7 @@ class HandlerTest(unittest.TestCase):
 
     def setUp(self):
         try:
-            os.mkfifo(self.fifo_pipe_path, mode=0o644)
+            os.mkfifo(self.fifo_pipe_path)
         except Exception:
             pass
 
@@ -19,7 +19,10 @@ class HandlerTest(unittest.TestCase):
         os.remove(self.fifo_pipe_path)
 
     def read_from_pipe(self):
-        actual_output = json.loads(os.read(self.fifo_pipe, 10000))
+        read_obj = os.read(self.fifo_pipe, 10000)
+        if isinstance(read_obj, bytes):
+            read_obj = read_obj.decode("utf-8")
+        actual_output = json.loads(read_obj)
         os.close(self.fifo_pipe)
         return actual_output
 
@@ -33,6 +36,15 @@ class HandlerTest(unittest.TestCase):
         algo.serve()
         output = self.read_from_pipe()
         return output
+
+    def execute_without_load(self, input, apply):
+        self.open_pipe()
+        algo = Algorithmia.handler(apply)
+        sys.stdin = input
+        algo.serve()
+        output = self.read_from_pipe()
+        return output
+
 
 
 # ----- Tests ----- #
@@ -58,7 +70,7 @@ class HandlerTest(unittest.TestCase):
             "result": "hello Algorithmia"
         }
         input = [str(json.dumps(input))]
-        actual_output = self.execute_example(input, apply_basic)
+        actual_output = self.execute_without_load(input, apply_basic)
         self.assertEqual(expected_output, actual_output)
 
 

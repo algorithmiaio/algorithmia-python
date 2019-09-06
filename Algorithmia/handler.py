@@ -8,7 +8,7 @@ import six
 
 class Handler(object):
 
-    def __init__(self, apply_func, load_func=lambda: None):
+    def __init__(self, apply_func, load_func):
         """
         Creates the handler object
         :param apply_func: A required function that can have an arity of 1-2, depending on if loading occurs

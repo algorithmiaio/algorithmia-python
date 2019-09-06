@@ -21,7 +21,7 @@ def dir(dataUrl):
 def client(api_key=None, api_address=None):
     return Client(api_key, api_address)
 
-def handler(apply_func, load_func=None):
+def handler(apply_func, load_func=lambda: None):
     return Handler(apply_func, load_func)
 
 # The default client to use, assuming the user does not want to construct their own
