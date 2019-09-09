@@ -33,11 +33,11 @@ class Client(object):
         return Algorithm(self, algoRef)
 
     def file(self, dataUrl):
-        if dataUrl.startswith('local://'): return LocalDataFile(self, dataUrl)
+        if dataUrl.startswith('file://'): return LocalDataFile(self, dataUrl)
         else: return DataFile(self, dataUrl)
 
     def dir(self, dataUrl):
-        if dataUrl.startswith('local://'): return LocalDataDirectory(self, dataUrl)
+        if dataUrl.startswith('file://'): return LocalDataDirectory(self, dataUrl)
         else: return DataDirectory(self, dataUrl)
 
     # Used internally to post json to the api and parse json response

@@ -147,10 +147,9 @@ class DataDirectory(DataObject):
 
 class LocalDataDirectory():
     def __init__(self, client, dataUrl):
-        #super(DataDirectory, self).__init__(DataObjectType.directory)
         self.client = client
         # Parse dataUrl
-        self.path = dataUrl.replace('local://', '')
+        self.path = dataUrl.replace('file://', '')
 
     def set_attributes(self, response_json):
         raise NotImplementedError
@@ -168,7 +167,7 @@ class LocalDataDirectory():
         os.rmdir(self.path)
 
     def file(self, name):
-        return LocalDataFile(self.client, 'local://' + pathJoin(self.path, name))
+        return LocalDataFile(self.client, 'file://' + pathJoin(self.path, name))
 
     def dir(self, name):
         raise NotImplementedError

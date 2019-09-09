@@ -128,7 +128,7 @@ class LocalDataFile():
     def __init__(self, client, filePath):
         self.client = client
         # Parse dataUrl
-        self.path = filePath.replace('local://', '')
+        self.path = filePath.replace('file://', '')
         self.url = '/v1/data/' + self.path
         self.last_modified = None
         self.size = None

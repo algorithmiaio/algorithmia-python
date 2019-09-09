@@ -159,8 +159,8 @@ class LocalDataDirectoryTest(unittest.TestCase):
     EXISTING_FILES = ['file1.txt', 'file2.txt']
     def setUp(self):
         self.client = Algorithmia.client()
-        self.DUMMY_DIR = 'local://' + self._DUMMY_DIR
-        self.EXISTING_DIR = 'local://' + self._EXISTING_DIR
+        self.DUMMY_DIR = 'file://' + self._DUMMY_DIR
+        self.EXISTING_DIR = 'file://' + self._EXISTING_DIR
         # create existing dir w files in it
         os.mkdir(self._EXISTING_DIR)
         for fname in self.EXISTING_FILES:
