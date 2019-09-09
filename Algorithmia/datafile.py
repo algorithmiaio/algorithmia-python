@@ -85,7 +85,7 @@ class DataFile(DataObject):
 
     def put(self, data):
         # Post to data api
-        
+
         # First turn the data to bytes if we can
         if isinstance(data, six.string_types) and not isinstance(data, six.binary_type):
             data = bytes(data.encode())

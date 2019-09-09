@@ -3,7 +3,7 @@
 import Algorithmia
 from Algorithmia.algorithm import Algorithm
 from Algorithmia.datafile import DataFile, LocalDataFile
-from Algorithmia.datadirectory import DataDirectory
+from Algorithmia.datadirectory import DataDirectory, LocalDataDirectory
 from algorithmia_api_client import Configuration, DefaultApi, ApiClient
 
 import json, re, requests, six
@@ -37,7 +37,8 @@ class Client(object):
         else: return DataFile(self, dataUrl)
 
     def dir(self, dataUrl):
-        return DataDirectory(self, dataUrl)
+        if dataUrl.startswith('file://'): return LocalDataDirectory(self, dataUrl)
+        else: return DataDirectory(self, dataUrl)
 
     # Used internally to post json to the api and parse json response
     def postJsonHelper(self, url, input_object, parse_response_as_json=True, **query_parameters):

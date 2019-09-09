@@ -4,9 +4,10 @@ import sys
 sys.path = ['../'] + sys.path
 
 import unittest
+import os
 
 import Algorithmia
-from Algorithmia.datadirectory import DataDirectory
+from Algorithmia.datadirectory import DataDirectory, LocalDataDirectory
 from Algorithmia.data import DataObjectType
 from Algorithmia.acl import Acl, AclType
 
@@ -151,6 +152,38 @@ class DataDirectoryTest(unittest.TestCase):
         self.assertTrue(dd.is_dir())
         self.assertFalse(dd.is_file())
         self.assertTrue(dd.get_type() is DataObjectType.directory)
+
+class LocalDataDirectoryTest(unittest.TestCase):
+    _DUMMY_DIR = 'dummy_dir_that_should_not_exist'
+    _EXISTING_DIR = 'existing_dir_that_should_not_exist_before_test'
+    EXISTING_FILES = ['file1.txt', 'file2.txt']
+    def setUp(self):
+        self.client = Algorithmia.client()
+        self.DUMMY_DIR = 'file://' + self._DUMMY_DIR
+        self.EXISTING_DIR = 'file://' + self._EXISTING_DIR
+        # create existing dir w files in it
+        os.mkdir(self._EXISTING_DIR)
+        for fname in self.EXISTING_FILES:
+            with open(self._EXISTING_DIR+'/'+fname, 'w') as f:
+                f.write('filler text')
+        # ensure dummy dir does not exist yet
+        assert not os.path.isdir(self.DUMMY_DIR)
+    def tearDown(self):
+        for fname in self.EXISTING_FILES:
+            os.remove(self._EXISTING_DIR+'/'+fname)
+        os.rmdir(self._EXISTING_DIR)
+    def test_exist_or_not(self):
+        self.assertTrue(self.client.dir(self.EXISTING_DIR).exists())
+        self.assertFalse(self.client.dir(self.DUMMY_DIR).exists())
+    def test_create_delete(self):
+        self.client.dir(self.DUMMY_DIR).create()
+        self.assertTrue(self.client.dir(self.DUMMY_DIR).exists())
+        self.client.dir(self.DUMMY_DIR).delete()
+        self.assertFalse(self.client.dir(self.DUMMY_DIR).exists())
+    def test_list(self):
+        contents = set(x for x in self.client.dir(self.EXISTING_DIR).list())
+        self.assertEqual(contents, set(self.EXISTING_FILES))
+
 
 if __name__ == '__main__':
     unittest.main()

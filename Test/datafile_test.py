@@ -9,7 +9,7 @@ import unittest, os, uuid
 import Algorithmia
 from Algorithmia.datafile import DataFile, LocalDataFile
 
-class DataDirectoryTest(unittest.TestCase):
+class DataFileTest(unittest.TestCase):
     def setUp(self):
         self.client = Algorithmia.client()
 
