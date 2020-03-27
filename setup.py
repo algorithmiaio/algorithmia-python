@@ -16,7 +16,7 @@ setup(
         'requests',
         'six',
         'enum34',
-        'algorithmia-api-client==1.1.0,<2.0'
+        'algorithmia-api-client==1.2.0,<2.0'
     ],
     include_package_data=True,
     classifiers=[
