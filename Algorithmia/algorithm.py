@@ -82,6 +82,36 @@ class Algorithm(object):
             error_message = json.loads(e.body)["error"]["message"]
             raise ApiError(error_message)
 
+    def builds(self, limit=56, marker=None):
+        try:
+            if marker is not None:
+                api_response = self.client.manageApi.get_algorithm_builds(self.username, self.algoname, limit=limit, marker=marker)
+            else:
+                api_response = self.client.manageApi.get_algorithm_builds(self.username, self.algoname, limit=limit)
+            return api_response
+        except ApiException as e:
+            error_message = json.loads(e.body)["error"]["message"]
+            raise ApiError(error_message)
+
+    def get_build(self, build_id):
+        # Get the build object for a given build_id
+        # The build status can have one of the following value: succeeded, failed, in-progress
+        try:
+            api_response = self.client.manageApi.get_algorithm_build_by_id(self.username, self.algoname, build_id)
+            return api_response
+        except ApiException as e:
+            error_message = json.loads(e.body)["error"]["message"]
+            raise ApiError(error_message)
+
+    def get_build_logs(self, build_id):
+        # Get the algorithm build logs for a given build_id
+        try:
+            api_response = self.client.manageApi.get_algorithm_build_logs(self.username, self.algoname, build_id)
+            return api_response
+        except ApiException as e:
+            error_message = json.loads(e.body)["error"]["message"]
+            raise ApiError(error_message)
+
     # Get info on an algorithm
     def info(self, algo_hash=None):
         try:
