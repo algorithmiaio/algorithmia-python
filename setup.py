@@ -15,7 +15,7 @@ setup(
     install_requires=[
         'requests',
         'six',
-        'enum34==1.1.10',
+        'enum34==1.1.10;python_version<"3.4"',
         'algorithmia-api-client==1.1.0'
     ],
     include_package_data=True,
