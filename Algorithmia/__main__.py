@@ -1,6 +1,7 @@
 import sys
 import os
 import Algorithmia
+from pathlib import Path
 
 #CLI app to allow a user to run algorithms and manage data collections
 
@@ -31,7 +32,7 @@ General commands include:
 
 def main():
 	args = sys.argv[1:]
-	print(args)
+	#print(args)
 	
 	if len(args) < 1 or args[0] == "--help":
 		print(usage)
@@ -39,8 +40,14 @@ def main():
 		#print(VERSION)
 		print("version")
 	else:
-		#create a client expecting an apikey to be found in the ALGORITHMIA_API_KEY enviroment variable
-		client = Algorithmia.client()
+		#create the api key file if it does not exist
+		keyFile = Path(os.environ['HOME']+"/.algorithmia_api_key")
+		keyFile.touch(exist_ok=True)
+
+		#create a client expecting an apikey to be found in the .algorithmia_api_key file
+		key = open(os.environ['HOME']+"/.algorithmia_api_key","r")
+		client = Algorithmia.client(key.read())
+		key.close()
 		cmd = args[0]
 
 # algo auth
@@ -49,18 +56,10 @@ def main():
 			print("Configuring authentication for 'default' profile")
 			APIkey = input("enter API key: ")
 
-			#overwrite apikey enviroment variable
-			#os.environ['ALGORITHMIA_API_KEY'] = APIkey
-			setenv = "export ALGORITHMIA_API_KEY=" + "'" + APIkey + "'"
-			print(setenv)
-
-			# this does not update the enviroment variable properly
-			print(os.system(setenv))
-			os.system("printenv ALGORITHMIA_API_KEY")
+			auth(APIkey)
 
 # algo run <algo> <args..>    run the the spesified algo
 		elif cmd == 'run':
-			#client = Algorithmia.client(os.environ['ALGORITHMIA_API_KEY'])
 			algo_name = args[1]
 
 			if(len(args) > 3):
@@ -68,13 +67,8 @@ def main():
 			else:
 				algo_input = args[2]
 
-			algo = client.algo(algo_name);
-			try:
-				print(algo.pipe(algo_input).result)
-			except Exception as error:
-				print(error)
+			print(runalgo(algo_name, algo_input, client))
 		else:
-			print("in data command")
 			#data command
 			if(len(args) == 2):
 				path = args[1]
@@ -84,39 +78,19 @@ def main():
 # algo mkdir <path>
 			if(cmd == "mkdir"):
 				#make a dir in data collection
-				print("mk "+path)
-				newDir = client.dir(path)
-				
-				if newDir.exists() is False:
-					newDir.create()
+				mkdir(path, client)
 			
 # algo rmdir <path>
 			elif(cmd == "rmdir"):
-				#remove a dir in data collection
-				print("rm "+path)
-				Dir = client.dir(path)
-				
-				if Dir.exists():
-					Dir.delete()
+				rmdir(path, client)
 
 # algo ls <path>			
 			elif(cmd == "ls"):
-				#list dir
-				if(path is None):
-					path = "/.my"
-				print("list "+path)
-				listingDir = client.dir(path)
-				for f in listingDir.list():
-					print(f.getName())
+				print(ls(path, client))
 
 # algo cat <file>
 			elif(cmd == "cat"):
-				file = client.file(path)
-			
-				if(file.exists()):
-					print(file.getString())
-				else:
-					print("file does not exist "+path)
+				print(cat(path, client))
 
 # algo cp <src> <dest>
 			elif(cmd == "cp"):
@@ -127,15 +101,120 @@ def main():
 					src = args[1]
 					dest = args[2]
 
-					file = client.file(src)
-					destLocation = client.file(dest)
-					
+					cp(src, dest, client)
 
-					if(file.exists()):
-						destLocation.putFile(file.getFile())
 
-					else:
-						print("file does not exist")
+
+# algo auth
+def auth(apikey):
+
+	#setenv = "export ALGORITHMIA_API_KEY=" + "'" + APIkey + "'"
+	#print(setenv)
+
+	#store api key in local config file and read from it each time a client needs to be created
+	key = open(os.environ['HOME']+"/.algorithmia_api_key","w")
+	key.write(apikey)
+	key.close()
+
+	print("apikey is:")
+	key = open(os.environ['HOME']+"/.algorithmia_api_key","r")
+	print(key.read())
+	key.close()
+
+# algo run <algo> <args..>    run the the spesified algo
+def runalgo(name, inputs, client):
+	#client = Algorithmia.client(os.environ['ALGORITHMIA_API_KEY'])
+	algo_name = name
+
+	algo_input = inputs
+
+	result = None
+
+	algo = client.algo(algo_name);
+	try:
+		result = algo.pipe(algo_input).result
+	except Exception as error:
+		print(error)
+
+	return result
+
+
+
+# algo mkdir <path>
+def mkdir(path, client):
+	#make a dir in data collection
+	print("mk "+path)
+	newDir = client.dir(path)
+	
+	if newDir.exists() is False:
+		newDir.create()
+			
+# algo rmdir <path>
+def rmdir(path, client):
+				#remove a dir in data collection
+				print("rm "+path)
+				Dir = client.dir(path)
+				
+				if Dir.exists():
+					Dir.delete()
+
+# algo ls <path>			
+def ls(path, client):
+	#list dir
+	listing = ""
+	if(path is None):
+		path = "/.my"
+	print("list "+path)
+	listingDir = client.dir(path)
+	for f in listingDir.list():
+		listing += f.getName() + "\n"
+	return listing
+
+# algo cat <file>
+def cat(path, client):
+	result = None
+	file = client.file(path)
+
+	if(file.exists()):
+		result = file.getString()
+	else:
+		result = "file does not exist "+path
+
+	return result
+
+# algo cp <src> <dest>
+def cp(src, dest, client):
+
+	if(src is None or dest is None):
+		print("expected algo cp <src> <dest>")
+	else:
+
+		
+		destLocation = client.file(dest)
+
+		#if src is local and dest is remote
+		if("data://" not in src and "data://" in dest):
+			client.file(dest).putFile(src)
+
+		#if src and dest are remote
+		elif("data://" in src and "data://" in dest):
+			file = client.file(src).getFile().name
+			print(file)
+			client.file(dest).putFile(file)
+
+		#if src is remote and dest is local
+		elif("data://" in src and "data://" not in dest):
+			file = client.file(src).getFile().name
+			print(file)
+
+			#this assumes dest is a full file path not just a directory
+			destFile = open(dest,"w")
+			srcfile = open(file,"r")
+			destFile.write(srcfile.read())
+			destFile.close()
+			srcfile.close()
+		else:
+			print("at least one of the operands must be a path to a remote data source data://")
 
 
 
