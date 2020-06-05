@@ -2,7 +2,6 @@
 
 from Algorithmia.client import Client
 from Algorithmia.handler import Handler
-from Algorithmia.CLI import CLI
 import os
 
 apiKey = None
@@ -24,9 +23,6 @@ def client(api_key=None, api_address=None):
 
 def handler(apply_func, load_func=lambda: None):
     return Handler(apply_func, load_func)
-
-def cli():
-    return CLI()
 
 # The default client to use, assuming the user does not want to construct their own
 defaultClient = None

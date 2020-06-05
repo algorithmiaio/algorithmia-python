@@ -108,7 +108,7 @@ class CLITest(unittest.TestCase):
 		self.assertEqual(result, inputs, client)
 	
 	def test_auth(self):
-		key = "simPoLu48KMOtaJ6TT4P4hEY1C+1"
+		key = "apikey"
 		CLI().auth(key)
 		home = os.environ['HOME']
 		keyfile = open(home+"/.algorithmia_api_key","r")
