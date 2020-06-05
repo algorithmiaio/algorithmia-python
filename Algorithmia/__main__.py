@@ -68,6 +68,11 @@ def main():
 				algo_input = args[2]
 
 			print(runalgo(algo_name, algo_input, client))
+		elif(cmd == "clone"):
+			
+			algo_name = args[1]
+
+			print("cloning src for" + algo_name)
 		else:
 			#data command
 			if(len(args) == 2):
