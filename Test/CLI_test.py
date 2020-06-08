@@ -9,8 +9,11 @@ import Algorithmia
 from Algorithmia.CLI import CLI
 
 class CLITest(unittest.TestCase):
-	#def setUp(self):
-
+	def setUp(self):
+		# create a directory to use in testing the cp command 
+		client = Algorithmia.client()
+		CLI().mkdir("/.my/moredata", client)
+	
 	def test_ls(self):
 		parentDir = "/.my/"
 		newDir = "test"

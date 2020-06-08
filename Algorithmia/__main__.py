@@ -68,12 +68,14 @@ def main():
 				algo_input = args[2]
 
 			print(runalgo(algo_name, algo_input, client))
+
+#algo clone <user/algo>
 		elif(cmd == "clone"):
 			
 			algo_name = args[1]
 
 			print("cloning src for" + algo_name)
-			exitcode = os.system("git clone https://git.algorithmia.com/git"+algo_name+".git")
+			exitcode = os.system("git clone https://git.algorithmia.com/git/"+algo_name+".git")
 
 			if(exitcode != 0):
 				print("failed to clone\nis git installed?")
