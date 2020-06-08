@@ -5,7 +5,7 @@ sys.path = ['../'] + sys.path
 
 import unittest
 
-import AlgorithmiaI
+import Algorithmia
 
 class AlgoTest(unittest.TestCase):
     def setUp(self):

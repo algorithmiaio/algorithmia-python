@@ -73,6 +73,10 @@ def main():
 			algo_name = args[1]
 
 			print("cloning src for" + algo_name)
+			exitcode = os.system("git clone https://git.algorithmia.com/git"+algo_name+".git")
+
+			if(exitcode != 0):
+				print("failed to clone\nis git installed?")
 		else:
 			#data command
 			if(len(args) == 2):
