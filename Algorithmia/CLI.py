@@ -1,5 +1,7 @@
 import Algorithmia
 import os
+from Algorithmia.algo_response import AlgoResponse
+import json, re, requests
 
 class CLI():
 	def __init__(self):
@@ -22,18 +24,120 @@ class CLI():
 
 	# algo run <algo> <args..>    run the the spesified algo
 	def runalgo(self, name, inputs, client):
-		#client = Algorithmia.client(os.environ['ALGORITHMIA_API_KEY'])
 		algo_name = name
 
-		algo_input = inputs
+		algo_input = inputs[0]
 
+		algo = client.algo(algo_name)
+		
 		result = None
+		'''
+		time = 300
+		if("--timeout" in inputs):
+			#find timeout value
 
-		algo = client.algo(algo_name);
-		try:
-			result = algo.pipe(algo_input).result
-		except Exception as error:
-			print(error)
+
+			time = 300
+
+		algo.set_options(timeout=time, stdout=("--debug" in inputs), output=)
+		'''
+
+
+		#handle input type flags
+		if(len(inputs) >= 1):
+			if(inputs[0] == "-d" or inputs[0] == "--data"):
+				#data
+				algo_input = inputs[1]
+				print(algo_input)
+				try:
+					result = algo.pipe(algo_input)
+				except Exception as error:
+					print(error)
+
+			elif(inputs[0] == '-t'):
+				#text
+				algo_input = inputs[1]
+				key = open(os.environ['HOME']+"/.algorithmia_api_key","r")
+				result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=algo_input.encode('utf-8'),
+					headers={'Authorization':key.read(),'Content-Type':'text/plain'}, params= algo.query_parameters).json())
+				key.close()
+
+			elif(inputs[0] == "-j"):
+				#json
+				algo_input = inputs[1]
+				key = open(os.environ['HOME']+"/.algorithmia_api_key","r")
+				result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=algo_input,
+					headers={'Authorization':key.read(),'Content-Type':'application/json'}, params= algo.query_parameters).json())
+				key.close()
+			
+			elif(inputs[0] == "-b"):
+				#binary
+				algo_input = inputs[1]
+				key = open(os.environ['HOME']+"/.algorithmia_api_key","r")
+				result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=bytes(algo_input),
+					headers={'Authorization':key.read(),'Content-Type':'application/octet-stream'}, params= algo.query_parameters).json())
+				key.close()
+			
+			elif(inputs[0] == "-D" or inputs[0] == "--data-file"):
+				#data file
+				algo_input = open(inputs[1],"r").read()
+				try:
+					result = algo.pipe(algo_input)
+				except Exception as error:
+					print(error)
+
+			elif(inputs[0] == "-T"):
+				#text file
+				algo_input = open(inputs[1],"r").read()
+				key = open(os.environ['HOME']+"/.algorithmia_api_key","r")
+				
+				result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=algo_input.encode('utf-8'),
+					headers={'Authorization':key.read(),'Content-Type':'text/plain'}, params= algo.query_parameters).json())
+				key.close()
+			
+			elif(inputs[0] == "-J"):
+				#json file
+				#read json file and run algo with that input bypassing the auto detection of input type in pipe
+				algo_input = open(inputs[1],"r").read()
+				key = open(os.environ['HOME']+"/.algorithmia_api_key","r")
+
+				result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=json.dumps(algo_input).encode('utf-8'),
+					headers={'Authorization':key.read(),'Content-Type':'application/json'}, params= algo.query_parameters))
+				key.close()
+
+			elif(inputs[0] == "-B"):
+				#binary file
+				algo_input = open(inputs[1],"rb").read()
+				key = open(os.environ['HOME']+"/.algorithmia_api_key","r")
+
+				result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=bytes(algo_input),
+					headers={'Authorization':key.read(),'Content-Type':'application/octet-stream'}, params= algo.query_parameters).json())
+				key.close()
+
+			else:
+				algo_input = inputs[0]
+				#print("in else no input flag")
+				try:
+					result = algo.pipe(algo_input)
+				except Exception as error:
+					print(error)
+			
+			#handle output flags
+
+			#response
+
+			#response-body
+
+			#output to file
+
+
+
+		if(inputs[-1] == "--response-body"):
+			result_body = """{ "result": """+result.result + ",\n" + """  "metadata": """ 
+			result_body = result_body + json.dumps(result.metadata.full_metadata)
+			result = result_body + " }"
+		else:
+			result = result.result
 
 		return result
 
@@ -42,7 +146,6 @@ class CLI():
 	# algo mkdir <path>
 	def mkdir(self, path, client):
 		#make a dir in data collection
-		#print("mk "+path)
 		newDir = client.dir(path)
 		
 		if newDir.exists() is False:

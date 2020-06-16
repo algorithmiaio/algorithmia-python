@@ -21,7 +21,7 @@ class CLITest(unittest.TestCase):
 
 		CLI().mkdir(parentDir+newDir, client)
 		result = CLI().ls(parentDir, client)
-		self.assertTrue(result is not None)
+		self.assertTrue(result is not None and "moredata" in result and newDir in result)
 		
 		CLI().rmdir(parentDir+newDir, client)
 
