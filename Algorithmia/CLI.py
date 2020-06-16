@@ -108,6 +108,8 @@ class CLI():
 			elif(inputs[0] == "-B"):
 				#binary file
 				algo_input = open(inputs[1],"rb").read()
+				print(algo_input)
+				print("end input \n")
 				key = open(os.environ['HOME']+"/.algorithmia_api_key","r")
 
 				result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=bytes(algo_input),
@@ -116,7 +118,6 @@ class CLI():
 
 			else:
 				algo_input = inputs[0]
-				#print("in else no input flag")
 				try:
 					result = algo.pipe(algo_input)
 				except Exception as error:
@@ -126,21 +127,30 @@ class CLI():
 
 			#response
 
-			#response-body
-
-			#output to file
-
-
-
+		#response-body
 		if(inputs[-1] == "--response-body"):
 			result_body = """{ "result": """+result.result + ",\n" + """  "metadata": """ 
 			result_body = result_body + json.dumps(result.metadata.full_metadata)
 			result = result_body + " }"
+
+		#output to file
+		elif(inputs[-2] == "--output" or inputs[-2] == "-o"):
+			try:
+				if isinstance(result.result, bytearray) or isinstance(result.result, bytes):
+					out = open(inputs[-1],"wb")
+					out.write(result.result)
+					out.close()
+				else:
+					out = open(inputs[-1],"w")
+					out.write(result.result)
+					out.close()
+
+			except Exception as error:
+					print(error)
 		else:
 			result = result.result
 
 		return result
-
 
 
 	# algo mkdir <path>
