@@ -133,20 +133,21 @@ class CLI():
 			result_body = result_body + json.dumps(result.metadata.full_metadata)
 			result = result_body + " }"
 
-		#output to file
-		elif(inputs[-2] == "--output" or inputs[-2] == "-o"):
-			try:
-				if isinstance(result.result, bytearray) or isinstance(result.result, bytes):
-					out = open(inputs[-1],"wb")
-					out.write(result.result)
-					out.close()
-				else:
-					out = open(inputs[-1],"w")
-					out.write(result.result)
-					out.close()
+		#output to file if there is an output file spesified
+		elif(len(inputs >= 3)):
+			if(inputs[-2] == "--output" or inputs[-2] == "-o"):
+				try:
+					if isinstance(result.result, bytearray) or isinstance(result.result, bytes):
+						out = open(inputs[-1],"wb")
+						out.write(result.result)
+						out.close()
+					else:
+						out = open(inputs[-1],"w")
+						out.write(result.result)
+						out.close()
 
-			except Exception as error:
-					print(error)
+				except Exception as error:
+						print(error)
 		else:
 			result = result.result
 
