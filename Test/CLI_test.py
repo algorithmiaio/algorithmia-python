@@ -104,11 +104,11 @@ class CLITest(unittest.TestCase):
 
 	def test_run(self):
 		name = "util/Echo"
-		inputs = "test"
+		inputs = ["test"]
 		client = Algorithmia.client()
 
 		result = CLI().runalgo(name,inputs, client)
-		self.assertEqual(result, inputs, client)
+		self.assertEqual(result, inputs)
 	
 	def test_auth(self):
 		key = "apikey"
