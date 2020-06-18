@@ -134,7 +134,7 @@ class CLI():
 			result = result_body + " }"
 
 		#output to file if there is an output file spesified
-		elif(len(inputs >= 3)):
+		elif(len(inputs) >= 3):
 			if(inputs[-2] == "--output" or inputs[-2] == "-o"):
 				try:
 					if isinstance(result.result, bytearray) or isinstance(result.result, bytes):
