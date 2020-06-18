@@ -108,7 +108,7 @@ class CLITest(unittest.TestCase):
 		client = Algorithmia.client()
 
 		result = CLI().runalgo(name,inputs, client)
-		self.assertEqual(result, inputs)
+		self.assertEqual(result, inputs[0])
 	
 	def test_auth(self):
 		key = "apikey"
