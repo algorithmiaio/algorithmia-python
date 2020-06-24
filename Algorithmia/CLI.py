@@ -1,5 +1,6 @@
 import Algorithmia
 import os
+from pathlib import Path
 from Algorithmia.algo_response import AlgoResponse
 import json, re, requests
 
@@ -7,22 +8,21 @@ class CLI():
 	def __init__(self):
 		self.client = Algorithmia.client()
 		# algo auth
-	def auth(self, apikey):
-
-		#setenv = "export ALGORITHMIA_API_KEY=" + "'" + APIkey + "'"
-		#print(setenv)
+	def auth(self, apikey, apiaddress, profile):
 
 		#store api key in local config file and read from it each time a client needs to be created
-		key = open(os.environ['HOME']+"/.algorithmia_api_key","w")
-		key.write(apikey)
+		key = self.getconfigfile("w")
+		if(profile == "default"):
+			config = "["+profile+"] \n\napi_key="+apikey+"\n\napi_server="+apiaddress
+		else:
+			#if this is not the default profile apend the new profile to the end of the file
+			key = self.getconfigfile("a")
+			config = "\n["+profile+"] \n\napi_key="+apikey+"\n\napi_server="+apiaddress
+
+		key.write(config)
 		key.close()
 
-		print("apikey is:")
-		key = open(os.environ['HOME']+"/.algorithmia_api_key","r")
-		print(key.read())
-		key.close()
-
-	# algo run <algo> <args..>    run the the spesified algo
+	# algo run <algo> <args..>    run the the specified algo
 	def runalgo(self, name, inputs, client):
 		algo_name = name
 
@@ -31,16 +31,17 @@ class CLI():
 		algo = client.algo(algo_name)
 		
 		result = None
-		'''
+
 		time = 300
 		if("--timeout" in inputs):
 			#find timeout value
+			for i in range(0,len(inputs)+1):
+				if(inputs[i] == "--timeout" and i != len(inputs)):
+					time = int(inputs[i+1])
+					break
 
-
-			time = 300
-
-		algo.set_options(timeout=time, stdout=("--debug" in inputs), output=)
-		'''
+		algo.set_options(timeout=time, stdout=("--debug" in inputs))
+		
 
 
 		#handle input type flags
@@ -48,7 +49,7 @@ class CLI():
 			if(inputs[0] == "-d" or inputs[0] == "--data"):
 				#data
 				algo_input = inputs[1]
-				print(algo_input)
+
 				try:
 					result = algo.pipe(algo_input)
 				except Exception as error:
@@ -57,25 +58,25 @@ class CLI():
 			elif(inputs[0] == '-t'):
 				#text
 				algo_input = inputs[1]
-				key = open(os.environ['HOME']+"/.algorithmia_api_key","r")
+				key = self.getAPIkey()
 				result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=algo_input.encode('utf-8'),
-					headers={'Authorization':key.read(),'Content-Type':'text/plain'}, params= algo.query_parameters).json())
+					headers={'Authorization':key,'Content-Type':'text/plain'}, params= algo.query_parameters).json())
 				key.close()
 
 			elif(inputs[0] == "-j"):
 				#json
 				algo_input = inputs[1]
-				key = open(os.environ['HOME']+"/.algorithmia_api_key","r")
+				key = self.getAPIkey()
 				result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=algo_input,
-					headers={'Authorization':key.read(),'Content-Type':'application/json'}, params= algo.query_parameters).json())
+					headers={'Authorization':key,'Content-Type':'application/json'}, params= algo.query_parameters).json())
 				key.close()
 			
 			elif(inputs[0] == "-b"):
 				#binary
 				algo_input = inputs[1]
-				key = open(os.environ['HOME']+"/.algorithmia_api_key","r")
+				key = self.getAPIkey()
 				result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=bytes(algo_input),
-					headers={'Authorization':key.read(),'Content-Type':'application/octet-stream'}, params= algo.query_parameters).json())
+					headers={'Authorization':key,'Content-Type':'application/octet-stream'}, params= algo.query_parameters).json())
 				key.close()
 			
 			elif(inputs[0] == "-D" or inputs[0] == "--data-file"):
@@ -89,32 +90,29 @@ class CLI():
 			elif(inputs[0] == "-T"):
 				#text file
 				algo_input = open(inputs[1],"r").read()
-				key = open(os.environ['HOME']+"/.algorithmia_api_key","r")
+				key = self.getAPIkey()
 				
 				result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=algo_input.encode('utf-8'),
-					headers={'Authorization':key.read(),'Content-Type':'text/plain'}, params= algo.query_parameters).json())
-				key.close()
+					headers={'Authorization':key,'Content-Type':'text/plain'}, params= algo.query_parameters).json())
 			
 			elif(inputs[0] == "-J"):
 				#json file
 				#read json file and run algo with that input bypassing the auto detection of input type in pipe
 				algo_input = open(inputs[1],"r").read()
-				key = open(os.environ['HOME']+"/.algorithmia_api_key","r")
+				key = self.getAPIkey()
 
 				result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=json.dumps(algo_input).encode('utf-8'),
-					headers={'Authorization':key.read(),'Content-Type':'application/json'}, params= algo.query_parameters))
-				key.close()
+					headers={'Authorization':key,'Content-Type':'application/json'}, params= algo.query_parameters))
 
 			elif(inputs[0] == "-B"):
 				#binary file
 				algo_input = open(inputs[1],"rb").read()
 				print(algo_input)
 				print("end input \n")
-				key = open(os.environ['HOME']+"/.algorithmia_api_key","r")
+				key = self.getAPIkey()
 
 				result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=bytes(algo_input),
-					headers={'Authorization':key.read(),'Content-Type':'application/octet-stream'}, params= algo.query_parameters).json())
-				key.close()
+					headers={'Authorization':key,'Content-Type':'application/octet-stream'}, params= algo.query_parameters).json())
 
 			else:
 				algo_input = inputs[0]
@@ -165,7 +163,7 @@ class CLI():
 	# algo rmdir <path>
 	def rmdir(self, path, client):
 		#remove a dir in data collection
-		#print("rm "+path)
+
 		Dir = client.dir(path)
 		
 		if Dir.exists():
@@ -177,7 +175,7 @@ class CLI():
 		listing = ""
 		if(path is None):
 			path = "/.my"
-		#print("list "+path)
+
 		listingDir = client.dir(path)
 		for f in listingDir.list():
 			listing += f.getName() + "\n"
@@ -221,7 +219,6 @@ class CLI():
 				file = client.file(src).getFile()
 				filename = file.name
 				file.close()
-				#print(file)
 
 				#this assumes dest is a full file path not just a directory
 				destFile = open(dest,"w")
@@ -231,3 +228,49 @@ class CLI():
 				srcfile.close()
 			else:
 				print("at least one of the operands must be a path to a remote data source data://")
+
+	def getconfigfile(self, mode):
+		if(os.name == "posix"):
+			#if!windows
+			#~/.algorithmia/config
+			#create the api key file if it does not exist
+			keyFile = Path(os.environ['HOME']+"/.algorithmia/config")
+			keyFile.touch(exist_ok=True)
+			key = open(keyFile,mode)
+		elif(os.name == "nt"):
+			#ifwindows
+			#%LOCALAPPDATA%\Algorithmia\config
+			#create the api key file if it does not exist
+			keyFile = Path("%LOCALAPPDATA%\\Algorithmia\\config")
+			keyFile.touch(exist_ok=True)
+			key = open(keyFile,mode)
+
+		return key
+
+	def getAPIkey(self):
+		key = self.getconfigfile("r")
+		config = key.readlines()
+		key.close()
+		apikey = None
+		print(config)
+		if(len(config) > 3):
+			#api_key=:
+			if(config[2][:8] == "api_key="):
+				#slice the apikey line to exclude the 'apikey=' and newline
+				apikey = config[2][8:len(config[2])-1]
+
+		print("apikey: " + apikey)
+		return apikey
+
+	def getAPIaddress(self):
+		key = self.getconfigfile("r")
+		config = key.readlines()
+		key.close()
+
+		#check for invalid formating
+
+		#api_server=:
+		if(config[4][:11] == "api_server="):
+			apiaddress = config[4][11:]
+
+		return apiaddress

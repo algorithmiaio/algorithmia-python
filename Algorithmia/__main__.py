@@ -2,11 +2,7 @@ import sys
 import os
 import json
 import Algorithmia
-from pathlib import Path
 from Algorithmia.CLI import CLI
-
-import importlib
-importlib.reload(Algorithmia.CLI)
 
 
 #CLI app to allow a user to run algorithms and manage data collections
@@ -44,43 +40,40 @@ def main():
 		print(usage)
 	elif args[0] == "--version":
 		#print(VERSION)
-		print("version")
+		print(Algorithmia.version)
 	else:
-		#create the api key file if it does not exist
-		keyFile = Path(os.environ['HOME']+"/.algorithmia_api_key")
-		keyFile.touch(exist_ok=True)
 
-		#create a client expecting an apikey to be found in the .algorithmia_api_key file
-		key = open(os.environ['HOME']+"/.algorithmia_api_key","r")
-		client = Algorithmia.client(key.read())
-		key.close()
+		client = Algorithmia.client(CLI().getAPIkey())
 		cmd = args[0]
 
 # algo auth
 		if cmd == 'auth':
 			#auth
 			print("Configuring authentication for 'default' profile")
+			APIaddress = input("enter API address:")
 			APIkey = input("enter API key: ")
+			profile = "default"
 
-			CLI().auth(APIkey)
+			if(len(args) > 2):
+				if(args[1] == "--profile"):
+					profile = args[3]
+
+			CLI().auth(APIkey, APIaddress, profile)
 
 # algo run <algo> <args..>    run the the spesified algo
 		elif cmd == 'run':
 			algo_name = args[1]
 
-			#if(len(args) > 3):
 			algo_input = args[2:]
-			#else:
-			#	algo_input = args[2:]
 
+			#debug input
 			print(algo_input)
 			print(len(algo_input))
 			print(algo_input[0])
 			print(algo_name)
-			print(type(algo_name))
+
 			r = CLI().runalgo(algo_name, algo_input, client)
 			print(r)
-			#print(r.result)
 
 #algo clone <user/algo>
 		elif(cmd == "clone"):
@@ -88,7 +81,10 @@ def main():
 			algo_name = args[1]
 
 			print("cloning src for" + algo_name)
+			#if api address == none
 			exitcode = os.system("git clone https://git.algorithmia.com/git/"+algo_name+".git")
+			#api address != none
+			exitcode = os.system("git clone " + CLI().getAPIaddress()+algo_name+".git")
 
 			if(exitcode != 0):
 				print("failed to clone\nis git installed?")
