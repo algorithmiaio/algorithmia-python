@@ -19,6 +19,7 @@ setup(
         'requests',
         'six',
         'enum34',
+        'toml',
         'algorithmia-api-client==1.1.0'
     ],
     include_package_data=True,

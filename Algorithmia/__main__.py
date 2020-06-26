@@ -43,7 +43,13 @@ def main():
 		print(Algorithmia.version)
 	else:
 
-		client = Algorithmia.client(CLI().getAPIkey())
+		#create a client with the correct profile
+		profile = 'default'
+		if(len(args) > 2):
+			if(args[-2] == "--profile"):
+				profile = args[-1]
+
+		client = Algorithmia.client(CLI().getAPIkey(profile))
 		cmd = args[0]
 
 # algo auth
@@ -66,12 +72,6 @@ def main():
 
 			algo_input = args[2:]
 
-			#debug input
-			print(algo_input)
-			print(len(algo_input))
-			print(algo_input[0])
-			print(algo_name)
-
 			r = CLI().runalgo(algo_name, algo_input, client)
 			print(r)
 
@@ -84,7 +84,7 @@ def main():
 			#if api address == none
 			exitcode = os.system("git clone https://git.algorithmia.com/git/"+algo_name+".git")
 			#api address != none
-			exitcode = os.system("git clone " + CLI().getAPIaddress()+algo_name+".git")
+			exitcode = os.system("git clone " + CLI().getAPIaddress(profile)+algo_name+".git")
 
 			if(exitcode != 0):
 				print("failed to clone\nis git installed?")

@@ -1,8 +1,8 @@
 import Algorithmia
 import os
-from pathlib import Path
 from Algorithmia.algo_response import AlgoResponse
 import json, re, requests
+import toml
 
 class CLI():
 	def __init__(self):
@@ -234,43 +234,41 @@ class CLI():
 			#if!windows
 			#~/.algorithmia/config
 			#create the api key file if it does not exist
-			keyFile = Path(os.environ['HOME']+"/.algorithmia/config")
-			keyFile.touch(exist_ok=True)
+			keyFile = os.environ['HOME']+"/.algorithmia/config"
+			if(not os.path.exists(keyFile)):
+				file = open(keyFile,"w")
+				file.write("[profiles]")
+				file.close()
+
 			key = open(keyFile,mode)
 		elif(os.name == "nt"):
 			#ifwindows
 			#%LOCALAPPDATA%\Algorithmia\config
 			#create the api key file if it does not exist
-			keyFile = Path("%LOCALAPPDATA%\\Algorithmia\\config")
-			keyFile.touch(exist_ok=True)
+			keyFile = "%LOCALAPPDATA%\\Algorithmia\\config"
+			if(not os.path.exists(keyFile)):
+				file = open(keyFile,"w")
+				file.write("[profiles]")
+				file.close()
+
 			key = open(keyFile,mode)
 
 		return key
 
-	def getAPIkey(self):
+	def getAPIkey(self,profile):
 		key = self.getconfigfile("r")
-		config = key.readlines()
+		config_dict = toml.load(os.environ['HOME']+"/.algorithmia/config")
 		key.close()
 		apikey = None
-		print(config)
-		if(len(config) > 3):
-			#api_key=:
-			if(config[2][:8] == "api_key="):
-				#slice the apikey line to exclude the 'apikey=' and newline
-				apikey = config[2][8:len(config[2])-1]
-
-		print("apikey: " + apikey)
+		apikey = config_dict['profiles'][profile]['api_key']
 		return apikey
 
-	def getAPIaddress(self):
+	def getAPIaddress(self,profile):
 		key = self.getconfigfile("r")
 		config = key.readlines()
+		config_dict = toml.load(os.environ['HOME']+"/.algorithmia/config")
 		key.close()
 
-		#check for invalid formating
-
-		#api_server=:
-		if(config[4][:11] == "api_server="):
-			apiaddress = config[4][11:]
+		apiaddress = config_dict['profiles'][profile]['api_server']
 
 		return apiaddress
