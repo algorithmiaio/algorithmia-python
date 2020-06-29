@@ -11,15 +11,21 @@ class CLI():
 	def auth(self, apikey, apiaddress, profile):
 
 		#store api key in local config file and read from it each time a client needs to be created
-		key = self.getconfigfile("w")
-		if(profile == "default"):
-			config = "["+profile+"] \n\napi_key="+apikey+"\n\napi_server="+apiaddress
-		else:
-			#if this is not the default profile apend the new profile to the end of the file
-			key = self.getconfigfile("a")
-			config = "\n["+profile+"] \n\napi_key="+apikey+"\n\napi_server="+apiaddress
+		key = self.getconfigfile()
+		config = toml.load(key)
 
-		key.write(config)
+		if('profiles' in config.keys()):
+			if(profile in config['profiles'].keys()):
+				config['profiles'][profile]['api_key'] = apikey
+				config['profiles'][profile]['api_server'] = apiaddress
+			else:
+				config['profiles'][profile] = {'api_key':apikey,'api_server':apiaddress}
+		else:
+			config['profiles'] = {profile:{'api_key':apikey,'api_server':apiaddress}}
+
+		key = open(key, "w")
+
+		toml.dump(config,key)
 		key.close()
 
 	# algo run <algo> <args..>    run the the specified algo
@@ -229,7 +235,7 @@ class CLI():
 			else:
 				print("at least one of the operands must be a path to a remote data source data://")
 
-	def getconfigfile(self, mode):
+	def getconfigfile(self):
 		if(os.name == "posix"):
 			#if!windows
 			#~/.algorithmia/config
@@ -240,7 +246,7 @@ class CLI():
 				file.write("[profiles]")
 				file.close()
 
-			key = open(keyFile,mode)
+			key = keyFile
 		elif(os.name == "nt"):
 			#ifwindows
 			#%LOCALAPPDATA%\Algorithmia\config
@@ -251,23 +257,21 @@ class CLI():
 				file.write("[profiles]")
 				file.close()
 
-			key = open(keyFile,mode)
+			key = keyFile
 
 		return key
 
 	def getAPIkey(self,profile):
-		key = self.getconfigfile("r")
-		config_dict = toml.load(os.environ['HOME']+"/.algorithmia/config")
-		key.close()
+		key = self.getconfigfile()
+		config_dict = toml.load(key)
 		apikey = None
-		apikey = config_dict['profiles'][profile]['api_key']
+		if('profiles' in config_dict.keys() and profile in config_dict['profiles'].keys()):
+			apikey = config_dict['profiles'][profile]['api_key']
 		return apikey
 
 	def getAPIaddress(self,profile):
-		key = self.getconfigfile("r")
-		config = key.readlines()
-		config_dict = toml.load(os.environ['HOME']+"/.algorithmia/config")
-		key.close()
+		key = self.getconfigfile()
+		config_dict = toml.load(key)
 
 		apiaddress = config_dict['profiles'][profile]['api_server']
 

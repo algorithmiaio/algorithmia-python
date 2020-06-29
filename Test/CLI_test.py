@@ -112,7 +112,9 @@ class CLITest(unittest.TestCase):
 	
 	def test_auth(self):
 		key = "apikey"
-		CLI().auth(key)
+		address = 'apiAddress'
+		profile = 'defualt'
+		CLI().auth(key,address,profile)
 		home = os.environ['HOME']
 		keyfile = open(home+"/.algorithmia_api_key","r")
 		result = keyfile.read()

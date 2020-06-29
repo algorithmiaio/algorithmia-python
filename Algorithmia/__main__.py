@@ -34,7 +34,7 @@ General commands include:
 
 def main():
 	args = sys.argv[1:]
-	#print(args)
+	
 	
 	if len(args) < 1 or args[0] == "--help":
 		print(usage)
@@ -55,14 +55,9 @@ def main():
 # algo auth
 		if cmd == 'auth':
 			#auth
-			print("Configuring authentication for 'default' profile")
+			print("Configuring authentication for profile: " + profile)
 			APIaddress = input("enter API address:")
 			APIkey = input("enter API key: ")
-			profile = "default"
-
-			if(len(args) > 2):
-				if(args[1] == "--profile"):
-					profile = args[3]
 
 			CLI().auth(APIkey, APIaddress, profile)
 
