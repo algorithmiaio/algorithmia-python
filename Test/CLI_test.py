@@ -104,10 +104,12 @@ class CLITest(unittest.TestCase):
 
 	def test_run(self):
 		name = "util/Echo"
-		inputs = ["test"]
+		inputs = "test"
 		client = Algorithmia.client()
+		args = Namespace(algo='util/Echo', binary=False, binary_file=False, data=False, data_file=False, debug=False, input='test', json=False, json_file=False, profile='pro2', subparser_name='run', text=False, text_file=False, timeout=300)
 
-		result = CLI().runalgo(name,inputs, client)
+
+		result = CLI().runalgo(name,inputs, args, client)
 		self.assertEqual(result, inputs[0])
 	
 	def test_auth(self):

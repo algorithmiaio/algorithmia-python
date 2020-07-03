@@ -3,6 +3,7 @@ import os
 import json
 import Algorithmia
 from Algorithmia.CLI import CLI
+import argparse
 
 
 #CLI app to allow a user to run algorithms and manage data collections
@@ -20,105 +21,145 @@ General commands include:
     clone	Clones an algorithm source
 
   Data commands include:
-    ls
-    mkdir
-    rmdir
-    rm
-    cp
-    cat
+    ls list the contents of a data directory
+    mkdir create a data directory
+    rmdir remove a data directory
+    rm remove a file from a data directory
+    cp copy file(s) to or from a data directory
+    cat concatinate and print file(s) in a data directory
 
   Global options:
     --help
     --profile <name>
 """
 
-def main():
-	args = sys.argv[1:]
+def mainAP():
+	parser = argparse.ArgumentParser('CLI for interacting with Algorithmia', description = usage)
+
+	subparsers = parser.add_subparsers(help = 'sub cmd',dest = 'subparser_name')
+
+	parser_auth = subparsers.add_parser('auth', help = 'save api key and api address for profile')
+
+	parser_clone = subparsers.add_parser('clone', help = 'clone <algo>')
+	parser_clone.add_argument('algo')
+
+	#parse options for the run command
+	parser_run = subparsers.add_parser('run', help = 'algo run <algo> [input options] <args..> [output options]')
+
+	parser_run.add_argument('algo')
+	parser_run.add_argument('-d','--data', action = 'store_true', help = 'detect input type')
+	parser_run.add_argument('-t','--text', action = 'store_true', help = 'treat input as text')
+	parser_run.add_argument('-j','--json', action = 'store_true', help = 'treat input as json data')
+	parser_run.add_argument('-b','--binary', action = 'store_true', help = 'treat input as binary data')
+	parser_run.add_argument('-D','--data-file', action = 'store_true', help = 'spesify a path to an input file')
+	parser_run.add_argument('-T','--text-file', action = 'store_true', help = 'spesify a path to a text file')
+	parser_run.add_argument('-J','--json-file', action = 'store_true', help = 'spesify a path to a json file')
+	parser_run.add_argument('-B','--binary-file', action = 'store_true', help = 'spesify a path to a binary file')
+	parser_run.add_argument('input')
+	parser_run.add_argument('--timeout', action = 'store',type = int, default = 300, help = 'spesify a timeout')
+	parser_run.add_argument('--debug', action = 'store_true', help = 'print the stdout from the algo <this only works for the owner>')
+	parser_run.add_argument('--profile', action = 'store', type = str, default = 'default')
+
+	#subparser for ls
+	parser_ls = subparsers.add_parser('ls', help = 'ls [-l] [directory]', )
 	
+	parser_ls.add_argument('-l', action = 'store_true')
+	parser_ls.add_argument('path', nargs  = '?', default = None)
+	parser_ls.add_argument('--profile', action = 'store', type = str, default = 'default')
+
+	#subparser for mkdir
+	parser_mkdir = subparsers.add_parser('mkdir', help = 'mkdir <directory>')
 	
-	if len(args) < 1 or args[0] == "--help":
-		print(usage)
-	elif args[0] == "--version":
-		#print(VERSION)
-		print(Algorithmia.version)
-	else:
+	parser_mkdir.add_argument('path', help = 'directory to create')
+	parser_mkdir.add_argument('--profile', action = 'store', type = str, default = 'default')
 
-		#create a client with the correct profile
-		profile = 'default'
-		if(len(args) > 2):
-			if(args[-2] == "--profile"):
-				profile = args[-1]
+	#subparser for rmdir
+	parser_rmdir = subparsers.add_parser('rmdir', help = 'rmdir [-f] <directory>')
+	
+	parser_rmdir.add_argument('-f', action = 'store_true', help = 'force directory removal if it is not empty')
+	parser_rmdir.add_argument('path', help = 'directory to remove')
+	parser_rmdir.add_argument('--profile', action = 'store', type = str, default = 'default')
 
-		client = Algorithmia.client(CLI().getAPIkey(profile))
-		cmd = args[0]
+	#subparser for cp
+	parser_cp = subparsers.add_parser('cp', help = 'cp <src,...> <dest>',)
+	
+	parser_cp.add_argument('src', nargs = '*', type = str, help = 'file(s) to be coppied')
+	parser_cp.add_argument('dest', help = 'destination for file(s) to be coppied to')
+	parser_cp.add_argument('--profile', action = 'store', type = str, default = 'default')
 
-# algo auth
-		if cmd == 'auth':
-			#auth
-			print("Configuring authentication for profile: " + profile)
-			APIaddress = input("enter API address:")
-			APIkey = input("enter API key: ")
+	#sub parser for cat
+	parser_cat = subparsers.add_parser('cat', help = 'cat <path,...>')
+	
+	parser_cat.add_argument('path', nargs = '*', help = 'file(s) to concatinate and print')
+	parser_cat.add_argument('--profile', action = 'store', type = str, default = 'default')
 
+
+	parser.add_argument('--profile', action = 'store', type = str, default = 'default')
+
+	args = parser.parse_args()
+
+	print(args)
+	
+	client = Algorithmia.client(CLI().getAPIkey(args.profile))
+	
+	if(args.subparser_name == 'auth'):
+
+		print("Configuring authentication for profile: " + profile)
+		APIaddress = input("enter API address:")
+		APIkey = input("enter API key:")
+
+		if(len(APIkey) == 28 and APIkey.startswith("sim")):
 			CLI().auth(APIkey, APIaddress, profile)
-
-# algo run <algo> <args..>    run the the spesified algo
-		elif cmd == 'run':
-			algo_name = args[1]
-
-			algo_input = args[2:]
-
-			r = CLI().runalgo(algo_name, algo_input, client)
-			print(r)
-
-#algo clone <user/algo>
-		elif(cmd == "clone"):
-			
-			algo_name = args[1]
-
-			print("cloning src for" + algo_name)
-			#if api address == none
-			exitcode = os.system("git clone https://git.algorithmia.com/git/"+algo_name+".git")
-			#api address != none
-			exitcode = os.system("git clone " + CLI().getAPIaddress(profile)+algo_name+".git")
-
-			if(exitcode != 0):
-				print("failed to clone\nis git installed?")
 		else:
-			#data command
-			if(len(args) == 2):
-				path = args[1]
-			else:
-				path = None
+			print("invalid api key")
 
-# algo mkdir <path>
-			if(cmd == "mkdir"):
-				#make a dir in data collection
-				CLI().mkdir(path, client)
-			
-# algo rmdir <path>
-			elif(cmd == "rmdir"):
-				CLI().rmdir(path, client)
+	elif(args.subparser_name == 'run'):
 
-# algo ls <path>			
-			elif(cmd == "ls"):
-				print(CLI().ls(path, client))
+		algo_name = args.algo
 
-# algo cat <file>
-			elif(cmd == "cat"):
-				print(CLI().cat(path, client))
+		algo_input = args.input
 
-# algo cp <src> <dest>
-			elif(cmd == "cp"):
+		r = CLI().runalgo(algo_name, algo_input, args, client)
+		print(r)
 
-				if(len(args) < 3):
-					print("expected algo cp <src> <dest>")
-				else:
-					src = args[1]
-					dest = args[2]
+	elif(args.subparser_name == 'clone'):
 
-					CLI().cp(src, dest, client)
+		algo_name = args.algo
+
+		print("cloning src for" + algo_name)
+		if(CLI().getAPIaddress(profile) == None):
+			exitcode = os.system("git clone https://git.algorithmia.com/git/"+algo_name+".git")
+		else:
+			#replace https://api.<domain> with https://git.<domain>
+			exitcode = os.system("git clone " + (CLI().getAPIaddress(profile).replace("//api.", "//git."))+"/git/"+algo_name+".git")
+
+		if(exitcode != 0):
+			print("failed to clone\nis git installed?")
+	
+	if(args.subparser_name == 'ls'):
+		print(args.path)
+		print(CLI().ls(args.path, client))
+	
+	elif(args.subparser_name == 'mkdir'):
+		CLI().mkdir(args.path, client)
+
+	elif(args.subparser_name == 'rmdir'):
+		CLI().rmdir(args.path, client)
+
+	elif(args.subparser_name == 'rm'):
+		CLI().rm(args.path, client)
+	
+	elif(args.subparser_name == 'cp'):
+		print(CLI().cp(args.src,args.dest, client))
+
+	elif(args.subparser_name == 'cat'):
+		print(CLI().cat(args.path, client))
+
+
+
 
 
 
 if __name__ == '__main__':
-	main()
+	#main()
+	mainAP()

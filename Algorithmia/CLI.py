@@ -28,108 +28,84 @@ class CLI():
 		toml.dump(config,key)
 		key.close()
 
+		self.ls(client = Algorithmia.client(self.getAPIkey(profile)))
+
 	# algo run <algo> <args..>    run the the specified algo
-	def runalgo(self, name, inputs, client):
-		algo_name = name
+	def runalgo(self, name, inputs, options, client):
+		algo_input = inputs
 
-		algo_input = inputs[0]
-
-		algo = client.algo(algo_name)
+		algo = client.algo(name)
 		
 		result = None
 
-		time = 300
-		if("--timeout" in inputs):
-			#find timeout value
-			for i in range(0,len(inputs)+1):
-				if(inputs[i] == "--timeout" and i != len(inputs)):
-					time = int(inputs[i+1])
-					break
-
-		algo.set_options(timeout=time, stdout=("--debug" in inputs))
+		algo.set_options(timeout=options.timeout, stdout=options.debug)
 		
 
 
 		#handle input type flags
-		if(len(inputs) >= 1):
-			if(inputs[0] == "-d" or inputs[0] == "--data"):
-				#data
-				algo_input = inputs[1]
+		if(options.data):
+			#data
+			algo_input = inputs
 
-				try:
-					result = algo.pipe(algo_input)
-				except Exception as error:
-					print(error)
+			result = algo.pipe(algo_input)
 
-			elif(inputs[0] == '-t'):
-				#text
-				algo_input = inputs[1]
-				key = self.getAPIkey()
-				result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=algo_input.encode('utf-8'),
-					headers={'Authorization':key,'Content-Type':'text/plain'}, params= algo.query_parameters).json())
-				key.close()
+		elif(options.text):
+			#text
+			key = self.getAPIkey()
+			result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=algo_input.encode('utf-8'),
+				headers={'Authorization':key,'Content-Type':'text/plain'}, params= algo.query_parameters).json())
+			key.close()
 
-			elif(inputs[0] == "-j"):
-				#json
-				algo_input = inputs[1]
-				key = self.getAPIkey()
-				result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=algo_input,
-					headers={'Authorization':key,'Content-Type':'application/json'}, params= algo.query_parameters).json())
-				key.close()
+		elif(options.json):
+			#json
+			key = self.getAPIkey()
+			result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=algo_input,
+				headers={'Authorization':key,'Content-Type':'application/json'}, params= algo.query_parameters).json())
+			key.close()
+		
+		elif(options.binary):
+			#binary
+			key = self.getAPIkey()
+			result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=bytes(algo_input),
+				headers={'Authorization':key,'Content-Type':'application/octet-stream'}, params= algo.query_parameters).json())
+			key.close()
+		
+		elif(options.data_file):
+			#data file
+			algo_input = open(inputs,"r").read()
+			result = algo.pipe(algo_input)
+
+		elif(options.text_file):
+			#text file
+			algo_input = open(inputs,"r").read()
+			key = self.getAPIkey()
 			
-			elif(inputs[0] == "-b"):
-				#binary
-				algo_input = inputs[1]
-				key = self.getAPIkey()
-				result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=bytes(algo_input),
-					headers={'Authorization':key,'Content-Type':'application/octet-stream'}, params= algo.query_parameters).json())
-				key.close()
-			
-			elif(inputs[0] == "-D" or inputs[0] == "--data-file"):
-				#data file
-				algo_input = open(inputs[1],"r").read()
-				try:
-					result = algo.pipe(algo_input)
-				except Exception as error:
-					print(error)
+			result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=algo_input.encode('utf-8'),
+				headers={'Authorization':key,'Content-Type':'text/plain'}, params= algo.query_parameters).json())
+		
+		elif(options.json_file):
+			#json file
+			#read json file and run algo with that input bypassing the auto detection of input type in pipe
+			algo_input = open(inputs,"r").read()
+			key = self.getAPIkey()
 
-			elif(inputs[0] == "-T"):
-				#text file
-				algo_input = open(inputs[1],"r").read()
-				key = self.getAPIkey()
-				
-				result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=algo_input.encode('utf-8'),
-					headers={'Authorization':key,'Content-Type':'text/plain'}, params= algo.query_parameters).json())
-			
-			elif(inputs[0] == "-J"):
-				#json file
-				#read json file and run algo with that input bypassing the auto detection of input type in pipe
-				algo_input = open(inputs[1],"r").read()
-				key = self.getAPIkey()
+			result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=json.dumps(algo_input).encode('utf-8'),
+				headers={'Authorization':key,'Content-Type':'application/json'}, params= algo.query_parameters))
 
-				result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=json.dumps(algo_input).encode('utf-8'),
-					headers={'Authorization':key,'Content-Type':'application/json'}, params= algo.query_parameters))
+		elif(options.binary_file):
+			#binary file
+			algo_input = open(inputs,"rb").read()
+			key = self.getAPIkey()
 
-			elif(inputs[0] == "-B"):
-				#binary file
-				algo_input = open(inputs[1],"rb").read()
-				print(algo_input)
-				print("end input \n")
-				key = self.getAPIkey()
+			result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=bytes(algo_input),
+				headers={'Authorization':key,'Content-Type':'application/octet-stream'}, params= algo.query_parameters).json())
 
-				result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=bytes(algo_input),
-					headers={'Authorization':key,'Content-Type':'application/octet-stream'}, params= algo.query_parameters).json())
+		else:
+			result = algo.pipe(algo_input)
+		
+		#handle output flags
 
-			else:
-				algo_input = inputs[0]
-				try:
-					result = algo.pipe(algo_input)
-				except Exception as error:
-					print(error)
-			
-			#handle output flags
-
-			#response
+		#response
 
 		#response-body
 		if(inputs[-1] == "--response-body"):
@@ -175,12 +151,20 @@ class CLI():
 		if Dir.exists():
 			Dir.delete()
 
+	def rm(self, path, client):
+		
+		#for f in path
+		file = client.file(path)
+
+		if file.exists():
+			file.delete()
+
 	# algo ls <path>			
 	def ls(self, path, client):
 		#list dir
 		listing = ""
 		if(path is None):
-			path = "/.my"
+			path = "/."
 
 		listingDir = client.dir(path)
 		for f in listingDir.list():
@@ -189,13 +173,15 @@ class CLI():
 
 	# algo cat <file>
 	def cat(self, path, client):
-		result = None
-		file = client.file(path)
+		result = ""
+		for f in path:
+			file = client.file(path)
 
-		if(file.exists()):
-			result = file.getString()
-		else:
-			result = "file does not exist "+path
+			if(file.exists()):
+				result += file.getString()
+			else:
+				result = "file does not exist "+path
+				break
 
 		return result
 
