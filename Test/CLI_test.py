@@ -7,20 +7,20 @@ import unittest
 import os
 import Algorithmia
 from Algorithmia.CLI import CLI
+import argparse
 
 class CLITest(unittest.TestCase):
 	def setUp(self):
 		# create a directory to use in testing the cp command 
-		client = Algorithmia.client('simdylfCeXZ8/MgaQzokUHlalWm1')
+		self.client = Algorithmia.client('simdylfCeXZ8/MgaQzokUHlalWm1')
 		CLI().mkdir("/.my/moredata", client)
 	
 	def test_ls(self):
 		parentDir = "/.my/"
 		newDir = "test"
-		client = Algorithmia.client()
 
-		CLI().mkdir(parentDir+newDir, client)
-		result = CLI().ls(parentDir, client)
+		CLI().mkdir(parentDir+newDir, self.client)
+		result = CLI().ls(parentDir, self.client)
 		self.assertTrue(result is not None and "moredata" in result and newDir in result)
 		
 		CLI().rmdir(parentDir+newDir, client)
@@ -30,47 +30,43 @@ class CLITest(unittest.TestCase):
 
 		parentDir = "/.my/"
 		newDir = "test"
-		client = Algorithmia.client()
 
-		CLI().mkdir(parentDir+newDir, client)
-		result = CLI().ls(parentDir, client)
+		CLI().mkdir(parentDir+newDir, self.client)
+		result = CLI().ls(parentDir, self.client)
 		self.assertTrue(newDir in result)
 		
-		CLI().rmdir(parentDir+newDir, client)
+		CLI().rmdir(parentDir+newDir, self.client)
 
 	def test_rmdir(self):
 		parentDir = "/.my/"
 		newDir = "testRmdir"
-		client = Algorithmia.client()
 
-		CLI().mkdir(parentDir+newDir, client)
-		result = CLI().ls(parentDir, client)
+		CLI().mkdir(parentDir+newDir, self.client)
+		result = CLI().ls(parentDir, self.client)
 		self.assertTrue(newDir in result)
 		
-		CLI().rmdir(parentDir+newDir, client)
+		CLI().rmdir(parentDir+newDir, self.client)
 
-		result = CLI().ls(parentDir, client)
+		result = CLI().ls(parentDir, self.client)
 		self.assertTrue(newDir not in result)
 
 	def test_cat(self):
 		file = "data://.my/moredata/test.txt"
 		fileContents = "some text in test file"
-		client = Algorithmia.client()
 
-		CLI().rm(file, client)
+		CLI().rm(file, self.client)
 		testfile = open("./test.txt", "w")
 		testfile.write(fileContents)
 		testfile.close()
 
-		CLI().cp("./test.txt",file,client)
+		CLI().cp("./test.txt",file,self.client)
 
-		result = CLI().cat(file,client)
+		result = CLI().cat(file,self.client)
 		self.assertEqual(result, fileContents)
 
 
 #local to remote
 	def test_cp_L2R(self):
-		client = Algorithmia.client()
 
 		testfile = open("./test.txt", "w")
 		testfile.write("some text")
@@ -78,35 +74,32 @@ class CLITest(unittest.TestCase):
 
 		src = "./test.txt"
 		dest = "data://.my/moredata/test.txt"
-		CLI().cp(src,dest,client)
+		CLI().cp(src,dest,self.client)
 
-		result = CLI().ls("/.my/moredata/",client)
+		result = CLI().ls("/.my/moredata/",self.client)
 		self.assertTrue("test.txt" in result)
 
 #remote to remote
 	def test_cp_R2R(self):
-		client = Algorithmia.client()
 
 		src = "data://.my/moredata/test.txt"
 		dest = "data://.my/moredata/test2.txt"
-		CLI().cp(src,dest,client)
+		CLI().cp(src,dest,self.client)
 
-		result = CLI().ls("/.my/moredata",client)
+		result = CLI().ls("/.my/moredata",self.client)
 		self.assertTrue("test2.txt" in result)
 
 #remote to local
 	def test_cp_R2L(self):
 		src = "data://.my/moredata/test.txt"
 		dest = "./test.txt"
-		client = Algorithmia.client()
 
-		CLI().cp(src,dest,client)
+		CLI().cp(src,dest,self.client)
 		self.assertTrue(os.path.isfile(dest))
 
 	def test_run(self):
 		name = "util/Echo"
 		inputs = "test"
-		client = Algorithmia.client()
 
 		parser = argparse.ArgumentParser('CLI for interacting with Algorithmia', description = usage)
 
@@ -130,7 +123,7 @@ class CLITest(unittest.TestCase):
 		
 		args = parser.parse_args(['run',name,'-d',inputs])
 
-		result = CLI().runalgo(name,inputs, args, client)
+		result = CLI().runalgo(name,inputs, args, self.client)
 		self.assertEqual(result, inputs[0])
 	
 	def test_auth(self):
@@ -139,11 +132,10 @@ class CLITest(unittest.TestCase):
 		address = 'apiAddress'
 		profile = 'defualt'
 		CLI().auth(key,address,profile)
-		home = os.environ['HOME']
-		keyfile = open(home+"/.algorithmia_api_key","r")
-		result = keyfile.read()
-		keyfile.close()
-		self.assertEqual(result, key)
+		resultK = CLI().getAPIkey()
+		resultA = CLI().getAPIaddress()
+		self.assertEqual(resultK, key)
+		self.assertEqual(resultA, address)
 
 
 if __name__ == '__main__':

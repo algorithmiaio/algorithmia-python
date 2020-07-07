@@ -170,12 +170,12 @@ class CLI():
 	def cat(self, path, client):
 		result = ""
 		for f in path:
-			file = client.file(path)
+			file = client.file(f)
 
 			if(file.exists()):
 				result += file.getString()
 			else:
-				result = "file does not exist "+path
+				result = "file does not exist "+f
 				break
 
 		return result
@@ -191,30 +191,31 @@ class CLI():
 			destLocation = client.file(dest)
 
 			#if src is local and dest is remote
-			if("data://" not in src and "data://" in dest):
-				client.file(dest).putFile(src)
+			for f in src:
+				if("data://" not in f and "data://" in dest):
+					client.file(dest).putFile(f)
 
-			#if src and dest are remote
-			elif("data://" in src and "data://" in dest):
-				file = client.file(src).getFile()
-				filename = file.name
-				file.close()
-				client.file(dest).putFile(filename)
+				#if src and dest are remote
+				elif("data://" in f and "data://" in dest):
+					file = client.file(f).getFile()
+					filename = file.name
+					file.close()
+					client.file(dest).putFile(filename)
 
-			#if src is remote and dest is local
-			elif("data://" in src and "data://" not in dest):
-				file = client.file(src).getFile()
-				filename = file.name
-				file.close()
+				#if src is remote and dest is local
+				elif("data://" in f and "data://" not in dest):
+					file = client.file(f).getFile()
+					filename = file.name
+					file.close()
 
-				#this assumes dest is a full file path not just a directory
-				destFile = open(dest,"w")
-				srcfile = open(filename,"r")
-				destFile.write(srcfile.read())
-				destFile.close()
-				srcfile.close()
-			else:
-				print("at least one of the operands must be a path to a remote data source data://")
+					#this assumes dest is a full file path not just a directory
+					destFile = open(dest,"w")
+					srcfile = open(filename,"r")
+					destFile.write(srcfile.read())
+					destFile.close()
+					srcfile.close()
+				else:
+					print("at least one of the operands must be a path to a remote data source data://")
 
 	def getconfigfile(self):
 		if(os.name == "posix"):

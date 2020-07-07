@@ -20,6 +20,7 @@ setup(
         'six',
         'enum34',
         'toml',
+        'argparse',
         'algorithmia-api-client==1.1.0'
     ],
     include_package_data=True,
