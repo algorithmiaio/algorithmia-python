@@ -13,7 +13,7 @@ class CLITest(unittest.TestCase):
 	def setUp(self):
 		# create a directory to use in testing the cp command 
 		self.client = Algorithmia.client('simdylfCeXZ8/MgaQzokUHlalWm1')
-		CLI().mkdir("/.my/moredata", client)
+		CLI().mkdir("/.my/moredata", self.client)
 	
 	def test_ls(self):
 		parentDir = "/.my/"
