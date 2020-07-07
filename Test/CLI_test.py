@@ -11,7 +11,7 @@ from Algorithmia.CLI import CLI
 class CLITest(unittest.TestCase):
 	def setUp(self):
 		# create a directory to use in testing the cp command 
-		client = Algorithmia.client()
+		client = Algorithmia.client('')
 		CLI().mkdir("/.my/moredata", client)
 	
 	def test_ls(self):
@@ -30,7 +30,7 @@ class CLITest(unittest.TestCase):
 
 		parentDir = "/.my/"
 		newDir = "test"
-		client = Algorithmia.client()
+		client = Algorithmia.client('simdylfCeXZ8/MgaQzokUHlalWm1')
 
 		CLI().mkdir(parentDir+newDir, client)
 		result = CLI().ls(parentDir, client)
@@ -53,7 +53,6 @@ class CLITest(unittest.TestCase):
 		self.assertTrue(newDir not in result)
 
 	def test_cat(self):
-		CLI().rm()
 		file = "data://.my/moredata/test.txt"
 		fileContents = "some text in test file"
 		client = Algorithmia.client()
@@ -108,14 +107,35 @@ class CLITest(unittest.TestCase):
 		name = "util/Echo"
 		inputs = "test"
 		client = Algorithmia.client()
-		args = Namespace(algo='util/Echo', binary=False, binary_file=False, data=False, data_file=False, debug=False, input='test', json=False, json_file=False, profile='pro2', subparser_name='run', text=False, text_file=False, timeout=300)
 
+		parser = argparse.ArgumentParser('CLI for interacting with Algorithmia', description = usage)
+
+		subparsers = parser.add_subparsers(help = 'sub cmd',dest = 'subparser_name')
+		parser_run = subparsers.add_parser('run', help = 'algo run <algo> [input options] <args..> [output options]')
+
+		parser_run.add_argument('algo')
+		parser_run.add_argument('-d','--data', action = 'store_true', help = 'detect input type')
+		parser_run.add_argument('-t','--text', action = 'store_true', help = 'treat input as text')
+		parser_run.add_argument('-j','--json', action = 'store_true', help = 'treat input as json data')
+		parser_run.add_argument('-b','--binary', action = 'store_true', help = 'treat input as binary data')
+		parser_run.add_argument('-D','--data-file', action = 'store_true', help = 'spesify a path to an input file')
+		parser_run.add_argument('-T','--text-file', action = 'store_true', help = 'spesify a path to a text file')
+		parser_run.add_argument('-J','--json-file', action = 'store_true', help = 'spesify a path to a json file')
+		parser_run.add_argument('-B','--binary-file', action = 'store_true', help = 'spesify a path to a binary file')
+		parser_run.add_argument('input')
+		parser_run.add_argument('--timeout', action = 'store',type = int, default = 300, help = 'spesify a timeout')
+		parser_run.add_argument('--debug', action = 'store_true', help = 'print the stdout from the algo <this only works for the owner>')
+		parser_run.add_argument('--profile', action = 'store', type = str, default = 'default')
+		parser_run.add_argument('-o', '--output', action = 'store', default = None, type = str)
+		
+		args = parser.parse_args(['run',name,'-d',inputs])
 
 		result = CLI().runalgo(name,inputs, args, client)
 		self.assertEqual(result, inputs[0])
 	
 	def test_auth(self):
-		key = "apikey"
+		#key for test account
+		key = "simdylfCeXZ8/MgaQzokUHlalWm1"
 		address = 'apiAddress'
 		profile = 'defualt'
 		CLI().auth(key,address,profile)
