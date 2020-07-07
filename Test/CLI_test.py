@@ -53,10 +53,12 @@ class CLITest(unittest.TestCase):
 		self.assertTrue(newDir not in result)
 
 	def test_cat(self):
+		CLI().rm()
 		file = "data://.my/moredata/test.txt"
 		fileContents = "some text in test file"
 		client = Algorithmia.client()
 
+		CLI().rm(file, client)
 		testfile = open("./test.txt", "w")
 		testfile.write(fileContents)
 		testfile.close()

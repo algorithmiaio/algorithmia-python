@@ -33,12 +33,13 @@ General commands include:
     --profile <name>
 """
 
-def mainAP():
+def main():
 	parser = argparse.ArgumentParser('CLI for interacting with Algorithmia', description = usage)
 
 	subparsers = parser.add_subparsers(help = 'sub cmd',dest = 'subparser_name')
 
 	parser_auth = subparsers.add_parser('auth', help = 'save api key and api address for profile')
+	parser_auth.add_argument('--profile', action = 'store', type = str, default = 'default')
 
 	parser_clone = subparsers.add_parser('clone', help = 'clone <algo>')
 	parser_clone.add_argument('algo')
@@ -59,6 +60,7 @@ def mainAP():
 	parser_run.add_argument('--timeout', action = 'store',type = int, default = 300, help = 'spesify a timeout')
 	parser_run.add_argument('--debug', action = 'store_true', help = 'print the stdout from the algo <this only works for the owner>')
 	parser_run.add_argument('--profile', action = 'store', type = str, default = 'default')
+	parser_run.add_argument('-o', '--output', action = 'store', default = None, type = str)
 
 	#subparser for ls
 	parser_ls = subparsers.add_parser('ls', help = 'ls [-l] [directory]', )
@@ -66,6 +68,12 @@ def mainAP():
 	parser_ls.add_argument('-l', action = 'store_true')
 	parser_ls.add_argument('path', nargs  = '?', default = None)
 	parser_ls.add_argument('--profile', action = 'store', type = str, default = 'default')
+
+	#subparser for rm
+	parser_rm = subparsers.add_parser('ls', help = 'rm <path>', )
+	
+	parser_rm.add_argument('path', nargs  = '?', default = None)
+	parser_rm.add_argument('--profile', action = 'store', type = str, default = 'default')
 
 	#subparser for mkdir
 	parser_mkdir = subparsers.add_parser('mkdir', help = 'mkdir <directory>')
@@ -104,12 +112,12 @@ def mainAP():
 	
 	if(args.subparser_name == 'auth'):
 
-		print("Configuring authentication for profile: " + profile)
+		print("Configuring authentication for profile: " + args.profile)
 		APIaddress = input("enter API address:")
 		APIkey = input("enter API key:")
 
 		if(len(APIkey) == 28 and APIkey.startswith("sim")):
-			CLI().auth(APIkey, APIaddress, profile)
+			CLI().auth(APIkey, APIaddress, args.profile)
 		else:
 			print("invalid api key")
 
@@ -119,8 +127,7 @@ def mainAP():
 
 		algo_input = args.input
 
-		r = CLI().runalgo(algo_name, algo_input, args, client)
-		print(r)
+		print(CLI().runalgo(algo_name, algo_input, args, client))
 
 	elif(args.subparser_name == 'clone'):
 
@@ -162,4 +169,4 @@ def mainAP():
 
 if __name__ == '__main__':
 	#main()
-	mainAP()
+	main()

@@ -28,7 +28,7 @@ class CLI():
 		toml.dump(config,key)
 		key.close()
 
-		self.ls(client = Algorithmia.client(self.getAPIkey(profile)))
+		print(self.ls(path = None,client = Algorithmia.client(self.getAPIkey(profile))))
 
 	# algo run <algo> <args..>    run the the specified algo
 	def runalgo(self, name, inputs, options, client):
@@ -51,24 +51,21 @@ class CLI():
 
 		elif(options.text):
 			#text
-			key = self.getAPIkey()
+			key = self.getAPIkey(options.profile)
 			result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=algo_input.encode('utf-8'),
 				headers={'Authorization':key,'Content-Type':'text/plain'}, params= algo.query_parameters).json())
-			key.close()
 
 		elif(options.json):
 			#json
-			key = self.getAPIkey()
+			key = self.getAPIkey(options.profile)
 			result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=algo_input,
 				headers={'Authorization':key,'Content-Type':'application/json'}, params= algo.query_parameters).json())
-			key.close()
 		
 		elif(options.binary):
 			#binary
-			key = self.getAPIkey()
+			key = self.getAPIkey(options.profile)
 			result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=bytes(algo_input),
 				headers={'Authorization':key,'Content-Type':'application/octet-stream'}, params= algo.query_parameters).json())
-			key.close()
 		
 		elif(options.data_file):
 			#data file
@@ -78,7 +75,7 @@ class CLI():
 		elif(options.text_file):
 			#text file
 			algo_input = open(inputs,"r").read()
-			key = self.getAPIkey()
+			key = self.getAPIkey(options.profile)
 			
 			result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=algo_input.encode('utf-8'),
 				headers={'Authorization':key,'Content-Type':'text/plain'}, params= algo.query_parameters).json())
@@ -87,7 +84,7 @@ class CLI():
 			#json file
 			#read json file and run algo with that input bypassing the auto detection of input type in pipe
 			algo_input = open(inputs,"r").read()
-			key = self.getAPIkey()
+			key = self.getAPIkey(options.profile)
 
 			result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=json.dumps(algo_input).encode('utf-8'),
 				headers={'Authorization':key,'Content-Type':'application/json'}, params= algo.query_parameters))
@@ -95,7 +92,7 @@ class CLI():
 		elif(options.binary_file):
 			#binary file
 			algo_input = open(inputs,"rb").read()
-			key = self.getAPIkey()
+			key = self.getAPIkey(options.profile)
 
 			result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=bytes(algo_input),
 				headers={'Authorization':key,'Content-Type':'application/octet-stream'}, params= algo.query_parameters).json())
@@ -114,24 +111,22 @@ class CLI():
 			result = result_body + " }"
 
 		#output to file if there is an output file spesified
-		elif(len(inputs) >= 3):
-			if(inputs[-2] == "--output" or inputs[-2] == "-o"):
-				try:
-					if isinstance(result.result, bytearray) or isinstance(result.result, bytes):
-						out = open(inputs[-1],"wb")
-						out.write(result.result)
-						out.close()
-					else:
-						out = open(inputs[-1],"w")
-						out.write(result.result)
-						out.close()
+		elif(options.output != None):
+			outputFile = options.output
+			try:
+				if isinstance(result.result, bytearray) or isinstance(result.result, bytes):
+					out = open(outputFile,"wb")
+					out.write(result.result)
+					out.close()
+				else:
+					out = open(outputFile,"w")
+					out.write(result.result)
+					out.close()
 
-				except Exception as error:
-						print(error)
-		else:
-			result = result.result
+			except Exception as error:
+					print(error)
 
-		return result
+		return result.result
 
 
 	# algo mkdir <path>
@@ -226,24 +221,28 @@ class CLI():
 			#if!windows
 			#~/.algorithmia/config
 			#create the api key file if it does not exist
-			keyFile = os.environ['HOME']+"/.algorithmia/config"
-			if(not os.path.exists(keyFile)):
-				file = open(keyFile,"w")
+			keyPath = os.environ['HOME']+"/.algorithmia/"
+			keyFile = "config"
+			if(not os.path.exists(keyPath)):
+				os.mkdir(keyPath)
+				file = open(keyPath+keyFile,"w")
 				file.write("[profiles]")
 				file.close()
 
-			key = keyFile
+			key = keyPath+keyFile
 		elif(os.name == "nt"):
 			#ifwindows
 			#%LOCALAPPDATA%\Algorithmia\config
 			#create the api key file if it does not exist
-			keyFile = "%LOCALAPPDATA%\\Algorithmia\\config"
-			if(not os.path.exists(keyFile)):
-				file = open(keyFile,"w")
+			keyPath = "%LOCALAPPDATA%\\Algorithmia\\"
+			keyFile = "config"
+			if(not os.path.exists(keyPath)):
+				os.mkdir(keyPath)
+				file = open(keyPath+keyFile,"w")
 				file.write("[profiles]")
 				file.close()
 
-			key = keyFile
+			key = keyPath+keyFile
 
 		return key
 
