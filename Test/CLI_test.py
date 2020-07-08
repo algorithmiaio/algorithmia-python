@@ -23,7 +23,7 @@ class CLITest(unittest.TestCase):
 		result = CLI().ls(parentDir, self.client)
 		self.assertTrue(result is not None and "moredata" in result and newDir in result)
 		
-		CLI().rmdir(parentDir+newDir, client)
+		CLI().rmdir(parentDir+newDir, self.client)
 
 
 	def test_mkdir(self):
@@ -59,9 +59,9 @@ class CLITest(unittest.TestCase):
 		testfile.write(fileContents)
 		testfile.close()
 
-		CLI().cp("./test.txt",file,self.client)
+		CLI().cp(["./test.txt"],file,self.client)
 
-		result = CLI().cat(file,self.client)
+		result = CLI().cat([file],self.client)
 		self.assertEqual(result, fileContents)
 
 
@@ -101,7 +101,7 @@ class CLITest(unittest.TestCase):
 		name = "util/Echo"
 		inputs = "test"
 
-		parser = argparse.ArgumentParser('CLI for interacting with Algorithmia', description = usage)
+		parser = argparse.ArgumentParser('CLI for interacting with Algorithmia')
 
 		subparsers = parser.add_subparsers(help = 'sub cmd',dest = 'subparser_name')
 		parser_run = subparsers.add_parser('run', help = 'algo run <algo> [input options] <args..> [output options]')
@@ -132,8 +132,8 @@ class CLITest(unittest.TestCase):
 		address = 'apiAddress'
 		profile = 'defualt'
 		CLI().auth(key,address,profile)
-		resultK = CLI().getAPIkey()
-		resultA = CLI().getAPIaddress()
+		resultK = CLI().getAPIkey(profile)
+		resultA = CLI().getAPIaddress(profile)
 		self.assertEqual(resultK, key)
 		self.assertEqual(resultA, address)
 
