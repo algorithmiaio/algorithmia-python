@@ -72,7 +72,7 @@ class CLITest(unittest.TestCase):
 		testfile.write("some text")
 		testfile.close()
 
-		src = "./test.txt"
+		src = ["./test.txt"]
 		dest = "data://.my/moredata/test.txt"
 		CLI().cp(src,dest,self.client)
 
@@ -82,7 +82,7 @@ class CLITest(unittest.TestCase):
 #remote to remote
 	def test_cp_R2R(self):
 
-		src = "data://.my/moredata/test.txt"
+		src = ["data://.my/moredata/test.txt"]
 		dest = "data://.my/moredata/test2.txt"
 		CLI().cp(src,dest,self.client)
 
@@ -91,7 +91,7 @@ class CLITest(unittest.TestCase):
 
 #remote to local
 	def test_cp_R2L(self):
-		src = "data://.my/moredata/test.txt"
+		src = ["data://.my/moredata/test.txt"]
 		dest = "./test.txt"
 
 		CLI().cp(src,dest,self.client)
@@ -124,7 +124,7 @@ class CLITest(unittest.TestCase):
 		args = parser.parse_args(['run',name,'-d',inputs])
 
 		result = CLI().runalgo(name,inputs, args, self.client)
-		self.assertEqual(result, inputs[0])
+		self.assertEqual(result, inputs)
 	
 	def test_auth(self):
 		#key for test account
