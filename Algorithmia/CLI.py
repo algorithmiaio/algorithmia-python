@@ -28,7 +28,7 @@ class CLI():
 		toml.dump(config,key)
 		key.close()
 
-		print(self.ls(path = None,client = Algorithmia.client(self.getAPIkey(profile))))
+		self.ls(path = None,client = Algorithmia.client(self.getAPIkey(profile)))
 
 	# algo run <algo> <args..>    run the the specified algo
 	def runalgo(self, name, inputs, options, client):
@@ -138,13 +138,14 @@ class CLI():
 			newDir.create()
 				
 	# algo rmdir <path>
-	def rmdir(self, path, client):
+	def rmdir(self, path, client, force = False):
 		#remove a dir in data collection
 
 		Dir = client.dir(path)
 		
 		if Dir.exists():
-			Dir.delete()
+			Dir.delete(force)
+
 
 	def rm(self, path, client):
 		
@@ -168,11 +169,13 @@ class CLI():
 		#long listing
 		if(l):
 			listingDir = client.dir(path)
-			for f in listingDir.list():
-				#if(is file)
+			for f in listingDir.files():
 				listing += f.last_modified.strftime("%Y-%m-%d %H:%M:%S") + '   '
 				listing += str(f.size) + '   '
 				listing += f.getName() + "\n"
+			for f in listingDir.dirs():
+				listing += f.getName() + "\n"
+
 		else:
 			listingDir = client.dir(path)
 			for f in listingDir.list():

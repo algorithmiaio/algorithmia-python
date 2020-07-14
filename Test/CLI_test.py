@@ -137,6 +137,23 @@ class CLITest(unittest.TestCase):
 		self.assertEqual(resultK, key)
 		self.assertEqual(resultA, address)
 
+	def test_rm(self):
+		testfile = open("./testRM.txt", "w")
+		testfile.write("some text")
+		testfile.close()
+
+		src = ["./testRM.txt"]
+		dest = "data://.my/moredata/testRM.txt"
+		CLI().cp(src,dest,self.client)
+		
+		result1 = CLI().ls("/.my/moredata",self.client)
+		
+		CLI().rm("/.my/moredata",self.client)
+		
+		result2 = CLI().ls("/.my/moredata",self.client)
+
+		self.assertTrue("testRM.txt" in result1 and "testRM.txt" not in result2)
+
 
 if __name__ == '__main__':
     unittest.main()

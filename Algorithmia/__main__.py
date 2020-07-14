@@ -66,7 +66,7 @@ def main():
 	#subparser for ls
 	parser_ls = subparsers.add_parser('ls', help = 'ls [-l] [directory]', )
 	
-	parser_ls.add_argument('-l', action = 'store_true')
+	parser_ls.add_argument('-l', '--long', action = 'store_true')
 	parser_ls.add_argument('path', nargs  = '?', default = None)
 	parser_ls.add_argument('--profile', action = 'store', type = str, default = 'default')
 
@@ -85,7 +85,7 @@ def main():
 	#subparser for rmdir
 	parser_rmdir = subparsers.add_parser('rmdir', help = 'rmdir [-f] <directory>')
 	
-	parser_rmdir.add_argument('-f', action = 'store_true', help = 'force directory removal if it is not empty')
+	parser_rmdir.add_argument('-f', '--force', action = 'store_true', help = 'force directory removal if it is not empty')
 	parser_rmdir.add_argument('path', help = 'directory to remove')
 	parser_rmdir.add_argument('--profile', action = 'store', type = str, default = 'default')
 
@@ -111,7 +111,7 @@ def main():
 	if(args.cmd == 'auth'):
 
 		print("Configuring authentication for profile: " + args.profile)
-		APIaddress = input("enter API address:")
+		APIaddress = input("enter API address [api.algorithmia.com]:")
 		APIkey = input("enter API key:")
 
 		if(len(APIkey) == 28 and APIkey.startswith("sim")):
@@ -153,13 +153,13 @@ def main():
 			print("failed to clone\nis git installed?")
 	
 	if(args.cmd == 'ls'):
-		print(CLI().ls(args.path, client, args.l))
+		print(CLI().ls(args.path, client, args.long))
 	
 	elif(args.cmd == 'mkdir'):
 		CLI().mkdir(args.path, client)
 
 	elif(args.cmd == 'rmdir'):
-		CLI().rmdir(args.path, client)
+		CLI().rmdir(args.path, client, args.force)
 
 	elif(args.cmd == 'rm'):
 		CLI().rm(args.path, client)
