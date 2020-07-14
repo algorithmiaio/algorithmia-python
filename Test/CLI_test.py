@@ -148,7 +148,7 @@ class CLITest(unittest.TestCase):
 		
 		result1 = CLI().ls("/.my/moredata",self.client)
 		
-		CLI().rm("/.my/moredata",self.client)
+		CLI().rm("/.my/moredata/testRM.txt",self.client)
 		
 		result2 = CLI().ls("/.my/moredata",self.client)
 
