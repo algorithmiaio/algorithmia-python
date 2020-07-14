@@ -155,15 +155,29 @@ class CLI():
 			file.delete()
 
 	# algo ls <path>			
-	def ls(self, path, client):
+	def ls(self, path, client, l=False):
 		#list dir
 		listing = ""
 		if(path is None):
 			path = "/."
 
-		listingDir = client.dir(path)
-		for f in listingDir.list():
-			listing += f.getName() + "\n"
+		#listingDir = client.dir(path)
+		#for f in listingDir.list():
+		#	listing += f.getName() + "\n"
+
+		#long listing
+		if(l):
+			listingDir = client.dir(path)
+			for f in listingDir.list():
+				#if(is file)
+				listing += f.last_modified.strftime("%Y-%m-%d %H:%M:%S") + '   '
+				listing += str(f.size) + '   '
+				listing += f.getName() + "\n"
+		else:
+			listingDir = client.dir(path)
+			for f in listingDir.list():
+				listing += f.getName() + "\n"
+
 		return listing
 
 	# algo cat <file>

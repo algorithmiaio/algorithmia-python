@@ -28,6 +28,12 @@ Install a wheel manually:
 ```bash
 pip install --user --upgrade dist/algorithmia-*.whl
 ```
+#install locally for testing
+
+from directory containing setup.py and the Algorithmia directory:
+```bash
+pip3 install ./
+```
 
 ## Authentication
 

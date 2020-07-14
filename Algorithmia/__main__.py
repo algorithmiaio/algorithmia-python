@@ -8,41 +8,42 @@ import argparse
 
 #CLI app to allow a user to run algorithms and manage data collections
 
-usage = """CLI for interaction with Algorithmia
-Usage:
-algo [<cmd>] [options] [<args>...]
-algo[<cmd>] [--help | --version]
+usage = """CLI for interaction with Algorithmia\n
+Usage:\n
+algo [<cmd>] [options] [<args>...]\n
+algo[<cmd>] [--help | --version]\n\n
 
-General commands include:
-  auth	configure authentication
+General commands include:\n
+  auth	configure authentication\n\n
 
-  Algorithm commands include:
-    run	Runs an algorithm
-    clone	Clones an algorithm source
+  Algorithm commands include:\n
+    run	Runs an algorithm\n
+    clone	Clones an algorithm source\n\n
 
-  Data commands include:
-    ls list the contents of a data directory
-    mkdir create a data directory
-    rmdir remove a data directory
-    rm remove a file from a data directory
-    cp copy file(s) to or from a data directory
-    cat concatinate and print file(s) in a data directory
+  Data commands include:\n
+    ls list the contents of a data directory\n
+    mkdir create a data directory\n
+    rmdir remove a data directory\n
+    rm remove a file from a data directory\n
+    cp copy file(s) to or from a data directory\n
+    cat concatinate and print file(s) in a data directory\n\n
 
-  Global options:
-    --help
-    --profile <name>
+  Global options:\n
+    --help\n
+    --profile <name>\n\n
 """
 
 def main():
-	parser = argparse.ArgumentParser('CLI for interacting with Algorithmia', description = usage)
+	parser = argparse.ArgumentParser('algo', description = usage)
 
-	subparsers = parser.add_subparsers(help = 'sub cmd',dest = 'subparser_name')
+	subparsers = parser.add_subparsers(help = 'sub cmd',dest = 'cmd')
 
 	parser_auth = subparsers.add_parser('auth', help = 'save api key and api address for profile')
 	parser_auth.add_argument('--profile', action = 'store', type = str, default = 'default')
 
 	parser_clone = subparsers.add_parser('clone', help = 'clone <algo>')
 	parser_clone.add_argument('algo')
+	parser_clone.add_argument('--profile', action = 'store', type = str, default = 'default')
 
 	#parse options for the run command
 	parser_run = subparsers.add_parser('run', help = 'algo run <algo> [input options] <args..> [output options]')
@@ -70,7 +71,7 @@ def main():
 	parser_ls.add_argument('--profile', action = 'store', type = str, default = 'default')
 
 	#subparser for rm
-	parser_rm = subparsers.add_parser('ls', help = 'rm <path>', )
+	parser_rm = subparsers.add_parser('rm', help = 'rm <path>', )
 	
 	parser_rm.add_argument('path', nargs  = '?', default = None)
 	parser_rm.add_argument('--profile', action = 'store', type = str, default = 'default')
@@ -101,16 +102,13 @@ def main():
 	parser_cat.add_argument('path', nargs = '*', help = 'file(s) to concatinate and print')
 	parser_cat.add_argument('--profile', action = 'store', type = str, default = 'default')
 
-
+	subparsers.add_parser('help')
 	parser.add_argument('--profile', action = 'store', type = str, default = 'default')
 
 	args = parser.parse_args()
 
-	print(args)
-	
-	client = Algorithmia.client(CLI().getAPIkey(args.profile))
-	
-	if(args.subparser_name == 'auth'):
+	#run auth before trying to create a client
+	if(args.cmd == 'auth'):
 
 		print("Configuring authentication for profile: " + args.profile)
 		APIaddress = input("enter API address:")
@@ -121,7 +119,18 @@ def main():
 		else:
 			print("invalid api key")
 
-	elif(args.subparser_name == 'run'):
+	if(args.cmd == 'help'):
+		parser.parse_args(['-h'])
+
+	#create a client with the appropreate api address and key
+	client = Algorithmia.client()
+	if(len(CLI().getAPIaddress(args.profile)) > 1):
+		client = Algorithmia.client(CLI().getAPIkey(args.profile), CLI().getAPIaddress(args.profile))
+	else:
+		client = Algorithmia.client(CLI().getAPIkey(args.profile))
+	
+	
+	if(args.cmd == 'run'):
 
 		algo_name = args.algo
 
@@ -129,7 +138,7 @@ def main():
 
 		print(CLI().runalgo(algo_name, algo_input, args, client))
 
-	elif(args.subparser_name == 'clone'):
+	elif(args.cmd == 'clone'):
 
 		algo_name = args.algo
 
@@ -143,23 +152,22 @@ def main():
 		if(exitcode != 0):
 			print("failed to clone\nis git installed?")
 	
-	if(args.subparser_name == 'ls'):
-		print(args.path)
-		print(CLI().ls(args.path, client))
+	if(args.cmd == 'ls'):
+		print(CLI().ls(args.path, client, args.l))
 	
-	elif(args.subparser_name == 'mkdir'):
+	elif(args.cmd == 'mkdir'):
 		CLI().mkdir(args.path, client)
 
-	elif(args.subparser_name == 'rmdir'):
+	elif(args.cmd == 'rmdir'):
 		CLI().rmdir(args.path, client)
 
-	elif(args.subparser_name == 'rm'):
+	elif(args.cmd == 'rm'):
 		CLI().rm(args.path, client)
 	
-	elif(args.subparser_name == 'cp'):
+	elif(args.cmd == 'cp'):
 		print(CLI().cp(args.src,args.dest, client))
 
-	elif(args.subparser_name == 'cat'):
+	elif(args.cmd == 'cat'):
 		print(CLI().cat(args.path, client))
 
 
