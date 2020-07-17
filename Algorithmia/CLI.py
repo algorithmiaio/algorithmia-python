@@ -160,26 +160,26 @@ class CLI():
 		#list dir
 		listing = ""
 		if(path is None):
-			path = "/."
+			path = "data://."
 
-		#listingDir = client.dir(path)
-		#for f in listingDir.list():
-		#	listing += f.getName() + "\n"
+		if('data://' in path):
+			#long listing
+			if(l):
+				listingDir = client.dir(path)
+				for f in listingDir.files():
+					listing += f.last_modified.strftime("%Y-%m-%d %H:%M:%S") + '   '
+					listing += str(f.size) + '   '
+					listing += f.getName() + "\n"
+				for f in listingDir.dirs():
+					listing += f.getName() + "\n"
 
-		#long listing
-		if(l):
-			listingDir = client.dir(path)
-			for f in listingDir.files():
-				listing += f.last_modified.strftime("%Y-%m-%d %H:%M:%S") + '   '
-				listing += str(f.size) + '   '
-				listing += f.getName() + "\n"
-			for f in listingDir.dirs():
-				listing += f.getName() + "\n"
-
+			else:
+				listingDir = client.dir(path)
+				for f in listingDir.list():
+					listing += f.getName() + "\n"
+					#listing += 'data://'+f.path + "\n"
 		else:
-			listingDir = client.dir(path)
-			for f in listingDir.list():
-				listing += f.getName() + "\n"
+			print("operand must be a path to a remote data source data://")
 
 		return listing
 
@@ -187,12 +187,16 @@ class CLI():
 	def cat(self, path, client):
 		result = ""
 		for f in path:
-			file = client.file(f)
+			if('data://' in f):
+				file = client.file(f)
 
-			if(file.exists()):
-				result += file.getString()
+				if(file.exists()):
+					result += file.getString()
+				else:
+					result = "file does not exist "+f
+					break
 			else:
-				result = "file does not exist "+f
+				print("operands must be a path to a remote data source data://")
 				break
 
 		return result
@@ -206,18 +210,34 @@ class CLI():
 
 			
 			destLocation = client.file(dest)
-
-			#if src is local and dest is remote
+			print(src)
 			for f in src:
-				if("data://" not in f and "data://" in dest):
-					client.file(dest).putFile(f)
+				
+
+				#if dest is a directory apend the src name
+				#if there are multiple src files only the final one will be copied if dest is not a directory
+				destPath = dest
+				if(os.path.isdir(dest) or client.dir(dest).exists()):
+					if(dest[-1] == '/'):
+						destPath+=client.file(f).getName()
+					else:
+						destPath+='/'+client.file(f).getName()
+				
+				if(f[-1] == '*'):
+					src += ['data://'+file.path for file in client.dir(f[:len(f)-2]).files()]
+
+				#if src is local and dest is remote
+				elif("data://" not in f and "data://" in dest):
+					print(destPath)
+					print(f)
+					client.file(destPath).putFile(f)
 
 				#if src and dest are remote
 				elif("data://" in f and "data://" in dest):
 					file = client.file(f).getFile()
 					filename = file.name
 					file.close()
-					client.file(dest).putFile(filename)
+					client.file(destPath).putFile(filename)
 
 				#if src is remote and dest is local
 				elif("data://" in f and "data://" not in dest):
@@ -225,8 +245,7 @@ class CLI():
 					filename = file.name
 					file.close()
 
-					#this assumes dest is a full file path not just a directory
-					destFile = open(dest,"w")
+					destFile = open(destPath,"w")
 					srcfile = open(filename,"r")
 					destFile.write(srcfile.read())
 					destFile.close()

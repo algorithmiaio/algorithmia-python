@@ -152,7 +152,7 @@ def main():
 		if(exitcode != 0):
 			print("failed to clone\nis git installed?")
 	
-	if(args.cmd == 'ls'):
+	elif(args.cmd == 'ls'):
 		print(CLI().ls(args.path, client, args.long))
 	
 	elif(args.cmd == 'mkdir'):
@@ -165,10 +165,12 @@ def main():
 		CLI().rm(args.path, client)
 	
 	elif(args.cmd == 'cp'):
-		print(CLI().cp(args.src,args.dest, client))
+		CLI().cp(args.src,args.dest, client)
 
 	elif(args.cmd == 'cat'):
 		print(CLI().cat(args.path, client))
+	else:
+		parser.parse_args(['-h'])
 
 
 
