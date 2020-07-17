@@ -169,15 +169,14 @@ class CLI():
 				for f in listingDir.files():
 					listing += f.last_modified.strftime("%Y-%m-%d %H:%M:%S") + '   '
 					listing += str(f.size) + '   '
-					listing += f.getName() + "\n"
+					listing += 'data://'+f.path + "\n"
 				for f in listingDir.dirs():
-					listing += f.getName() + "\n"
+					listing += 'data://'+f.path + "\n"
 
 			else:
 				listingDir = client.dir(path)
 				for f in listingDir.list():
-					listing += f.getName() + "\n"
-					#listing += 'data://'+f.path + "\n"
+					listing += 'data://'+f.path + "\n"
 		else:
 			print("operand must be a path to a remote data source data://")
 
@@ -210,7 +209,6 @@ class CLI():
 
 			
 			destLocation = client.file(dest)
-			print(src)
 			for f in src:
 				
 
@@ -228,8 +226,6 @@ class CLI():
 
 				#if src is local and dest is remote
 				elif("data://" not in f and "data://" in dest):
-					print(destPath)
-					print(f)
 					client.file(destPath).putFile(f)
 
 				#if src and dest are remote

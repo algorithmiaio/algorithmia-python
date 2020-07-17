@@ -16,7 +16,7 @@ class CLITest(unittest.TestCase):
 		CLI().mkdir("/.my/moredata", self.client)
 	
 	def test_ls(self):
-		parentDir = "/.my/"
+		parentDir = "data://.my/"
 		newDir = "test"
 
 		CLI().mkdir(parentDir+newDir, self.client)
@@ -28,7 +28,7 @@ class CLITest(unittest.TestCase):
 
 	def test_mkdir(self):
 
-		parentDir = "/.my/"
+		parentDir = "data://.my/"
 		newDir = "test"
 
 		CLI().mkdir(parentDir+newDir, self.client)
@@ -38,7 +38,7 @@ class CLITest(unittest.TestCase):
 		CLI().rmdir(parentDir+newDir, self.client)
 
 	def test_rmdir(self):
-		parentDir = "/.my/"
+		parentDir = "data://.my/"
 		newDir = "testRmdir"
 
 		CLI().mkdir(parentDir+newDir, self.client)
@@ -143,14 +143,14 @@ class CLITest(unittest.TestCase):
 		testfile.close()
 
 		src = ["./testRM.txt"]
-		dest = "data://.my/moredata/testRM.txt"
+		dest = "data://.my/moredata/"
 		CLI().cp(src,dest,self.client)
 		
-		result1 = CLI().ls("/.my/moredata",self.client)
+		result1 = CLI().ls(dest,self.client)
 		
-		CLI().rm("/.my/moredata/testRM.txt",self.client)
+		CLI().rm("data://.my/moredata/testRM.txt",self.client)
 		
-		result2 = CLI().ls("/.my/moredata",self.client)
+		result2 = CLI().ls(dest,self.client)
 
 		self.assertTrue("testRM.txt" in result1 and "testRM.txt" not in result2)
 
