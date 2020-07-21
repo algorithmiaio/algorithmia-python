@@ -240,11 +240,7 @@ class CLI():
 					filename = file.name
 					file.close()
 
-					destFile = open(destPath,"w")
-					srcfile = open(filename,"r")
-					destFile.write(srcfile.read())
-					destFile.close()
-					srcfile.close()
+					os.system("mv " + filename + " " + destPath)
 				else:
 					print("at least one of the operands must be a path to a remote data source data://")
 
