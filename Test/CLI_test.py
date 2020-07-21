@@ -115,7 +115,6 @@ class CLITest(unittest.TestCase):
 		parser_run.add_argument('-T','--text-file', action = 'store_true', help = 'spesify a path to a text file')
 		parser_run.add_argument('-J','--json-file', action = 'store_true', help = 'spesify a path to a json file')
 		parser_run.add_argument('-B','--binary-file', action = 'store_true', help = 'spesify a path to a binary file')
-		parser_run.add_argument('input')
 		parser_run.add_argument('--timeout', action = 'store',type = int, default = 300, help = 'spesify a timeout')
 		parser_run.add_argument('--debug', action = 'store_true', help = 'print the stdout from the algo <this only works for the owner>')
 		parser_run.add_argument('--profile', action = 'store', type = str, default = 'default')

@@ -31,10 +31,10 @@ class CLI():
 		self.ls(path = None,client = Algorithmia.client(self.getAPIkey(profile)))
 
 	# algo run <algo> <args..>    run the the specified algo
-	def runalgo(self, name, inputs, options, client):
-		algo_input = inputs
+	def runalgo(self, options, client):
+		algo_input = None
 
-		algo = client.algo(name)
+		algo = client.algo(options.algo)
 		
 		result = None
 
@@ -43,75 +43,73 @@ class CLI():
 
 
 		#handle input type flags
-		if(options.data):
+		if(options.data != None):
 			#data
-			algo_input = inputs
+			algo_input = options.data
 
 			result = algo.pipe(algo_input)
 
-		elif(options.text):
+		elif(options.text != None):
 			#text
+			algo_input = options.text
 			key = self.getAPIkey(options.profile)
 			result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=algo_input.encode('utf-8'),
 				headers={'Authorization':key,'Content-Type':'text/plain'}, params= algo.query_parameters).json())
 
-		elif(options.json):
+		elif(options.json != None):
 			#json
+			algo_input = options.json
 			key = self.getAPIkey(options.profile)
 			result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=algo_input,
 				headers={'Authorization':key,'Content-Type':'application/json'}, params= algo.query_parameters).json())
 		
-		elif(options.binary):
+		elif(options.binary != None):
 			#binary
+			algo_input = options.binary
 			key = self.getAPIkey(options.profile)
 			result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=bytes(algo_input),
 				headers={'Authorization':key,'Content-Type':'application/octet-stream'}, params= algo.query_parameters).json())
 		
-		elif(options.data_file):
+		elif(options.data_file != None):
 			#data file
-			algo_input = open(inputs,"r").read()
+			algo_input = open(options.data_file,"r").read()
 			result = algo.pipe(algo_input)
 
-		elif(options.text_file):
+		elif(options.text_file != None):
 			#text file
-			algo_input = open(inputs,"r").read()
+			algo_input = open(options.text_file,"r").read()
 			key = self.getAPIkey(options.profile)
 			
 			result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=algo_input.encode('utf-8'),
 				headers={'Authorization':key,'Content-Type':'text/plain'}, params= algo.query_parameters).json())
 		
-		elif(options.json_file):
+		elif(options.json_file != None):
 			#json file
 			#read json file and run algo with that input bypassing the auto detection of input type in pipe
-			algo_input = open(inputs,"r").read()
+			algo_input = open(options.json_file,"r").read()
 			key = self.getAPIkey(options.profile)
 
 			result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=json.dumps(algo_input).encode('utf-8'),
 				headers={'Authorization':key,'Content-Type':'application/json'}, params= algo.query_parameters))
 
-		elif(options.binary_file):
+		elif(options.binary_file != None):
 			#binary file
-			algo_input = open(inputs,"rb").read()
+			algo_input = open(options.binary_file,"rb").read()
 			key = self.getAPIkey(options.profile)
 
 			result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=bytes(algo_input),
 				headers={'Authorization':key,'Content-Type':'application/octet-stream'}, params= algo.query_parameters).json())
 
 		else:
-			result = algo.pipe(algo_input)
+			output = "no valid input detected"
+
+		if(result != None):
+			output = result.result
 		
 		#handle output flags
 
-		#response
-
-		#response-body
-		if(inputs[-1] == "--response-body"):
-			result_body = """{ "result": """+result.result + ",\n" + """  "metadata": """ 
-			result_body = result_body + json.dumps(result.metadata.full_metadata)
-			result = result_body + " }"
-
-		#output to file if there is an output file spesified
-		elif(options.output != None):
+		#output to file if there is an output file specified
+		if(options.output != None):
 			outputFile = options.output
 			try:
 				if isinstance(result.result, bytearray) or isinstance(result.result, bytes):
@@ -122,11 +120,12 @@ class CLI():
 					out = open(outputFile,"w")
 					out.write(result.result)
 					out.close()
+				output = ""
 
 			except Exception as error:
 					print(error)
 
-		return result.result
+		return output
 
 
 	# algo mkdir <path>
@@ -160,7 +159,7 @@ class CLI():
 		#list dir
 		listing = ""
 		if(path is None):
-			path = "data://."
+			path = "data://"
 
 		if('data://' in path):
 			#long listing

@@ -49,16 +49,15 @@ def main():
 	parser_run = subparsers.add_parser('run', help = 'algo run <algo> [input options] <args..> [output options]')
 
 	parser_run.add_argument('algo')
-	parser_run.add_argument('-d','--data', action = 'store_true', help = 'detect input type')
-	parser_run.add_argument('-t','--text', action = 'store_true', help = 'treat input as text')
-	parser_run.add_argument('-j','--json', action = 'store_true', help = 'treat input as json data')
-	parser_run.add_argument('-b','--binary', action = 'store_true', help = 'treat input as binary data')
-	parser_run.add_argument('-D','--data-file', action = 'store_true', help = 'spesify a path to an input file')
-	parser_run.add_argument('-T','--text-file', action = 'store_true', help = 'spesify a path to a text file')
-	parser_run.add_argument('-J','--json-file', action = 'store_true', help = 'spesify a path to a json file')
-	parser_run.add_argument('-B','--binary-file', action = 'store_true', help = 'spesify a path to a binary file')
-	parser_run.add_argument('input')
-	parser_run.add_argument('--timeout', action = 'store',type = int, default = 300, help = 'spesify a timeout')
+	parser_run.add_argument('-d','--data', action = 'store', help = 'detect input type', default = None)
+	parser_run.add_argument('-t','--text', action = 'store', help = 'treat input as text', default = None)
+	parser_run.add_argument('-j','--json', action = 'store', help = 'treat input as json data', default = None)
+	parser_run.add_argument('-b','--binary', action = 'store', help = 'treat input as binary data', default = None)
+	parser_run.add_argument('-D','--data-file', action = 'store', help = 'specify a path to an input file', default = None)
+	parser_run.add_argument('-T','--text-file', action = 'store', help = 'specify a path to a text file', default = None)
+	parser_run.add_argument('-J','--json-file', action = 'store', help = 'specify a path to a json file', default = None)
+	parser_run.add_argument('-B','--binary-file', action = 'store', help = 'specify a path to a binary file', default = None)
+	parser_run.add_argument('--timeout', action = 'store',type = int, default = 300, help = 'specify a timeout (seconds)')
 	parser_run.add_argument('--debug', action = 'store_true', help = 'print the stdout from the algo <this only works for the owner>')
 	parser_run.add_argument('--profile', action = 'store', type = str, default = 'default')
 	parser_run.add_argument('-o', '--output', action = 'store', default = None, type = str)
@@ -132,17 +131,13 @@ def main():
 	
 	if(args.cmd == 'run'):
 
-		algo_name = args.algo
-
-		algo_input = args.input
-
-		print(CLI().runalgo(algo_name, algo_input, args, client))
+		print(CLI().runalgo(args, client))
 
 	elif(args.cmd == 'clone'):
 
 		algo_name = args.algo
 
-		print("cloning src for" + algo_name)
+		print("cloning src for " + algo_name)
 		if(CLI().getAPIaddress(profile) == None):
 			exitcode = os.system("git clone https://git.algorithmia.com/git/"+algo_name+".git")
 		else:
