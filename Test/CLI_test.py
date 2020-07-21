@@ -122,7 +122,7 @@ class CLITest(unittest.TestCase):
 		
 		args = parser.parse_args(['run',name,'-d',inputs])
 
-		result = CLI().runalgo(name,inputs, args, self.client)
+		result = CLI().runalgo(args, self.client)
 		self.assertEqual(result, inputs)
 	
 	def test_auth(self):
