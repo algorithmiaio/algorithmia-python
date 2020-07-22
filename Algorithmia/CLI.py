@@ -214,10 +214,14 @@ class CLI():
 				#if dest is a directory apend the src name
 				#if there are multiple src files only the final one will be copied if dest is not a directory
 				destPath = dest
-				if(os.path.isdir(dest) or client.dir(dest).exists()):
-					if(dest[-1] == '/'):
+
+				path = dest.split('/')
+				print(path)
+
+				if(os.path.isdir(dest) or client.dir(dest).exists() and len(path) <= 5):
+					if(dest[-1] == '/' and path[-1] == ''):
 						destPath+=client.file(f).getName()
-					else:
+					elif(len(path)==4):
 						destPath+='/'+client.file(f).getName()
 				
 				if(f[-1] == '*'):
@@ -225,6 +229,7 @@ class CLI():
 
 				#if src is local and dest is remote
 				elif("data://" not in f and "data://" in dest):
+					print(destPath)
 					client.file(destPath).putFile(f)
 
 				#if src and dest are remote
@@ -232,6 +237,8 @@ class CLI():
 					file = client.file(f).getFile()
 					filename = file.name
 					file.close()
+
+					#print(destPath)
 					client.file(destPath).putFile(filename)
 
 				#if src is remote and dest is local

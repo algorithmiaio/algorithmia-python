@@ -13,7 +13,7 @@ class CLITest(unittest.TestCase):
 	def setUp(self):
 		# create a directory to use in testing the cp command 
 		self.client = Algorithmia.client('simdylfCeXZ8/MgaQzokUHlalWm1')
-		CLI().mkdir("/.my/moredata", self.client)
+		CLI().mkdir("data://.my/moredata", self.client)
 	
 	def test_ls(self):
 		parentDir = "data://.my/"
@@ -76,7 +76,7 @@ class CLITest(unittest.TestCase):
 		dest = "data://.my/moredata/test.txt"
 		CLI().cp(src,dest,self.client)
 
-		result = CLI().ls("/.my/moredata/",self.client)
+		result = CLI().ls("data://.my/moredata/",self.client)
 		self.assertTrue("test.txt" in result)
 
 #remote to remote
@@ -86,7 +86,7 @@ class CLITest(unittest.TestCase):
 		dest = "data://.my/moredata/test2.txt"
 		CLI().cp(src,dest,self.client)
 
-		result = CLI().ls("/.my/moredata",self.client)
+		result = CLI().ls("data://.my/moredata",self.client)
 		self.assertTrue("test2.txt" in result)
 
 #remote to local
