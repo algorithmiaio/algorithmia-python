@@ -164,6 +164,9 @@ class CLI():
 		if('data://' in path):
 			#long listing
 			if(l):
+				#if path is a file dont iterate
+				#if():
+
 				listingDir = client.dir(path)
 				for f in listingDir.files():
 					listing += f.last_modified.strftime("%Y-%m-%d %H:%M:%S") + '   '
@@ -221,7 +224,7 @@ class CLI():
 				if(os.path.isdir(dest) or client.dir(dest).exists() and len(path) <= 5):
 					if(dest[-1] == '/' and path[-1] == ''):
 						destPath+=client.file(f).getName()
-					elif(len(path)==4):
+					elif(len(path) == 4 or "data://" not in dest):
 						destPath+='/'+client.file(f).getName()
 				
 				if(f[-1] == '*'):
@@ -240,13 +243,13 @@ class CLI():
 
 					#print(destPath)
 					client.file(destPath).putFile(filename)
-
+ 
 				#if src is remote and dest is local
 				elif("data://" in f and "data://" not in dest):
 					file = client.file(f).getFile()
 					filename = file.name
 					file.close()
-
+					print(destPath)
 					os.system("mv " + filename + " " + destPath)
 				else:
 					print("at least one of the operands must be a path to a remote data source data://")

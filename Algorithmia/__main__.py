@@ -138,11 +138,11 @@ def main():
 		algo_name = args.algo
 
 		print("cloning src for " + algo_name)
-		if(CLI().getAPIaddress(profile) == None):
+		if(CLI().getAPIaddress(args.profile) == None):
 			exitcode = os.system("git clone https://git.algorithmia.com/git/"+algo_name+".git")
 		else:
 			#replace https://api.<domain> with https://git.<domain>
-			exitcode = os.system("git clone " + (CLI().getAPIaddress(profile).replace("//api.", "//git."))+"/git/"+algo_name+".git")
+			exitcode = os.system("git clone " + (CLI().getAPIaddress(args.profile).replace("//api.", "//git."))+"/git/"+algo_name+".git")
 
 		if(exitcode != 0):
 			print("failed to clone\nis git installed?")
