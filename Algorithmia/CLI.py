@@ -195,8 +195,6 @@ class CLI():
                 #path is a directory
                 #long listing
                 if(l):
-                    #if path is a file dont iterate
-
 
                     listingDir = client.dir(path)
                     for f in listingDir.files():
@@ -220,13 +218,16 @@ class CLI():
         result = ""
         for f in path:
             if('data://' in f):
-                file = client.file(f)
-
-                if(file.exists()):
-                    result += file.getString()
+                if(f[-1] == '*'):
+                    path += ['data://'+file.path for file in client.dir(f[:len(f)-2]).files()]
                 else:
-                    result = "file does not exist "+f
-                    break
+                    file = client.file(f)
+
+                    if(file.exists()):
+                        result += file.getString()
+                    else:
+                        result = "file does not exist "+f
+                        break
             else:
                 print("operands must be a path to a remote data source data://")
                 break

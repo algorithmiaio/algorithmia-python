@@ -34,138 +34,137 @@ General commands include:\n
 """
 
 def main():
-	parser = argparse.ArgumentParser('algo', description = usage)
+    parser = argparse.ArgumentParser('algo', description = "algo [<cmd>] [options] [<args>...] [--help] [--profile]")
 
-	subparsers = parser.add_subparsers(help = 'sub cmd',dest = 'cmd')
+    subparsers = parser.add_subparsers(help = 'sub cmd',dest = 'cmd')
 
-	parser_auth = subparsers.add_parser('auth', help = 'save api key and api address for profile')
-	parser_auth.add_argument('--profile', action = 'store', type = str, default = 'default')
+    parser_auth = subparsers.add_parser('auth', help = 'save api key and api address for profile')
+    parser_auth.add_argument('--profile', action = 'store', type = str, default = 'default')
 
-	parser_clone = subparsers.add_parser('clone', help = 'clone <algo>')
-	parser_clone.add_argument('algo')
-	parser_clone.add_argument('--profile', action = 'store', type = str, default = 'default')
+    parser_clone = subparsers.add_parser('clone', help = 'clone <algo> clone the algorithm repository')
+    parser_clone.add_argument('algo')
+    parser_clone.add_argument('--profile', action = 'store', type = str, default = 'default')
 
-	#parse options for the run command
-	parser_run = subparsers.add_parser('run', help = 'algo run <algo> [input options] <args..> [output options]')
+    #parse options for the run command
+    parser_run = subparsers.add_parser('run', help = 'algo run <algo> [input options] <args..> [output options] run an algorithm')
 
-	parser_run.add_argument('algo')
-	parser_run.add_argument('-d','--data', action = 'store', help = 'detect input type', default = None)
-	parser_run.add_argument('-t','--text', action = 'store', help = 'treat input as text', default = None)
-	parser_run.add_argument('-j','--json', action = 'store', help = 'treat input as json data', default = None)
-	parser_run.add_argument('-b','--binary', action = 'store', help = 'treat input as binary data', default = None)
-	parser_run.add_argument('-D','--data-file', action = 'store', help = 'specify a path to an input file', default = None)
-	parser_run.add_argument('-T','--text-file', action = 'store', help = 'specify a path to a text file', default = None)
-	parser_run.add_argument('-J','--json-file', action = 'store', help = 'specify a path to a json file', default = None)
-	parser_run.add_argument('-B','--binary-file', action = 'store', help = 'specify a path to a binary file', default = None)
-	parser_run.add_argument('--timeout', action = 'store',type = int, default = 300, help = 'specify a timeout (seconds)')
-	parser_run.add_argument('--debug', action = 'store_true', help = 'print the stdout from the algo <this only works for the owner>')
-	parser_run.add_argument('--profile', action = 'store', type = str, default = 'default')
-	parser_run.add_argument('-o', '--output', action = 'store', default = None, type = str)
+    parser_run.add_argument('algo')
+    parser_run.add_argument('-d','--data', action = 'store', help = 'detect input type', default = None)
+    parser_run.add_argument('-t','--text', action = 'store', help = 'treat input as text', default = None)
+    parser_run.add_argument('-j','--json', action = 'store', help = 'treat input as json data', default = None)
+    parser_run.add_argument('-b','--binary', action = 'store', help = 'treat input as binary data', default = None)
+    parser_run.add_argument('-D','--data-file', action = 'store', help = 'specify a path to an input file', default = None)
+    parser_run.add_argument('-T','--text-file', action = 'store', help = 'specify a path to a text file', default = None)
+    parser_run.add_argument('-J','--json-file', action = 'store', help = 'specify a path to a json file', default = None)
+    parser_run.add_argument('-B','--binary-file', action = 'store', help = 'specify a path to a binary file', default = None)
+    parser_run.add_argument('--timeout', action = 'store',type = int, default = 300, help = 'specify a timeout (seconds)')
+    parser_run.add_argument('--debug', action = 'store_true', help = 'print the stdout from the algo <this only works for the owner>')
+    parser_run.add_argument('--profile', action = 'store', type = str, default = 'default')
+    parser_run.add_argument('-o', '--output', action = 'store', default = None, type = str)
 
-	#subparser for ls
-	parser_ls = subparsers.add_parser('ls', help = 'ls [-l] [directory]', )
-	
-	parser_ls.add_argument('-l', '--long', action = 'store_true')
-	parser_ls.add_argument('path', nargs  = '?', default = None)
-	parser_ls.add_argument('--profile', action = 'store', type = str, default = 'default')
+    #subparser for ls
+    parser_ls = subparsers.add_parser('ls', help = 'ls [-l] [directory] list the contents of a directory', )
 
-	#subparser for rm
-	parser_rm = subparsers.add_parser('rm', help = 'rm <path>', )
-	
-	parser_rm.add_argument('path', nargs  = '?', default = None)
-	parser_rm.add_argument('--profile', action = 'store', type = str, default = 'default')
+    parser_ls.add_argument('-l', '--long', action = 'store_true')
+    parser_ls.add_argument('path', nargs  = '?', default = None)
+    parser_ls.add_argument('--profile', action = 'store', type = str, default = 'default')
 
-	#subparser for mkdir
-	parser_mkdir = subparsers.add_parser('mkdir', help = 'mkdir <directory>')
-	
-	parser_mkdir.add_argument('path', help = 'directory to create')
-	parser_mkdir.add_argument('--profile', action = 'store', type = str, default = 'default')
+    #subparser for rm
+    parser_rm = subparsers.add_parser('rm', help = 'rm <path> remove a file', )
 
-	#subparser for rmdir
-	parser_rmdir = subparsers.add_parser('rmdir', help = 'rmdir [-f] <directory>')
-	
-	parser_rmdir.add_argument('-f', '--force', action = 'store_true', help = 'force directory removal if it is not empty')
-	parser_rmdir.add_argument('path', help = 'directory to remove')
-	parser_rmdir.add_argument('--profile', action = 'store', type = str, default = 'default')
+    parser_rm.add_argument('path', nargs  = '?', default = None)
+    parser_rm.add_argument('--profile', action = 'store', type = str, default = 'default')
 
-	#subparser for cp
-	parser_cp = subparsers.add_parser('cp', help = 'cp <src,...> <dest>',)
-	
-	parser_cp.add_argument('src', nargs = '*', type = str, help = 'file(s) to be coppied')
-	parser_cp.add_argument('dest', help = 'destination for file(s) to be coppied to')
-	parser_cp.add_argument('--profile', action = 'store', type = str, default = 'default')
+    #subparser for mkdir
+    parser_mkdir = subparsers.add_parser('mkdir', help = 'mkdir <directory> create a directory')
 
-	#sub parser for cat
-	parser_cat = subparsers.add_parser('cat', help = 'cat <path,...>')
-	
-	parser_cat.add_argument('path', nargs = '*', help = 'file(s) to concatinate and print')
-	parser_cat.add_argument('--profile', action = 'store', type = str, default = 'default')
+    parser_mkdir.add_argument('path', help = 'directory to create')
+    parser_mkdir.add_argument('--profile', action = 'store', type = str, default = 'default')
 
-	subparsers.add_parser('help')
-	parser.add_argument('--profile', action = 'store', type = str, default = 'default')
+    #subparser for rmdir
+    parser_rmdir = subparsers.add_parser('rmdir', help = 'rmdir [-f] <directory> remove a directory')
 
-	args = parser.parse_args()
+    parser_rmdir.add_argument('-f', '--force', action = 'store_true', help = 'force directory removal if it is not empty')
+    parser_rmdir.add_argument('path', help = 'directory to remove')
+    parser_rmdir.add_argument('--profile', action = 'store', type = str, default = 'default')
 
-	#run auth before trying to create a client
-	if(args.cmd == 'auth'):
+    #subparser for cp
+    parser_cp = subparsers.add_parser('cp', help = 'cp <src,...> <dest> copy file(s) to the destination',)
 
-		print("Configuring authentication for profile: " + args.profile)
-		APIaddress = input("enter API address [api.algorithmia.com]:")
-		APIkey = input("enter API key:")
+    parser_cp.add_argument('src', nargs = '*', type = str, help = 'file(s) to be coppied')
+    parser_cp.add_argument('dest', help = 'destination for file(s) to be coppied to')
+    parser_cp.add_argument('--profile', action = 'store', type = str, default = 'default')
 
-		if(len(APIkey) == 28 and APIkey.startswith("sim")):
-			CLI().auth(APIkey, APIaddress, args.profile)
-		else:
-			print("invalid api key")
+    #sub parser for cat
+    parser_cat = subparsers.add_parser('cat', help = 'cat <path,...> concatinate and print file(s)')
 
-	if(args.cmd == 'help'):
-		parser.parse_args(['-h'])
+    parser_cat.add_argument('path', nargs = '*', help = 'file(s) to concatinate and print')
+    parser_cat.add_argument('--profile', action = 'store', type = str, default = 'default')
 
-	#create a client with the appropreate api address and key
-	client = Algorithmia.client()
-	if(len(CLI().getAPIaddress(args.profile)) > 1):
-		client = Algorithmia.client(CLI().getAPIkey(args.profile), CLI().getAPIaddress(args.profile))
-	else:
-		client = Algorithmia.client(CLI().getAPIkey(args.profile))
-	
-	
-	if(args.cmd == 'run'):
+    subparsers.add_parser('help')
+    parser.add_argument('--profile', action = 'store', type = str, default = 'default')
 
-		print(CLI().runalgo(args, client))
+    args = parser.parse_args()
 
-	elif(args.cmd == 'clone'):
+    #run auth before trying to create a client
+    if(args.cmd == 'auth'):
 
-		algo_name = args.algo
+        print("Configuring authentication for profile: " + args.profile)
+        APIaddress = input("enter API address [api.algorithmia.com]:")
+        APIkey = input("enter API key:")
 
-		print("cloning src for " + algo_name)
-		if(CLI().getAPIaddress(args.profile) == None):
-			exitcode = os.system("git clone https://git.algorithmia.com/git/"+algo_name+".git")
-		else:
-			#replace https://api.<domain> with https://git.<domain>
-			exitcode = os.system("git clone " + (CLI().getAPIaddress(args.profile).replace("//api.", "//git."))+"/git/"+algo_name+".git")
+        if(len(APIkey) == 28 and APIkey.startswith("sim")):
+            CLI().auth(APIkey, APIaddress, args.profile)
+        else:
+            print("invalid api key")
 
-		if(exitcode != 0):
-			print("failed to clone\nis git installed?")
-	
-	elif(args.cmd == 'ls'):
-		print(CLI().ls(args.path, client, args.long))
-	
-	elif(args.cmd == 'mkdir'):
-		CLI().mkdir(args.path, client)
+    if(args.cmd == 'help'):
+        parser.parse_args(['-h'])
 
-	elif(args.cmd == 'rmdir'):
-		CLI().rmdir(args.path, client, args.force)
+    #create a client with the appropreate api address and key
+    client = Algorithmia.client()
+    if(len(CLI().getAPIaddress(args.profile)) > 1):
+        client = Algorithmia.client(CLI().getAPIkey(args.profile), CLI().getAPIaddress(args.profile))
+    else:
+        client = Algorithmia.client(CLI().getAPIkey(args.profile))
 
-	elif(args.cmd == 'rm'):
-		CLI().rm(args.path, client)
-	
-	elif(args.cmd == 'cp'):
-		CLI().cp(args.src,args.dest, client)
+    if(args.cmd == 'run'):
 
-	elif(args.cmd == 'cat'):
-		print(CLI().cat(args.path, client))
-	else:
-		parser.parse_args(['-h'])
+        print(CLI().runalgo(args, client))
+
+    elif(args.cmd == 'clone'):
+
+        algo_name = args.algo
+
+        print("cloning src for " + algo_name)
+        if(CLI().getAPIaddress(args.profile) == None):
+            exitcode = os.system("git clone https://git.algorithmia.com/git/"+algo_name+".git")
+        else:
+            #replace https://api.<domain> with https://git.<domain>
+            exitcode = os.system("git clone " + (CLI().getAPIaddress(args.profile).replace("//api.", "//git."))+"/git/"+algo_name+".git")
+
+        if(exitcode != 0):
+            print("failed to clone\nis git installed?")
+
+    elif(args.cmd == 'ls'):
+        print(CLI().ls(args.path, client, args.long))
+
+    elif(args.cmd == 'mkdir'):
+        CLI().mkdir(args.path, client)
+
+    elif(args.cmd == 'rmdir'):
+        CLI().rmdir(args.path, client, args.force)
+
+    elif(args.cmd == 'rm'):
+        CLI().rm(args.path, client)
+
+    elif(args.cmd == 'cp'):
+        CLI().cp(args.src,args.dest, client)
+
+    elif(args.cmd == 'cat'):
+        print(CLI().cat(args.path, client))
+    else:
+        parser.parse_args(['-h'])
 
 
 
@@ -173,5 +172,5 @@ def main():
 
 
 if __name__ == '__main__':
-	#main()
-	main()
+    #main()
+    main()
