@@ -23,10 +23,8 @@ class CLI():
         else:
             config['profiles'] = {profile:{'api_key':apikey,'api_server':apiaddress}}
 
-        key = open(key, "w")
-
-        toml.dump(config,key)
-        key.close()
+        with open(key, "w") as key:
+            toml.dump(config,key)
 
         self.ls(path = None,client = Algorithmia.client(self.getAPIkey(profile)))
 
@@ -36,11 +34,11 @@ class CLI():
 
         algo = client.algo(options.algo)
 
+        url = client.apiAddress + algo.url
         result = None
+        content = None
 
         algo.set_options(timeout=options.timeout, stdout=options.debug)
-
-
 
         #handle input type flags
         if(options.data != None):
@@ -53,22 +51,20 @@ class CLI():
             #text
             algo_input = options.text
             key = self.getAPIkey(options.profile)
-            result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=algo_input.encode('utf-8'),
-                headers={'Authorization':key,'Content-Type':'text/plain'}, params= algo.query_parameters).json())
+            content = 'text/plain'
+            algo_input = algo_input.encode('utf-8')
 
         elif(options.json != None):
             #json
             algo_input = options.json
             key = self.getAPIkey(options.profile)
-            result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=algo_input,
-                headers={'Authorization':key,'Content-Type':'application/json'}, params= algo.query_parameters).json())
+            content = 'application/json'
 
         elif(options.binary != None):
             #binary
-            algo_input = options.binary
+            algo_input = bytes(options.binary)
             key = self.getAPIkey(options.profile)
-            result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=bytes(algo_input),
-                headers={'Authorization':key,'Content-Type':'application/octet-stream'}, params= algo.query_parameters).json())
+            content = 'application/octet-stream'
 
         elif(options.data_file != None):
             #data file
@@ -79,29 +75,33 @@ class CLI():
             #text file
             algo_input = open(options.text_file,"r").read()
             key = self.getAPIkey(options.profile)
-
-            result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=algo_input.encode('utf-8'),
-                headers={'Authorization':key,'Content-Type':'text/plain'}, params= algo.query_parameters).json())
+            content = 'text/plain'
+            algo_input = algo_input.encode('utf-8')
 
         elif(options.json_file != None):
             #json file
             #read json file and run algo with that input bypassing the auto detection of input type in pipe
-            algo_input = open(options.json_file,"r").read()
+            with open(options.json_file,"r") as f:
+                algo_input = f.read()
             key = self.getAPIkey(options.profile)
+            content = 'application/json'
+            algo_input = json.dumps(algo_input).encode('utf-8')
 
-            result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=json.dumps(algo_input).encode('utf-8'),
-                headers={'Authorization':key,'Content-Type':'application/json'}, params= algo.query_parameters))
 
         elif(options.binary_file != None):
             #binary file
-            algo_input = open(options.binary_file,"rb").read()
+            with open(options.binary_file,"rb") as f:
+                algo_inputs = bytes(f.read())
             key = self.getAPIkey(options.profile)
+            content = 'application/octet-stream'
 
-            result = AlgoResponse.create_algo_response(requests.post(client.apiAddress + algo.url, data=bytes(algo_input),
-                headers={'Authorization':key,'Content-Type':'application/octet-stream'}, params= algo.query_parameters).json())
 
         else:
             output = "no valid input detected"
+
+        if(content != None):
+            result = AlgoResponse.create_algo_response(requests.post(url, data=algo_input,
+                    headers={'Authorization':key,'Content-Type':content}, params= algo.query_parameters).json())
 
         if(result != None):
             output = result.result
@@ -290,27 +290,27 @@ class CLI():
             #~/.algorithmia/config
             #create the api key file if it does not exist
             keyPath = os.environ['HOME']+"/.algorithmia/"
-            keyFile = "config"
-            if(not os.path.exists(keyPath)):
-                os.mkdir(keyPath)
-                file = open(keyPath+keyFile,"w")
-                file.write("[profiles]")
-                file.close()
 
-            key = keyPath+keyFile
         elif(os.name == "nt"):
             #ifwindows
             #%LOCALAPPDATA%\Algorithmia\config
             #create the api key file if it does not exist
             keyPath = "%LOCALAPPDATA%\\Algorithmia\\"
-            keyFile = "config"
-            if(not os.path.exists(keyPath)):
-                os.mkdir(keyPath)
-                file = open(keyPath+keyFile,"w")
-                file.write("[profiles]")
-                file.close()
+        
+        keyFile = "config"
 
-            key = keyPath+keyFile
+        if(not os.path.exists(keyPath)):
+            os.mkdir(keyPath)
+
+        if(not os.path.exists(keyPath+keyFile)):
+            with open(keyPath+keyFile,"w") as file:
+                file.write("[profiles]\n")
+                file.write("[profiles.default]\n")
+                file.write("api_key = ''\n")
+                file.write("api_server = ''\n")
+
+
+        key = keyPath+keyFile
 
         return key
 

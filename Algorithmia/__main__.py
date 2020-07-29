@@ -26,7 +26,7 @@ General commands include:\n
     rmdir remove a data directory\n
     rm remove a file from a data directory\n
     cp copy file(s) to or from a data directory\n
-    cat concatinate and print file(s) in a data directory\n\n
+    cat concatenate and print file(s) in a data directory\n\n
 
   Global options:\n
     --help\n
@@ -91,14 +91,14 @@ def main():
     #subparser for cp
     parser_cp = subparsers.add_parser('cp', help = 'cp <src,...> <dest> copy file(s) to the destination',)
 
-    parser_cp.add_argument('src', nargs = '*', type = str, help = 'file(s) to be coppied')
-    parser_cp.add_argument('dest', help = 'destination for file(s) to be coppied to')
+    parser_cp.add_argument('src', nargs = '*', type = str, help = 'file(s) to be copied')
+    parser_cp.add_argument('dest', help = 'destination for file(s) to be copied to')
     parser_cp.add_argument('--profile', action = 'store', type = str, default = 'default')
 
     #sub parser for cat
-    parser_cat = subparsers.add_parser('cat', help = 'cat <path,...> concatinate and print file(s)')
+    parser_cat = subparsers.add_parser('cat', help = 'cat <path,...> concatenate and print file(s)')
 
-    parser_cat.add_argument('path', nargs = '*', help = 'file(s) to concatinate and print')
+    parser_cat.add_argument('path', nargs = '*', help = 'file(s) to concatenate and print')
     parser_cat.add_argument('--profile', action = 'store', type = str, default = 'default')
 
     subparsers.add_parser('help')
