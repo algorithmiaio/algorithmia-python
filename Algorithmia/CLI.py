@@ -33,7 +33,6 @@ class CLI():
         algo_input = None
 
         algo = client.algo(options.algo)
-
         url = client.apiAddress + algo.url
         result = None
         content = None

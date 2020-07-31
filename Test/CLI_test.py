@@ -52,14 +52,15 @@ class CLITest(unittest.TestCase):
 
 	def test_cat(self):
 		file = "data://.my/moredata/test.txt"
+		localfile = "./TestFiles/test.txt"
 		fileContents = "some text in test file"
 
 		CLI().rm(file, self.client)
-		testfile = open("./test.txt", "w")
+		testfile = open(localfile, "w")
 		testfile.write(fileContents)
 		testfile.close()
 
-		CLI().cp(["./test.txt"],file,self.client)
+		CLI().cp([localfile],file,self.client)
 
 		result = CLI().cat([file],self.client)
 		self.assertEqual(result, fileContents)
@@ -67,12 +68,12 @@ class CLITest(unittest.TestCase):
 
 #local to remote
 	def test_cp_L2R(self):
-
-		testfile = open("./test.txt", "w")
+		localfile = "./TestFiles/test.txt"
+		testfile = open(localfile, "w")
 		testfile.write("some text")
 		testfile.close()
 
-		src = ["./test.txt"]
+		src = [localfile]
 		dest = "data://.my/moredata/test.txt"
 		CLI().cp(src,dest,self.client)
 
@@ -137,11 +138,13 @@ class CLITest(unittest.TestCase):
 		self.assertEqual(resultA, address)
 
 	def test_rm(self):
-		testfile = open("./testRM.txt", "w")
+		localfile = "./TestFiles/testRM.txt"
+		
+		testfile = open(localfile, "w")
 		testfile.write("some text")
 		testfile.close()
 
-		src = ["./testRM.txt"]
+		src = [localfile]
 		dest = "data://.my/moredata/"
 		CLI().cp(src,dest,self.client)
 		

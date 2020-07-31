@@ -34,6 +34,12 @@ from directory containing setup.py and the Algorithmia directory:
 ```bash
 pip3 install ./
 ```
+#add CLI script to PATH
+
+to use the CLI it may be nessesary to add the install location to the PATH enviroment variable
+```bash
+export PATH = $HOME/.local/bin:$PATH
+```
 
 ## Authentication
 
