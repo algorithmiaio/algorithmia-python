@@ -14,6 +14,8 @@ class CLITest(unittest.TestCase):
 		# create a directory to use in testing the cp command 
 		self.client = Algorithmia.client('simdylfCeXZ8/MgaQzokUHlalWm1')
 		CLI().mkdir("data://.my/moredata", self.client)
+		if(not os.path.exists("./TestFiles/")):
+			os.mkdir("./TestFiles/")
 	
 	def test_ls(self):
 		parentDir = "data://.my/"
@@ -139,7 +141,7 @@ class CLITest(unittest.TestCase):
 
 	def test_rm(self):
 		localfile = "./TestFiles/testRM.txt"
-		
+
 		testfile = open(localfile, "w")
 		testfile.write("some text")
 		testfile.close()
