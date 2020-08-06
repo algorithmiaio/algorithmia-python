@@ -12,10 +12,15 @@ setup(
     author='Algorithmia',
     author_email='support@algorithmia.com',
     packages=['Algorithmia'],
+    entry_points = {
+    'console_scripts': ['algo = Algorithmia.__main__:main']
+    },
     install_requires=[
         'requests',
         'six',
         'enum34',
+        'toml',
+        'argparse',
         'algorithmia-api-client==1.1.0'
     ],
     include_package_data=True,
