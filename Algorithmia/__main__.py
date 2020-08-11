@@ -53,6 +53,10 @@ def main():
     parser_run.add_argument('-t','--text', action = 'store', help = 'treat input as text', default = None)
     parser_run.add_argument('-j','--json', action = 'store', help = 'treat input as json data', default = None)
     parser_run.add_argument('-b','--binary', action = 'store', help = 'treat input as binary data', default = None)
+        #hex/B64
+    parser_run.add_argument('-x','--hexadecimal', action = 'store', help = 'treat input as binary data', default = None)
+    parser_run.add_argument('-b64','--Base64', action = 'store', help = 'treat input as binary data', default = None)
+    
     parser_run.add_argument('-D','--data-file', action = 'store', help = 'specify a path to an input file', default = None)
     parser_run.add_argument('-T','--text-file', action = 'store', help = 'specify a path to a text file', default = None)
     parser_run.add_argument('-J','--json-file', action = 'store', help = 'specify a path to a json file', default = None)
@@ -110,10 +114,13 @@ def main():
     if(args.cmd == 'auth'):
 
         print("Configuring authentication for profile: " + args.profile)
-        APIaddress = input("enter API address [api.algorithmia.com]:")
+        APIaddress = input("enter API address [https://api.algorithmia.com]:")
         APIkey = input("enter API key:")
 
-        if(len(APIkey) == 28 and APIkey.startswith("sim")):
+        if len(APIkey) == 28 and APIkey.startswith("sim"):
+            if APIaddress == "" or not APIaddress.startswith("https://api."):
+                APIaddress = "https://api.algorithmia.com"
+
             CLI().auth(APIkey, APIaddress, args.profile)
         else:
             print("invalid api key")

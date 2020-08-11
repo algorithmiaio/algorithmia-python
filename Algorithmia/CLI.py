@@ -3,6 +3,7 @@ import os
 from Algorithmia.algo_response import AlgoResponse
 import json, re, requests, six
 import toml
+import base64
 
 class CLI():
     def __init__(self):
@@ -61,7 +62,19 @@ class CLI():
 
         elif(options.binary != None):
             #binary
-            algo_input = bytes(options.binary)
+            algo_input = bytes(options.binary,"utf-8")
+            key = self.getAPIkey(options.profile)
+            content = 'application/octet-stream'
+
+        elif(options.hexadecimal != None):
+            #binary hex
+            algo_input = bytes.fromhex(options.hexadecimal.encode("utf-8"))
+            key = self.getAPIkey(options.profile)
+            content = 'application/octet-stream'
+
+        elif(options.Base64 != None):
+            #binary base64
+            algo_input = bytes(base64.decodestring(base64.encodestring(options.Base64)))
             key = self.getAPIkey(options.profile)
             content = 'application/octet-stream'
 
@@ -262,7 +275,6 @@ class CLI():
 
                 #if src is local and dest is remote
                 elif("data://" not in f and "data://" in dest):
-                    print(destPath)
                     client.file(destPath).putFile(f)
 
                 #if src and dest are remote
@@ -278,7 +290,6 @@ class CLI():
                     file = client.file(f).getFile()
                     filename = file.name
                     file.close()
-                    print(destPath)
                     os.system("mv " + filename + " " + destPath)
                 else:
                     print("at least one of the operands must be a path to a remote data source data://")
