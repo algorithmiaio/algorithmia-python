@@ -3,7 +3,7 @@ import os
 from Algorithmia.algo_response import AlgoResponse
 import json, re, requests, six
 import toml
-import base64
+
 
 class CLI():
     def __init__(self):
@@ -62,19 +62,8 @@ class CLI():
 
         elif(options.binary != None):
             #binary
-            algo_input = bytes(options.binary,"utf-8")
-            key = self.getAPIkey(options.profile)
-            content = 'application/octet-stream'
+            algo_input = bytes(options.binary)
 
-        elif(options.hexadecimal != None):
-            #binary hex
-            algo_input = bytes.fromhex(options.hexadecimal.encode("utf-8"))
-            key = self.getAPIkey(options.profile)
-            content = 'application/octet-stream'
-
-        elif(options.Base64 != None):
-            #binary base64
-            algo_input = bytes(base64.decodestring(base64.encodestring(options.Base64)))
             key = self.getAPIkey(options.profile)
             content = 'application/octet-stream'
 
