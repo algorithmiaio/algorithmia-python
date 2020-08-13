@@ -114,7 +114,6 @@ class CLITest(unittest.TestCase):
 		parser_run.add_argument('-t','--text', action = 'store', help = 'treat input as text', default = None)
 		parser_run.add_argument('-j','--json', action = 'store', help = 'treat input as json data', default = None)
 		parser_run.add_argument('-b','--binary', action = 'store', help = 'treat input as binary data', default = None)
-
 		parser_run.add_argument('-D','--data-file', action = 'store', help = 'specify a path to an input file', default = None)
 		parser_run.add_argument('-T','--text-file', action = 'store', help = 'specify a path to a text file', default = None)
 		parser_run.add_argument('-J','--json-file', action = 'store', help = 'specify a path to a json file', default = None)
