@@ -111,7 +111,7 @@ def main():
     args = parser.parse_args()
 
     #run auth before trying to create a client
-    if(args.cmd == 'auth'):
+    if args.cmd == 'auth':
 
         print("Configuring authentication for profile: " + args.profile)
         APIaddress = input("enter API address [https://api.algorithmia.com]:")
@@ -125,7 +125,7 @@ def main():
         else:
             print("invalid api key")
 
-    ifargs.cmd == 'help':
+    if args.cmd == 'help':
         parser.parse_args(['-h'])
 
     #create a client with the appropreate api address and key
@@ -135,7 +135,7 @@ def main():
     else:
         client = Algorithmia.client(CLI().getAPIkey(args.profile))
 
-    if(args.cmd == 'run'):
+    if args.cmd == 'run':
 
         print(CLI().runalgo(args, client))
 
