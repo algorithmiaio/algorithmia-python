@@ -143,8 +143,11 @@ class CLI():
 
         Dir = client.dir(path)
 
-        if Dir.exists():
-            Dir.delete(force)
+        try:
+            if Dir.exists():
+                Dir.delete(force)
+        except Algorithmia.errors.DataApiError as e:
+            print(e)
 
 
     def rm(self, path, client):
