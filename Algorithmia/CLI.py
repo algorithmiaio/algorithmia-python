@@ -4,6 +4,7 @@ from Algorithmia.algo_response import AlgoResponse
 import json, re, requests, six
 import toml
 
+
 class CLI():
     def __init__(self):
         self.client = Algorithmia.client()
@@ -62,6 +63,7 @@ class CLI():
         elif(options.binary != None):
             #binary
             algo_input = bytes(options.binary)
+
             key = self.getAPIkey(options.profile)
             content = 'application/octet-stream'
 
@@ -141,8 +143,11 @@ class CLI():
 
         Dir = client.dir(path)
 
-        if Dir.exists():
-            Dir.delete(force)
+        try:
+            if Dir.exists():
+                Dir.delete(force)
+        except Algorithmia.errors.DataApiError as e:
+            print(e)
 
 
     def rm(self, path, client):
@@ -262,7 +267,6 @@ class CLI():
 
                 #if src is local and dest is remote
                 elif("data://" not in f and "data://" in dest):
-                    print(destPath)
                     client.file(destPath).putFile(f)
 
                 #if src and dest are remote
@@ -278,7 +282,6 @@ class CLI():
                     file = client.file(f).getFile()
                     filename = file.name
                     file.close()
-                    print(destPath)
                     os.system("mv " + filename + " " + destPath)
                 else:
                     print("at least one of the operands must be a path to a remote data source data://")

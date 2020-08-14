@@ -107,61 +107,66 @@ def main():
     args = parser.parse_args()
 
     #run auth before trying to create a client
-    if(args.cmd == 'auth'):
+    if args.cmd == 'auth':
 
         print("Configuring authentication for profile: " + args.profile)
-        APIaddress = input("enter API address [api.algorithmia.com]:")
+
+        APIaddress = input("enter API address [https://api.algorithmia.com]:")
         APIkey = input("enter API key:")
 
-        if(len(APIkey) == 28 and APIkey.startswith("sim")):
+        if len(APIkey) == 28 and APIkey.startswith("sim"):
+            if APIaddress == "" or not APIaddress.startswith("https://api."):
+                APIaddress = "https://api.algorithmia.com"
+
             CLI().auth(APIkey, APIaddress, args.profile)
         else:
             print("invalid api key")
 
-    if(args.cmd == 'help'):
+    if args.cmd == 'help':
         parser.parse_args(['-h'])
 
     #create a client with the appropreate api address and key
     client = Algorithmia.client()
-    if(len(CLI().getAPIaddress(args.profile)) > 1):
+    if len(CLI().getAPIaddress(args.profile)) > 1:
         client = Algorithmia.client(CLI().getAPIkey(args.profile), CLI().getAPIaddress(args.profile))
     else:
         client = Algorithmia.client(CLI().getAPIkey(args.profile))
 
-    if(args.cmd == 'run'):
+    if args.cmd == 'run':
 
         print(CLI().runalgo(args, client))
 
-    elif(args.cmd == 'clone'):
+    elif args.cmd == 'clone':
 
         algo_name = args.algo
 
         print("cloning src for " + algo_name)
-        if(CLI().getAPIaddress(args.profile) == None):
+
+        if CLI().getAPIaddress(args.profile) == None:
             exitcode = os.system("git clone https://git.algorithmia.com/git/"+algo_name+".git")
         else:
             #replace https://api.<domain> with https://git.<domain>
             exitcode = os.system("git clone " + (CLI().getAPIaddress(args.profile).replace("//api.", "//git."))+"/git/"+algo_name+".git")
 
-        if(exitcode != 0):
+        if exitcode != 0:
             print("failed to clone\nis git installed?")
 
-    elif(args.cmd == 'ls'):
+    elif args.cmd == 'ls':
         print(CLI().ls(args.path, client, args.long))
 
-    elif(args.cmd == 'mkdir'):
+    elif args.cmd == 'mkdir':
         CLI().mkdir(args.path, client)
 
-    elif(args.cmd == 'rmdir'):
+    elif args.cmd == 'rmdir':
         CLI().rmdir(args.path, client, args.force)
 
-    elif(args.cmd == 'rm'):
+    elif args.cmd == 'rm':
         CLI().rm(args.path, client)
 
-    elif(args.cmd == 'cp'):
+    elif args.cmd == 'cp':
         CLI().cp(args.src,args.dest, client)
 
-    elif(args.cmd == 'cat'):
+    elif args.cmd == 'cat':
         print(CLI().cat(args.path, client))
     else:
         parser.parse_args(['-h'])
