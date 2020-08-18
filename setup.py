@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='algorithmia',
-    version='1.3.0',
+    version='1.4.0',
     description='Algorithmia Python Client',
     long_description='Algorithmia Python Client is a client library for accessing Algorithmia from python code. This library also gets bundled with any Python algorithms in Algorithmia.',
     url='http://github.com/algorithmiaio/algorithmia-python',
@@ -25,7 +25,7 @@ setup(
     ],
     include_package_data=True,
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'Natural Language :: English',
         'License :: OSI Approved :: MIT License',
