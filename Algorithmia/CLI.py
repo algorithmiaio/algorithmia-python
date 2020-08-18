@@ -154,9 +154,11 @@ class CLI():
 
         #for f in path
         file = client.file(path)
-
-        if file.exists():
-            file.delete()
+        try:
+            if file.exists():
+                file.delete()
+        except Algorithmia.errors.DataApiError as e:
+            print(e)
 
     # algo ls <path>
     def ls(self, path, client, l=False):

@@ -2,10 +2,15 @@ import sys
 import os
 import json
 import Algorithmia
+import six
 from Algorithmia.CLI import CLI
 import argparse
 
-
+#bind input to raw input
+try:
+    input = raw_input
+except NameError:
+    pass
 #CLI app to allow a user to run algorithms and manage data collections
 
 usage = """CLI for interaction with Algorithmia\n
@@ -111,8 +116,8 @@ def main():
 
         print("Configuring authentication for profile: " + args.profile)
 
-        APIaddress = input("enter API address [https://api.algorithmia.com]:")
-        APIkey = input("enter API key:")
+        APIaddress = input("enter API address [https://api.algorithmia.com]: ")
+        APIkey = input("enter API key: ")
 
         if len(APIkey) == 28 and APIkey.startswith("sim"):
             if APIaddress == "" or not APIaddress.startswith("https://api."):
