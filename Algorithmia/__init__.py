@@ -24,6 +24,9 @@ def client(api_key=None, api_address=None):
 def handler(apply_func, load_func=lambda: None):
     return Handler(apply_func, load_func)
 
+def insights():
+    return getDefaultClient().insights()
+
 # The default client to use, assuming the user does not want to construct their own
 defaultClient = None
 
