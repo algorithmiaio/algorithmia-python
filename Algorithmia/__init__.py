@@ -2,9 +2,8 @@
 
 from Algorithmia.client import Client
 from Algorithmia.handler import Handler
-import os
-
 from Algorithmia.insights import Insights
+import os
 
 apiKey = None
 apiAddress = None
@@ -27,7 +26,7 @@ def handler(apply_func, load_func=lambda: None):
     return Handler(apply_func, load_func)
 
 def insights():
-    return Insights()
+    return getDefaultClient().Insights()
 
 # The default client to use, assuming the user does not want to construct their own
 defaultClient = None
