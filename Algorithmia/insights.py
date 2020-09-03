@@ -12,4 +12,5 @@ class Insights(object):
 
     def reportInsights(self):
         # todo How will these metrics leave the python algorithm and get to the algorithm-queue-reader? Request post here as place holder
-        requests.post("","",self.insightsCollection)
+        # Post to queue-reader?
+        requests.post("algorithm/queue/reader/base/url/insights","",self.insightsCollection)
