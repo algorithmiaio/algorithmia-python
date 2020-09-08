@@ -42,7 +42,7 @@ class Client(object):
         else: return DataDirectory(self, dataUrl)
 
     # Used to send insight data to Algorithm Queue Reader in cluster
-    def collectInsights(self, insights):
+    def report_insights(self, insights):
         return Insights(insights)
 
 
