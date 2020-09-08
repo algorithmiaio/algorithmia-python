@@ -5,8 +5,8 @@ import json
 class Insights:
     # Example of correct insights:
     # {
-    #   {"insightKey":"aKey", "insightValue":"aValue"},
-    #   {"insightKey":"aKey2", "insightValue":"aValue2"}
+    #   {"aKey":"aValue"},
+    #   {"aKey2":"aValue2"}
     # }
     def __init__(self, insights):
         # TODO should we get the URL from a config?
