@@ -1,8 +1,9 @@
 import requests
-
+import json
+from json import JSONEncoder
 
 class Insights:
-    # Example of correct insights = { {"insightKey":"aKey", "insightValue":"aValue"}, {"insightKey":"aKey2", "insightValue":"aValue2"} }
+    # Sends a list of insights to the algorthm queue reader endpoint
     def __init__(self, insights):
         # TODO should we get the URL from a config?
-        requests.post("https://localhost:9000/insights", data=insights)
+        requests.post("https://localhost:9000/insights", data=json.dumps(insights.__dict__))
