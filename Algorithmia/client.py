@@ -41,7 +41,7 @@ class Client(object):
         if dataUrl.startswith('file://'): return LocalDataDirectory(self, dataUrl)
         else: return DataDirectory(self, dataUrl)
 
-    # Used to send insight data to Algorithm Queue Reader in cluster
+    # Used to send insight data to Algorithm Queue Reader in cluster. Accepts a list of insights
     def collectInsights(self, insights):
         return Insights(insights)
 
