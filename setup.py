@@ -1,10 +1,11 @@
+import distutils
 import os
 
 from setuptools import setup
 
 setup(
     name='algorithmia',
-    version='1.4.0',
+    version='1.4.4',
     description='Algorithmia Python Client',
     long_description='Algorithmia Python Client is a client library for accessing Algorithmia from python code. This library also gets bundled with any Python algorithms in Algorithmia.',
     url='http://github.com/algorithmiaio/algorithmia-python',
