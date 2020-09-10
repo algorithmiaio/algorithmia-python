@@ -5,7 +5,6 @@ import os
 class Insights:
     # Example of correct insights:
     # {"aKey":"aValue","aKey2":"aValue2"}
-    # TODO add this env variable to the deploy config in stage tools?
     def __init__(self, insights):
         headers = {}
         headers['Content-Type'] = 'application/json'
