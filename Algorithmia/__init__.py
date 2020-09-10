@@ -2,7 +2,6 @@
 
 from Algorithmia.client import Client
 from Algorithmia.handler import Handler
-from Algorithmia.insights import Insights
 import os
 
 apiKey = None
