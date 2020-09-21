@@ -9,5 +9,6 @@ class Insights:
         headers = {}
         headers['Content-Type'] = 'application/json'
         AQR_URL = os.getenv('ALGORITHM_QUEUE_READER_URL') or "http://localhost:9000"
+        insight_payload=[{"insight_key": key, "insight_value": insights[key]} for key in insights.keys()]
 
-        requests.post(AQR_URL+"/v1/insights", data=json.dumps(insights).encode('utf-8'), headers=headers)
+        requests.post(AQR_URL+"/v1/insights", data=json.dumps(insight_payload).encode('utf-8'), headers=headers)
