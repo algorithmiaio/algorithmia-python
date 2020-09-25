@@ -16,7 +16,7 @@ setup(
     'console_scripts': ['algo = Algorithmia.__main__:main']
     },
     install_requires=[
-        'requests',
+        'requests>=2.4.0',
         'six',
         'enum34',
         'toml',

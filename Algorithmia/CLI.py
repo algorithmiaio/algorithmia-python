@@ -1,9 +1,9 @@
 import Algorithmia
 import os
 from Algorithmia.algo_response import AlgoResponse
+from Algorithmia.client import REQUEST_TIMEOUT
 import json, re, requests, six
 import toml
-
 
 class CLI():
     def __init__(self):
@@ -102,7 +102,7 @@ class CLI():
 
         if(content != None):
             result = AlgoResponse.create_algo_response(requests.post(url, data=algo_input,
-                    headers={'Authorization':key,'Content-Type':content}, params= algo.query_parameters).json())
+                    headers={'Authorization':key,'Content-Type':content}, params= algo.query_parameters, timeout=REQUEST_TIMEOUT).json())
 
         if(result != None):
             output = result.result
