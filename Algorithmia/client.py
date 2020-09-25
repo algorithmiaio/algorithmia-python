@@ -9,6 +9,8 @@ from algorithmia_api_client import Configuration, DefaultApi, ApiClient
 import json, re, requests, six
 import os
 
+REQUEST_TIMEOUT = 5
+
 class Client(object):
     'Algorithmia Common Library'
 
@@ -40,6 +42,8 @@ class Client(object):
         if dataUrl.startswith('file://'): return LocalDataDirectory(self, dataUrl)
         else: return DataDirectory(self, dataUrl)
 
+    requests.post(url, data=algo_input,
+                    headers={'Authorization':key,'Content-Type':content}, params= algo.query_parameters, timeout=REQUEST_TIMEOUT).json()
     # Used internally to post json to the api and parse json response
     def postJsonHelper(self, url, input_object, parse_response_as_json=True, **query_parameters):
         headers = {}
@@ -60,7 +64,7 @@ class Client(object):
             input_json = json.dumps(input_object).encode('utf-8')
             headers['Content-Type'] = 'application/json'
 
-        response = requests.post(self.apiAddress + url, data=input_json, headers=headers, params=query_parameters)
+        response = requests.post(self.apiAddress + url, data=input_json, headers=headers, params=query_parameters, timeout=REQUEST_TIMEOUT)
 
         if parse_response_as_json:
             return response.json()
@@ -71,27 +75,27 @@ class Client(object):
         headers = {}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
-        return requests.get(self.apiAddress + url, headers=headers, params=query_parameters)
+        return requests.get(self.apiAddress + url, headers=headers, params=query_parameters, timeout=REQUEST_TIMEOUT)
 
     def patchHelper(self, url, params):
         headers = {'content-type': 'application/json'}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
-        return requests.patch(self.apiAddress + url, headers=headers, data=json.dumps(params))
+        return requests.patch(self.apiAddress + url, headers=headers, data=json.dumps(params), timeout=REQUEST_TIMEOUT)
 
     # Used internally to get http head result
     def headHelper(self, url):
         headers = {}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
-        return requests.head(self.apiAddress + url, headers=headers)
+        return requests.head(self.apiAddress + url, headers=headers, timeout=REQUEST_TIMEOUT)
 
     # Used internally to http put a file
     def putHelper(self, url, data):
         headers = {}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
-        response = requests.put(self.apiAddress + url, data=data, headers=headers)
+        response = requests.put(self.apiAddress + url, data=data, headers=headers, timeout=REQUEST_TIMEOUT)
         return response.json()
 
     # Used internally to http delete a file
@@ -99,5 +103,5 @@ class Client(object):
         headers = {}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
-        response = requests.delete(self.apiAddress + url, headers=headers)
+        response = requests.delete(self.apiAddress + url, headers=headers, timeout=REQUEST_TIMEOUT)
         return response.json()
