@@ -1,6 +1,7 @@
 'Algorithmia API Client (python)'
 
 import Algorithmia
+from Algorithmia.insights import Insights
 from Algorithmia.algorithm import Algorithm
 from Algorithmia.datafile import DataFile, LocalDataFile
 from Algorithmia.datadirectory import DataDirectory, LocalDataDirectory
@@ -39,6 +40,11 @@ class Client(object):
     def dir(self, dataUrl):
         if dataUrl.startswith('file://'): return LocalDataDirectory(self, dataUrl)
         else: return DataDirectory(self, dataUrl)
+
+    # Used to send insight data to Algorithm Queue Reader in cluster
+    def report_insights(self, insights):
+        return Insights(insights)
+
 
     # Used internally to post json to the api and parse json response
     def postJsonHelper(self, url, input_object, parse_response_as_json=True, **query_parameters):

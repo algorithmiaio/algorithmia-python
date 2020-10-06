@@ -11,6 +11,7 @@ class AlgoTest(unittest.TestCase):
     def setUp(self):
         self.client = Algorithmia.client()
 
+    @unittest.skip("skipping test; please re-enable asap - https://algorithmia.atlassian.net/browse/DEV-75")
     def test_call_binary(self):
         result = self.client.algo('util/Echo').pipe(bytearray('foo','utf-8'))
         self.assertEquals('binary', result.metadata.content_type)
