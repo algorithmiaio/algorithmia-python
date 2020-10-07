@@ -219,13 +219,13 @@ class CLI():
     def cat(self, path, client):
         result = ""
         for f in path:
-            if('data://' in f):
-                if(f[-1] == '*'):
+            if '://' in f and not f.startswith("http"):
+                if f[-1] == '*':
                     path += ['data://'+file.path for file in client.dir(f[:len(f)-2]).files()]
                 else:
                     file = client.file(f)
 
-                    if(file.exists()):
+                    if file.exists():
                         result += file.getString()
                     else:
                         result = "file does not exist "+f
