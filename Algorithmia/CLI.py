@@ -161,61 +161,57 @@ class CLI():
             print(e)
 
     # algo ls <path>
-    def ls(self, path, client, l=False):
-        #list dir
+    def ls(self, path, client, longlist=False):
+        # by default list user's hosted data
         listing = ""
-        if(path is None):
+        if path is None:
             path = "data://"
 
-        if('data://' in path):
-            file = path.split('/')
-            if(len(file) == 5 and file[-1] != ''):
-                #path is a file
-                directory = path[:-len(file[-1])]
-                f = client.dir(directory)
-                #get directory iterate files listing+=file if(filename == file[-1])
+        file = path.split('/')
+        if file[-1] != '':
+            # path is a file, list parent
+            directory = path[:-len(file[-1])]
+            f = client.dir(directory)
 
-                response = client.getHelper(f.url, **{})
-                if response.status_code != 200:
-                      raise DataApiError("failed to get file info: " + str(response.content))
+            response = client.getHelper(f.url, **{})
+            if response.status_code != 200:
+                  raise DataApiError("failed to get file info: " + str(response.content))
 
-                responseContent = response.content
-                if isinstance(responseContent, six.binary_type):
-                    responseContent = responseContent.decode()
+            responseContent = response.content
+            if isinstance(responseContent, six.binary_type):
+                responseContent = responseContent.decode()
 
-                content = json.loads(responseContent)
+            content = json.loads(responseContent)
 
-                if 'files' in content:
-                    f = client.file(path)
-                    for file_info in content['files']:
-                        if(file_info['filename'] == file[-1]):
-                            f.set_attributes(file_info)
+            if 'files' in content:
+                f = client.file(path)
+                for file_info in content['files']:
+                    if file_info['filename'] == file[-1]:
+                        f.set_attributes(file_info)
 
-                if(l):
+            if longlist:
+                listing += f.last_modified.strftime("%Y-%m-%d %H:%M:%S") + '   '
+                listing += str(f.size) + '   '
+                listing += f.path + "\n"
+            else:
+                listing += f.path + "\n"
+        else:
+            # path is a directory
+            if longlist:
+                listingDir = client.dir(path)
+                for f in listingDir.dirs():
+                    listing += f.path + "/\n"
+                for f in listingDir.files():
                     listing += f.last_modified.strftime("%Y-%m-%d %H:%M:%S") + '   '
                     listing += str(f.size) + '   '
-                    listing += 'data://'+f.path + "\n"
-                else:
-                    listing += 'data://'+f.path + "\n"
+                    listing += f.path + "\n"
+
             else:
-                #path is a directory
-                #long listing
-                if(l):
-
-                    listingDir = client.dir(path)
-                    for f in listingDir.files():
-                        listing += f.last_modified.strftime("%Y-%m-%d %H:%M:%S") + '   '
-                        listing += str(f.size) + '   '
-                        listing += 'data://'+f.path + "\n"
-                    for f in listingDir.dirs():
-                        listing += 'data://'+f.path + "\n"
-
-                else:
-                    listingDir = client.dir(path)
-                    for f in listingDir.list():
-                        listing += 'data://'+f.path + "\n"
-        else:
-            print("operand must be a path to a remote data source data://")
+                listingDir = client.dir(path)
+                for f in listingDir.dirs():
+                    listing += f.path + "/\n"
+                for f in listingDir.files():
+                    listing += f.path + "\n"
 
         return listing
 
