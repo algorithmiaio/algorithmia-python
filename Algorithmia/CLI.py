@@ -252,7 +252,6 @@ class CLI():
                 destPath = dest
 
                 path = dest.split('/')
-                print(path)
 
                 if(os.path.isdir(dest) or client.dir(dest).exists() and len(path) <= 5):
                     if(dest[-1] == '/' and path[-1] == ''):
