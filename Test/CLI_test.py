@@ -89,7 +89,7 @@ class CLITest(unittest.TestCase):
 		dest = "data://.my/moredata/test2.txt"
 		CLI().cp(src,dest,self.client)
 
-		result = CLI().ls("data://.my/moredata",self.client)
+		result = CLI().ls("data://.my/moredata/",self.client)
 		self.assertTrue("test2.txt" in result)
 
 #remote to local
