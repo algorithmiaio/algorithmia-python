@@ -11,11 +11,10 @@ class AlgoTest(unittest.TestCase):
     def setUp(self):
         self.client = Algorithmia.client()
 
-# TODO Test fails in pipeline build.
-    # def test_call_binary(self):
-    #     result = self.client.algo('util/Echo').pipe(bytearray('foo','utf-8'))
-    #     self.assertEquals('binary', result.metadata.content_type)
-    #     self.assertEquals(bytearray('foo','utf-8'), result.result)
+    def test_call_binary(self):
+        result = self.client.algo('util/Echo').pipe(bytearray('foo','utf-8'))
+        self.assertEquals('binary', result.metadata.content_type)
+        self.assertEquals(bytearray('foo','utf-8'), result.result)
 
     def test_text_unicode(self):
         telephone = u"\u260E"
