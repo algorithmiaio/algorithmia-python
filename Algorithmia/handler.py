@@ -1,4 +1,5 @@
 import sys
+import os
 import json
 import base64
 import traceback
@@ -70,10 +71,13 @@ class Handler(object):
         return response_string
 
     def write_to_pipe(self, data_string):
-        with open(self.FIFO_PATH, 'w') as f:
-            f.write(data_string)
-            f.write('\n')
-        sys.stdout.flush()
+        if os.name == "posix":
+            with open(self.FIFO_PATH, 'w') as f:
+                f.write(data_string)
+                f.write('\n')
+            sys.stdout.flush()
+        if os.name == "nt":
+            sys.stdin = data_string
 
     def serve(self):
         try:

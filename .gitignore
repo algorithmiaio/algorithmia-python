@@ -62,3 +62,7 @@ target/
 
 #pypirc
 pypirc
+
+#Visual Studio Code
+.vscode
+

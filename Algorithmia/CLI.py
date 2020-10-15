@@ -1,5 +1,6 @@
 import Algorithmia
 import os
+from Algorithmia.errors import DataApiError
 from Algorithmia.algo_response import AlgoResponse
 import json, re, requests, six
 import toml
@@ -294,7 +295,7 @@ class CLI():
             #ifwindows
             #%LOCALAPPDATA%\Algorithmia\config
             #create the api key file if it does not exist
-            keyPath = "%LOCALAPPDATA%\\Algorithmia\\"
+            keyPath = os.path.expandvars("%LOCALAPPDATA%\\Algorithmia\\")
         
         keyFile = "config"
 
