@@ -7,17 +7,20 @@ from Algorithmia.datafile import DataFile, LocalDataFile
 from Algorithmia.datadirectory import DataDirectory, LocalDataDirectory
 from algorithmia_api_client import Configuration, DefaultApi, ApiClient
 
-import json, re, requests, six
+import json, re, requests, six, certifi
 import os
 
 class Client(object):
     'Algorithmia Common Library'
 
+    ca_cert = "./ca_cert.pem"
     apiKey = None
     apiAddress = None
+    requestSession = None
 
-    def __init__(self, apiKey = None, apiAddress = None):
+    def __init__(self, apiKey = None, apiAddress = None, caCert = None):
         # Override apiKey with environment variable
+        self.requestSession = requests.Session()
         if apiKey is None and 'ALGORITHMIA_API_KEY' in os.environ:
             apiKey = os.environ['ALGORITHMIA_API_KEY']
         self.apiKey = apiKey
@@ -25,6 +28,17 @@ class Client(object):
             self.apiAddress = apiAddress
         else:
             self.apiAddress = Algorithmia.getApiAddress()
+        if caCert is None and 'REQUESTS_CA_BUNDLE' in os.environ:
+            caCert = os.environ('REQUESTS_CA_BUNDLE')
+        elif caCert is not None and 'REQUESTS_CA_BUNDLE' not in os.environ:
+            self.catCerts(caCert)
+            self.requestSession.verify = self.ca_cert
+        elif caCert is not None and 'REQUESTS_CA_BUNDLE' in os.environ:
+            self.catCerts(caCert)
+            self.requestSession.verify = self.ca_cert
+            os.environ['REQUESTS_CA_BUNDLE'] = os.path.realpath(self.ca_cert)
+
+        
         config = Configuration()
         config.api_key['Authorization'] = self.apiKey
         config.host = "{}/v1".format(self.apiAddress)
@@ -66,7 +80,8 @@ class Client(object):
             input_json = json.dumps(input_object).encode('utf-8')
             headers['Content-Type'] = 'application/json'
 
-        response = requests.post(self.apiAddress + url, data=input_json, headers=headers, params=query_parameters)
+        #response = requests.post(self.apiAddress + url, data=input_json, headers=headers, params=query_parameters)
+        response = self.requestSession.post(self.apiAddress + url, data=input_json, headers=headers, params=query_parameters)
 
         if parse_response_as_json:
             return response.json()
@@ -77,27 +92,27 @@ class Client(object):
         headers = {}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
-        return requests.get(self.apiAddress + url, headers=headers, params=query_parameters)
+        return self.requestSession.get(self.apiAddress + url, headers=headers, params=query_parameters)
 
     def patchHelper(self, url, params):
         headers = {'content-type': 'application/json'}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
-        return requests.patch(self.apiAddress + url, headers=headers, data=json.dumps(params))
+        return self.requestSession.patch(self.apiAddress + url, headers=headers, data=json.dumps(params))
 
     # Used internally to get http head result
     def headHelper(self, url):
         headers = {}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
-        return requests.head(self.apiAddress + url, headers=headers)
+        return self.requestSession.head(self.apiAddress + url, headers=headers)
 
     # Used internally to http put a file
     def putHelper(self, url, data):
         headers = {}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
-        response = requests.put(self.apiAddress + url, data=data, headers=headers)
+        response = self.requestSession.put(self.apiAddress + url, data=data, headers=headers)
         return response.json()
 
     # Used internally to http delete a file
@@ -105,5 +120,13 @@ class Client(object):
         headers = {}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
-        response = requests.delete(self.apiAddress + url, headers=headers)
+        response = self.requestSession.delete(self.apiAddress + url, headers=headers)
         return response.json()
+
+    def catCerts(self,customCert):
+        if not os.path.exists(self.ca_cert):
+            open(self.ca_cert,'w')
+        with open(customCert,'r') as custom_cert:
+            open(self.ca_cert,'w').write(custom_cert.read())
+        with open(certifi.where(),'r') as cert:
+            open(self.ca_cert,'a').write(cert.read())

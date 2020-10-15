@@ -11,7 +11,12 @@ class AlgoTest(unittest.TestCase):
     def setUp(self):
         self.client = Algorithmia.client()
 
-
+    def test_call_customCert(self):
+        c = Algorithmia.client(ca_cert="./algoCA.pem")
+        result = c.algo('util/Echo').pipe(bytearray('foo','utf-8'))
+        self.assertEquals('binary', result.metadata.content_type)
+        self.assertEquals(bytearray('foo','utf-8'), result.result)
+        
     def test_call_binary(self):
         result = self.client.algo('util/Echo').pipe(bytearray('foo','utf-8'))
         self.assertEquals('binary', result.metadata.content_type)
