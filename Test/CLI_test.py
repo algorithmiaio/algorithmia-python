@@ -132,7 +132,7 @@ class CLITest(unittest.TestCase):
 		#key for test account
 		key = "simdylfCeXZ8/MgaQzokUHlalWm1"
 		address = 'apiAddress'
-		profile = 'defualt'
+		profile = 'default'
 		CLI().auth(key,address,profile)
 		resultK = CLI().getAPIkey(profile)
 		resultA = CLI().getAPIaddress(profile)

@@ -6,7 +6,8 @@ from Test.handler_algorithms import *
 
 
 class HandlerTest(unittest.TestCase):
-    fifo_pipe_path = "/tmp/algoout"
+    if os.name == "posix":
+        fifo_pipe_path = "/tmp/algoout"
     fifo_pipe = None
 
     def setUp(self):
@@ -16,7 +17,17 @@ class HandlerTest(unittest.TestCase):
             pass
 
     def tearDown(self):
-        os.remove(self.fifo_pipe_path)
+        if os.name == "posix":
+            os.remove(self.fifo_pipe_path)
+
+    def read_in(self):
+        if os.name == "posix":
+            return self.read_from_pipe()
+        if os.name == "nt":        
+            return self.read_from_stdin()
+
+    def read_from_stdin(self):
+        return json.loads(sys.stdin)
 
     def read_from_pipe(self):
         read_obj = os.read(self.fifo_pipe, 10000)
@@ -27,14 +38,15 @@ class HandlerTest(unittest.TestCase):
         return actual_output
 
     def open_pipe(self):
-        self.fifo_pipe = os.open(self.fifo_pipe_path, os.O_RDONLY | os.O_NONBLOCK)
+        if os.name == "posix":
+            self.fifo_pipe = os.open(self.fifo_pipe_path, os.O_RDONLY | os.O_NONBLOCK)
 
     def execute_example(self, input, apply, load=lambda: None):
         self.open_pipe()
         algo = Algorithmia.handler(apply, load)
         sys.stdin = input
         algo.serve()
-        output = self.read_from_pipe()
+        output = self.read_in()
         return output
 
     def execute_without_load(self, input, apply):
@@ -42,7 +54,7 @@ class HandlerTest(unittest.TestCase):
         algo = Algorithmia.handler(apply)
         sys.stdin = input
         algo.serve()
-        output = self.read_from_pipe()
+        output = self.read_in()
         return output
 
 

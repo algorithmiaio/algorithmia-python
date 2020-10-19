@@ -11,7 +11,6 @@ class AlgoTest(unittest.TestCase):
     def setUp(self):
         self.client = Algorithmia.client()
 
-
     def test_call_binary(self):
         result = self.client.algo('util/Echo').pipe(bytearray('foo','utf-8'))
         self.assertEquals('binary', result.metadata.content_type)
