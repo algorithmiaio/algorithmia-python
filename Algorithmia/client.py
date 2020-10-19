@@ -34,9 +34,9 @@ class Client(object):
             self.catCerts(caCert)
             self.requestSession.verify = self.ca_cert
         elif caCert is not None and 'REQUESTS_CA_BUNDLE' in os.environ:
+            #if both are available, use the one supplied in the constructor. I assume that a user supplying a cert in initialization wants to use that one. 
             self.catCerts(caCert)
             self.requestSession.verify = self.ca_cert
-            os.environ['REQUESTS_CA_BUNDLE'] = os.path.realpath(self.ca_cert)
 
         
         config = Configuration()
