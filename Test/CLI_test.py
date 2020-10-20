@@ -12,7 +12,7 @@ import argparse
 class CLITest(unittest.TestCase):
 	def setUp(self):
 		# create a directory to use in testing the cp command 
-		self.client = Algorithmia.client('simdylfCeXZ8/MgaQzokUHlalWm1')
+		self.client = Algorithmia.client()
 		CLI().mkdir("data://.my/moredata", self.client)
 		if(not os.path.exists("./TestFiles/")):
 			os.mkdir("./TestFiles/")
@@ -130,7 +130,7 @@ class CLITest(unittest.TestCase):
 	
 	def test_auth(self):
 		#key for test account
-		key = "simdylfCeXZ8/MgaQzokUHlalWm1"
+		key = os.getenv('ALGORITHMIA_API_KEY')
 		address = 'apiAddress'
 		profile = 'default'
 		CLI().auth(key,address,profile)
