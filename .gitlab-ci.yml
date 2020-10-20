@@ -1,0 +1,13 @@
+stages:
+  - test
+
+variables:
+  PROJECT_NAME: algorithmia-python
+  DOCKER_HOST: tcp://docker:2375/
+  DOCKER_DRIVER: overlay2
+  RUNNING_ON_BUILD_SERVER: "true"
+
+test:
+  stage: test
+  script:
+    - if [ -z "$ALGORITHMIA_API_KEY" ]; then echo "Algorithmia API key not defined"; exit 1; fi
