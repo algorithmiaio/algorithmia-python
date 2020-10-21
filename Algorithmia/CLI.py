@@ -280,7 +280,7 @@ class CLI():
                     file = client.file(f).getFile()
                     filename = file.name
                     file.close()
-                    os.system("mv " + filename + " " + destPath)
+                    os.replace(filename,destPath)
                 else:
                     print("at least one of the operands must be a path to a remote data source data://")
 
