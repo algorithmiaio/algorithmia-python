@@ -4,6 +4,7 @@ from Algorithmia.errors import DataApiError
 from Algorithmia.algo_response import AlgoResponse
 import json, re, requests, six
 import toml
+import shutil
 
 
 class CLI():
@@ -280,7 +281,7 @@ class CLI():
                     file = client.file(f).getFile()
                     filename = file.name
                     file.close()
-                    os.replace(filename,destPath)
+                    shutil.move(filename,destPath)
                 else:
                     print("at least one of the operands must be a path to a remote data source data://")
 
