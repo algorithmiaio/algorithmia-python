@@ -24,3 +24,4 @@ test:pytest:36:
     - pip install -r requirements.txt --quiet
     - pip install pytest --quiet
     - pytest
+
