@@ -18,8 +18,8 @@ def file(dataUrl):
 def dir(dataUrl):
     return getDefaultClient().dir(dataUrl)
 
-def client(api_key=None, api_address=None):
-    return Client(api_key, api_address)
+def client(api_key=None, api_address=None, ca_cert=None):
+    return Client(api_key, api_address, ca_cert)
 
 def handler(apply_func, load_func=lambda: None):
     return Handler(apply_func, load_func)
