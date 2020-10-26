@@ -80,7 +80,6 @@ class Client(object):
             input_json = json.dumps(input_object).encode('utf-8')
             headers['Content-Type'] = 'application/json'
 
-        #response = requests.post(self.apiAddress + url, data=input_json, headers=headers, params=query_parameters)
         response = self.requestSession.post(self.apiAddress + url, data=input_json, headers=headers, params=query_parameters)
 
         if parse_response_as_json:
