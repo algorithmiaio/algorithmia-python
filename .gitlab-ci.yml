@@ -10,4 +10,18 @@ variables:
 test:
   stage: test
   script:
-    - if [ -z "$ALGORITHMIA_API_KEY" ]; then echo "Algorithmia API key not defined"; exit 1; fi
+    - if [ -z $ALGORITHMIA_API_KEY ]; then echo "Algorithmia API key not defined"; exit 1; fi
+
+test:pylint:36:
+  image: python:3.6
+  script:
+    - pip install pylint --quiet
+    - pylint --ignored-classes=_socketobject *.py || echo $?
+
+test:pytest:36:
+  image: python:3.6
+  script:
+    - pip install -r requirements.txt --quiet
+    - pip install pytest --quiet
+    - pytest
+
