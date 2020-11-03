@@ -1,4 +1,5 @@
 import sys
+import os
 # look in ../ BEFORE trying to import Algorithmia.  If you append to the
 # you will load the version installed on the computer.
 sys.path = ['../'] + sys.path
@@ -11,6 +12,18 @@ class AlgoTest(unittest.TestCase):
     def setUp(self):
         self.client = Algorithmia.client()
 
+    def test_call_customCert(self):
+        open("./test.pem",'w')
+        c = Algorithmia.client(ca_cert="./test.pem")
+        result = c.algo('util/Echo').pipe(bytearray('foo','utf-8'))
+        self.assertEquals('binary', result.metadata.content_type)
+        self.assertEquals(bytearray('foo','utf-8'), result.result)
+        try:
+            os.remove("./test.pem")
+            os.remove("./ca_cert.pem")
+        except OSError as e:
+            print(e)
+        
     def test_call_binary(self):
         result = self.client.algo('util/Echo').pipe(bytearray('foo','utf-8'))
         self.assertEquals('binary', result.metadata.content_type)
