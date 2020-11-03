@@ -29,7 +29,7 @@ class Client(object):
         else:
             self.apiAddress = Algorithmia.getApiAddress()
         if caCert is None and 'REQUESTS_CA_BUNDLE' in os.environ:
-            caCert = os.environ('REQUESTS_CA_BUNDLE')
+            caCert = os.environ.get('REQUESTS_CA_BUNDLE')
             self.catCerts(caCert)
             self.requestSession.verify = self.ca_cert
         elif caCert is not None and 'REQUESTS_CA_BUNDLE' not in os.environ:
