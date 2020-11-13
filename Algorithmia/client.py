@@ -16,7 +16,7 @@ class Client(object):
     'Algorithmia Common Library'
    
 
-    handle, ca_cert = mkstemp(suffix = ".pem")
+    handle, ca_cert = None,None
     apiKey = None
     apiAddress = None
     requestSession = None
@@ -35,16 +35,13 @@ class Client(object):
             caCert = os.environ.get('REQUESTS_CA_BUNDLE')
             self.catCerts(caCert)
             self.requestSession.verify = self.ca_cert
-            atexit.register(self.exit_handler)
         elif caCert is not None and 'REQUESTS_CA_BUNDLE' not in os.environ:
             self.catCerts(caCert)
             self.requestSession.verify = self.ca_cert
-            atexit.register(self.exit_handler)
         elif caCert is not None and 'REQUESTS_CA_BUNDLE' in os.environ:
             #if both are available, use the one supplied in the constructor. I assume that a user supplying a cert in initialization wants to use that one. 
             self.catCerts(caCert)
             self.requestSession.verify = self.ca_cert
-            atexit.register(self.exit_handler)
 
 
         config = Configuration()
@@ -132,13 +129,15 @@ class Client(object):
 
     # Used internally to concatonate given custom cert with built in certificate store. 
     def catCerts(self,customCert):
+        self.handle, self.ca_cert = mkstemp(suffix = ".pem")
         #wrapped all in the with context handler to prevent unclosed files
         with open(customCert,'r') as custom_cert, \
             open(self.ca_cert,'w') as ca,\
             open(certifi.where(),'r') as cert:
                 new_cert = custom_cert.read() + cert.read()
                 ca.write(new_cert)
-        
+        atexit.register(self.exit_handler)
+
 
     # Used internally to clean up temporary files
     def exit_handler(self):
