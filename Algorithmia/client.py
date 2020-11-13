@@ -7,13 +7,16 @@ from Algorithmia.datafile import DataFile, LocalDataFile
 from Algorithmia.datadirectory import DataDirectory, LocalDataDirectory
 from algorithmia_api_client import Configuration, DefaultApi, ApiClient
 
+from tempfile import mkstemp
+import atexit
 import json, re, requests, six, certifi
 import os
 
 class Client(object):
     'Algorithmia Common Library'
+   
 
-    ca_cert = "./ca_cert.pem"
+    handle, ca_cert = mkstemp(suffix = ".pem")
     apiKey = None
     apiAddress = None
     requestSession = None
@@ -32,20 +35,23 @@ class Client(object):
             caCert = os.environ.get('REQUESTS_CA_BUNDLE')
             self.catCerts(caCert)
             self.requestSession.verify = self.ca_cert
+            atexit.register(self.exit_handler)
         elif caCert is not None and 'REQUESTS_CA_BUNDLE' not in os.environ:
             self.catCerts(caCert)
             self.requestSession.verify = self.ca_cert
+            atexit.register(self.exit_handler)
         elif caCert is not None and 'REQUESTS_CA_BUNDLE' in os.environ:
             #if both are available, use the one supplied in the constructor. I assume that a user supplying a cert in initialization wants to use that one. 
             self.catCerts(caCert)
             self.requestSession.verify = self.ca_cert
+            atexit.register(self.exit_handler)
 
-        
+
         config = Configuration()
         config.api_key['Authorization'] = self.apiKey
         config.host = "{}/v1".format(self.apiAddress)
         self.manageApi = DefaultApi(ApiClient(config))
-
+        
     def algo(self, algoRef):
         return Algorithm(self, algoRef)
 
@@ -124,10 +130,21 @@ class Client(object):
         response = self.requestSession.delete(self.apiAddress + url, headers=headers)
         return response.json()
 
+    # Used internally to concatonate given custom cert with built in certificate store. 
     def catCerts(self,customCert):
-        if not os.path.exists(self.ca_cert):
-            open(self.ca_cert,'w')
-        with open(customCert,'r') as custom_cert:
-            open(self.ca_cert,'w').write(custom_cert.read())
-        with open(certifi.where(),'r') as cert:
-            open(self.ca_cert,'a').write(cert.read())
+        #wrapped all in the with context handler to prevent unclosed files
+        with open(customCert,'r') as custom_cert, \
+            open(self.ca_cert,'w') as ca,\
+            open(certifi.where(),'r') as cert:
+                new_cert = custom_cert.read() + cert.read()
+                ca.write(new_cert)
+        
+
+    # Used internally to clean up temporary files
+    def exit_handler(self):
+        try:
+            os.close(self.handle)
+            os.unlink(self.ca_cert)
+        except OSError as e:
+            print(e)   
+

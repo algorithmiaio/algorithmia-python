@@ -20,7 +20,6 @@ class AlgoTest(unittest.TestCase):
         self.assertEquals(bytearray('foo','utf-8'), result.result)
         try:
             os.remove("./test.pem")
-            os.remove("./ca_cert.pem")
         except OSError as e:
             print(e)
         
