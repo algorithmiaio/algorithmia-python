@@ -60,6 +60,21 @@ class Client(object):
         if dataUrl.startswith('file://'): return LocalDataDirectory(self, dataUrl)
         else: return DataDirectory(self, dataUrl)
 
+    def create_user(self, requestString):
+        url = "/v1/users" 
+        response = self.postJsonHelper(url,input_object=requestString)
+        return response
+
+    def create_org(self,requestString):
+        url = "/v1/organizations"
+        response = self.postJsonHelper(url=url,input_object=requestString)
+        return response
+
+    def invite_to_org(self,orgname,username):
+        url = "/v1/organizations/"+orgname+"/members/"+username
+        response = self.putHelper(url,data={})
+        return response
+
     # Used to send insight data to Algorithm Queue Reader in cluster
     def report_insights(self, insights):
         return Insights(insights)
@@ -117,6 +132,8 @@ class Client(object):
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
         response = self.requestSession.put(self.apiAddress + url, data=data, headers=headers)
+        if response._content == b'':
+            return response
         return response.json()
 
     # Used internally to http delete a file
@@ -125,6 +142,8 @@ class Client(object):
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
         response = self.requestSession.delete(self.apiAddress + url, headers=headers)
+        if response.reason == "No Content":
+            return response
         return response.json()
 
     # Used internally to concatonate given custom cert with built in certificate store. 
