@@ -32,7 +32,7 @@ class client_test(unittest.TestCase):
 
     def test_invite_to_org(self):
         response = self.c.invite_to_org("a_myOrg38","a_Mrtest4")
-        self.assertEqual(200,response['status_code'])
+        self.assertEqual(200,response.status_code)
 
 
 if __name__ == '__main__':
