@@ -52,6 +52,7 @@ def parse_exception(error):
 
 class Metadata(object):
     def __init__(self, metadata):
+        super().__init__()
         self.content_type = metadata['content_type']
         self.duration = metadata['duration']
         self.stdout = None
@@ -59,9 +60,8 @@ class Metadata(object):
             self.stdout = metadata['stdout']
         self.full_metadata = metadata
 
+    def __getitem__(self, key):
+        return self.__dict__[key]
+
     def __repr__(self):
         return "Metadata(content_type='%s',duration=%s,stdout=%s)" % (self.content_type, self.duration, self.stdout)
-
-    def __getattr__(self, item):
-        d = vars(self)
-        return d[item]
