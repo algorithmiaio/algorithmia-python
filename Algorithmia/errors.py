@@ -19,9 +19,17 @@ class AlgorithmException(ApiError):
         return repr(self.message)
 
 
-def raiseApiError(result):
+def raiseDataApiError(result):
     if 'error' in result:
         if 'message' in result['error']:
             raise DataApiError(result['error']['message'])
         else:
             raise DataApiError(result['error'])
+
+
+def raiseAlgoApiError(result):
+    if 'error' in result:
+        if 'message' in result['error']:
+            raise AlgorithmException(result['error']['message'])
+        else:
+            raise AlgorithmException(result['error'])
