@@ -49,7 +49,8 @@ class Algorithm(object):
             api_response = self.client.manageApi.create_algorithm(self.username, create_request)
             return api_response
         except ApiException as e:
-            raiseApiError(e.body)
+            parsed = json.loads(e.body)
+            raiseApiError(parsed)
 
     # Update the settings in an algorithm
     def update(self, details={}, settings={}, version_info={}):
@@ -63,7 +64,8 @@ class Algorithm(object):
             api_response = self.client.manageApi.update_algorithm(self.username, self.algoname, update_request)
             return api_response
         except ApiException as e:
-            raiseApiError(e.body)
+            parsed = json.loads(e.body)
+            raiseApiError(parsed)
 
     # Publish an algorithm
     def publish(self, details={}, settings={}, version_info={}):
@@ -77,7 +79,8 @@ class Algorithm(object):
             api_response = self.client.manageApi.publish_algorithm(self.username, self.algoname, version_request)
             return api_response
         except ApiException as e:
-            raiseApiError(e.body)
+            parsed = json.loads(e.body)
+            raiseApiError(parsed)
 
     def builds(self, limit=56, marker=None):
         try:
@@ -87,7 +90,8 @@ class Algorithm(object):
                 api_response = self.client.manageApi.get_algorithm_builds(self.username, self.algoname, limit=limit)
             return api_response
         except ApiException as e:
-            raiseApiError(e.body)
+            parsed = json.loads(e.body)
+            raiseApiError(parsed)
 
     def get_build(self, build_id):
         # Get the build object for a given build_id
@@ -96,7 +100,8 @@ class Algorithm(object):
             api_response = self.client.manageApi.get_algorithm_build_by_id(self.username, self.algoname, build_id)
             return api_response
         except ApiException as e:
-            raiseApiError(e)
+            parsed = json.loads(e.body)
+            raiseApiError(parsed)
 
     def get_build_logs(self, build_id):
         # Get the algorithm build logs for a given build_id
@@ -104,7 +109,8 @@ class Algorithm(object):
             api_response = self.client.manageApi.get_algorithm_build_logs(self.username, self.algoname, build_id)
             return api_response
         except ApiException as e:
-            raiseApiError(e)
+            parsed = json.loads(e.body)
+            raiseApiError(parsed)
 
     # Get info on an algorithm
     def info(self, algo_hash=None):
@@ -116,7 +122,8 @@ class Algorithm(object):
                 api_response = self.client.manageApi.get_algorithm(self.username, self.algoname)
             return api_response
         except ApiException as e:
-            raiseApiError(e.body)
+            parsed = json.loads(e.body)
+            raiseApiError(parsed)
 
     # Get all versions of the algorithm, with the given filters
     def versions(self, limit=None, marker=None, published=None, callable=None):
@@ -137,7 +144,8 @@ class Algorithm(object):
             api_response = self.client.manageApi.get_algorithm_versions(self.username, self.algoname, **kwargs)
             return api_response
         except ApiException as e:
-            raiseApiError(e.body)
+            parsed = json.loads(e.body)
+            raiseApiError(parsed)
 
 
     # Compile an algorithm
@@ -147,7 +155,8 @@ class Algorithm(object):
             api_response = self.client.manageApi.algorithms_username_algoname_compile_post(self.username, self.algoname)
             return api_response
         except ApiException as e:
-            raiseApiError(e.body)
+            parsed = json.loads(e.body)
+            raiseApiError(parsed)
 
     # Pipe an input into this algorithm
     def pipe(self, input1):
