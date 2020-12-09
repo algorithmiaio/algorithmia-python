@@ -17,3 +17,11 @@ class AlgorithmException(ApiError):
         self.error_type = error_type
     def __str__(self):
         return repr(self.message)
+
+
+def raiseApiError(result):
+    if 'error' in result:
+        if 'message' in result['error']:
+            raise DataApiError(result['error']['message'])
+        else:
+            raise DataApiError(result['error'])

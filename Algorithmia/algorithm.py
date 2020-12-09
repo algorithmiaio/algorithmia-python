@@ -5,7 +5,7 @@ import json
 import re
 from Algorithmia.async_response import AsyncResponse
 from Algorithmia.algo_response import AlgoResponse
-from Algorithmia.errors import ApiError, ApiInternalError
+from Algorithmia.errors import ApiError, ApiInternalError, raiseApiError
 from enum import Enum
 from algorithmia_api_client.rest import ApiException
 from algorithmia_api_client import CreateRequest, UpdateRequest, VersionRequest, Details, Settings, SettingsMandatory, SettingsPublish, \
@@ -49,8 +49,7 @@ class Algorithm(object):
             api_response = self.client.manageApi.create_algorithm(self.username, create_request)
             return api_response
         except ApiException as e:
-            error_message = json.loads(e.body)["error"]["message"]
-            raise ApiError(error_message)
+            raiseApiError(e.body)
 
     # Update the settings in an algorithm
     def update(self, details={}, settings={}, version_info={}):
@@ -64,8 +63,7 @@ class Algorithm(object):
             api_response = self.client.manageApi.update_algorithm(self.username, self.algoname, update_request)
             return api_response
         except ApiException as e:
-            error_message = json.loads(e.body)["error"]["message"]
-            raise ApiError(error_message)
+            raiseApiError(e.body)
 
     # Publish an algorithm
     def publish(self, details={}, settings={}, version_info={}):
@@ -79,8 +77,7 @@ class Algorithm(object):
             api_response = self.client.manageApi.publish_algorithm(self.username, self.algoname, version_request)
             return api_response
         except ApiException as e:
-            error_message = json.loads(e.body)["error"]["message"]
-            raise ApiError(error_message)
+            raiseApiError(e.body)
 
     def builds(self, limit=56, marker=None):
         try:
@@ -90,8 +87,7 @@ class Algorithm(object):
                 api_response = self.client.manageApi.get_algorithm_builds(self.username, self.algoname, limit=limit)
             return api_response
         except ApiException as e:
-            error_message = json.loads(e.body)["error"]["message"]
-            raise ApiError(error_message)
+            raiseApiError(e.body)
 
     def get_build(self, build_id):
         # Get the build object for a given build_id
@@ -100,8 +96,7 @@ class Algorithm(object):
             api_response = self.client.manageApi.get_algorithm_build_by_id(self.username, self.algoname, build_id)
             return api_response
         except ApiException as e:
-            error_message = json.loads(e.body)["error"]["message"]
-            raise ApiError(error_message)
+            raiseApiError(e)
 
     def get_build_logs(self, build_id):
         # Get the algorithm build logs for a given build_id
@@ -109,8 +104,7 @@ class Algorithm(object):
             api_response = self.client.manageApi.get_algorithm_build_logs(self.username, self.algoname, build_id)
             return api_response
         except ApiException as e:
-            error_message = json.loads(e.body)["error"]["message"]
-            raise ApiError(error_message)
+            raiseApiError(e)
 
     # Get info on an algorithm
     def info(self, algo_hash=None):
@@ -122,8 +116,7 @@ class Algorithm(object):
                 api_response = self.client.manageApi.get_algorithm(self.username, self.algoname)
             return api_response
         except ApiException as e:
-            error_message = json.loads(e.body)["error"]["message"]
-            raise ApiError(error_message)
+            raiseApiError(e.body)
 
     # Get all versions of the algorithm, with the given filters
     def versions(self, limit=None, marker=None, published=None, callable=None):
@@ -144,8 +137,7 @@ class Algorithm(object):
             api_response = self.client.manageApi.get_algorithm_versions(self.username, self.algoname, **kwargs)
             return api_response
         except ApiException as e:
-            error_message = json.loads(e.body)["error"]["message"]
-            raise ApiError(error_message)
+            raiseApiError(e.body)
 
 
     # Compile an algorithm
@@ -155,8 +147,7 @@ class Algorithm(object):
             api_response = self.client.manageApi.algorithms_username_algoname_compile_post(self.username, self.algoname)
             return api_response
         except ApiException as e:
-            error_message = json.loads(e.body)["error"]["message"]
-            raise ApiError(error_message)
+            raiseApiError(e.body)
 
     # Pipe an input into this algorithm
     def pipe(self, input1):

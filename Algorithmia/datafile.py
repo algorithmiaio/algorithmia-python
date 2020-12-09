@@ -9,7 +9,7 @@ import os.path
 
 from Algorithmia.util import getParentAndBase
 from Algorithmia.data import DataObject, DataObjectType
-from Algorithmia.errors import DataApiError
+from Algorithmia.errors import DataApiError, raiseApiError
 
 
 class DataFile(DataObject):
@@ -211,10 +211,3 @@ def localPutHelper(path, contents):
             f.write(contents)
             return dict(status='success')
     except Exception as e: return dict(error=str(e))
-
-def raiseApiError(result):
-    if 'error' in result:
-        if 'message' in result['error']:
-            raise DataApiError(result['error']['message'])
-        else:
-            raise DataApiError(result['error'])
