@@ -52,7 +52,6 @@ def parse_exception(error):
 
 class Metadata(object):
     def __init__(self, metadata):
-        super().__init__()
         self.content_type = metadata['content_type']
         self.duration = metadata['duration']
         self.stdout = None
