@@ -9,7 +9,7 @@ import os.path
 
 from Algorithmia.util import getParentAndBase
 from Algorithmia.data import DataObject, DataObjectType
-from Algorithmia.errors import DataApiError
+from Algorithmia.errors import DataApiError, raiseDataApiError
 
 
 class DataFile(DataObject):
@@ -92,7 +92,7 @@ class DataFile(DataObject):
         if isinstance(data, six.binary_type):
             result = self.client.putHelper(self.url, data)
             if 'error' in result:
-                raiseApiError(result)
+                raiseDataApiError(result)
             else:
                 return self
         else:
@@ -103,7 +103,7 @@ class DataFile(DataObject):
         jsonElement = json.dumps(data)
         result = self.client.putHelper(self.url, jsonElement)
         if 'error' in result:
-            raiseApiError(result)
+            raiseDataApiError(result)
         else:
             return self
 
@@ -112,7 +112,7 @@ class DataFile(DataObject):
         with open(path, 'rb') as f:
             result = self.client.putHelper(self.url, f)
             if 'error' in result:
-                raiseApiError(result)
+                raiseDataApiError(result)
             else:
                 return self
 
@@ -120,7 +120,7 @@ class DataFile(DataObject):
         # Delete from data api
         result = self.client.deleteHelper(self.url)
         if 'error' in result:
-            raiseApiError(result)
+            raiseDataApiError(result)
         else:
             return True
 
@@ -187,14 +187,14 @@ class LocalDataFile():
         jsonElement = json.dumps(data)
         result = localPutHelper(self.path, jsonElement)
         if 'error' in result:
-            raiseApiError(result)
+            raiseDataApiError(result)
         else:
             return self
 
     def putFile(self, path):
         result = localPutHelper(path, self.path)
         if 'error' in result:
-            raiseApiError(result)
+            raiseDataApiError(result)
         else:
             return self
 
@@ -211,10 +211,3 @@ def localPutHelper(path, contents):
             f.write(contents)
             return dict(status='success')
     except Exception as e: return dict(error=str(e))
-
-def raiseApiError(result):
-    if 'error' in result:
-        if 'message' in result['error']:
-            raise DataApiError(result['error']['message'])
-        else:
-            raise DataApiError(result['error'])
