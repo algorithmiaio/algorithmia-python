@@ -95,26 +95,34 @@ class Handler(object):
                 }
             })
             return self.write_to_pipe(load_error_string)
-        for line in sys.stdin:
-            try:
-                request = json.loads(line)
-                formatted_input = self.format_data(request)
+        if all([(len(sys.argv) > 1), (sys.argv[1] == "ON_PROD")]):
+                request = json.loads(input())
                 if self.load_result:
-                    apply_result = self.apply_func(formatted_input, self.load_result)
+                    apply_result = self.apply_func(request, self.load_result)
                 else:
-                    apply_result = self.apply_func(formatted_input)
-                response_string = self.format_response(apply_result)
-            except Exception as e:
-                if hasattr(e, 'error_type'):
-                    error_type = e.error_type
-                else:
-                    error_type = 'AlgorithmError'
-                response_string = json.dumps({
-                    'error': {
-                        'message': str(e),
-                        'stacktrace': traceback.format_exc(),
-                        'error_type': error_type
-                    }
-                })
-            finally:
-                self.write_to_pipe(response_string)
+                    apply_result = self.apply_func(request)
+                print(apply_result)
+        else:
+            for line in sys.stdin:
+                try:
+                    request = json.loads(line)
+                    formatted_input = self.format_data(request)
+                    if self.load_result:
+                        apply_result = self.apply_func(formatted_input, self.load_result)
+                    else:
+                        apply_result = self.apply_func(formatted_input)
+                    response_string = self.format_response(apply_result)
+                except Exception as e:
+                    if hasattr(e, 'error_type'):
+                        error_type = e.error_type
+                    else:
+                        error_type = 'AlgorithmError'
+                    response_string = json.dumps({
+                        'error': {
+                            'message': str(e),
+                            'stacktrace': traceback.format_exc(),
+                            'error_type': error_type
+                        }
+                    })
+                finally:
+                    self.write_to_pipe(response_string)
