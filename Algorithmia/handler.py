@@ -95,7 +95,7 @@ class Handler(object):
                 }
             })
             return self.write_to_pipe(load_error_string)
-        if all([(len(sys.argv) > 1), (sys.argv[1] == "ON_PROD")]):
+        if len(sys.argv) > 1 and sys.argv[1] == "ON_PROD" :
                 request = json.loads(input())
                 if self.load_result:
                     apply_result = self.apply_func(request, self.load_result)
