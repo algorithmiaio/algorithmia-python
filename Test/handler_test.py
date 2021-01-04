@@ -5,61 +5,15 @@ import os
 from Test.handler_algorithms import *
 
 
-class HandlerTest(unittest.TestCase):
-    if os.name == "posix":
-        fifo_pipe_path = "/tmp/algoout"
-    fifo_pipe = None
+class HandlerAbstract:
 
-    def setUp(self):
-        try:
-            os.mkfifo(self.fifo_pipe_path)
-        except Exception:
-            pass
+    def execute_example(self, input, apply, load=lambda: None) -> str:
+        ...
 
-    def tearDown(self):
-        if os.name == "posix":
-            os.remove(self.fifo_pipe_path)
+    def execute_without_load(self, input, apply) -> str:
+        ...
 
-    def read_in(self):
-        if os.name == "posix":
-            return self.read_from_pipe()
-        if os.name == "nt":        
-            return self.read_from_stdin()
-
-    def read_from_stdin(self):
-        return json.loads(sys.stdin)
-
-    def read_from_pipe(self):
-        read_obj = os.read(self.fifo_pipe, 10000)
-        if isinstance(read_obj, bytes):
-            read_obj = read_obj.decode("utf-8")
-        actual_output = json.loads(read_obj)
-        os.close(self.fifo_pipe)
-        return actual_output
-
-    def open_pipe(self):
-        if os.name == "posix":
-            self.fifo_pipe = os.open(self.fifo_pipe_path, os.O_RDONLY | os.O_NONBLOCK)
-
-    def execute_example(self, input, apply, load=lambda: None):
-        self.open_pipe()
-        algo = Algorithmia.handler(apply, load)
-        sys.stdin = input
-        algo.serve()
-        output = self.read_in()
-        return output
-
-    def execute_without_load(self, input, apply):
-        self.open_pipe()
-        algo = Algorithmia.handler(apply)
-        sys.stdin = input
-        algo.serve()
-        output = self.read_in()
-        return output
-
-
-
-# ----- Tests ----- #
+    # ----- Tests ----- #
 
     def test_basic(self):
         input = {'content_type': 'json', 'data': 'Algorithmia'}
@@ -84,7 +38,6 @@ class HandlerTest(unittest.TestCase):
         input = [str(json.dumps(input))]
         actual_output = self.execute_without_load(input, apply_basic)
         self.assertEqual(expected_output, actual_output)
-
 
     def test_algorithm_loading_basic(self):
         input = {'content_type': 'json', 'data': 'ignore me'}
@@ -128,3 +81,72 @@ class HandlerTest(unittest.TestCase):
         actual_output["error"]["stacktrace"] = ''
         self.assertEqual(expected_output, actual_output)
 
+
+class HandlerLocalTest(HandlerAbstract, unittest.TestCase):
+    def read_from_stdin(self):
+        return json.loads(sys.stdin)
+
+    def execute_example(self, input, apply, load=lambda: None):
+        algo = Algorithmia.handler(apply, load)
+        sys.stdin = input
+        output = algo.serve()
+        return json.loads(output)
+
+    def execute_without_load(self, input, apply):
+        algo = Algorithmia.handler(apply)
+        sys.stdin = input
+        output = algo.serve()
+        return json.loads(output)
+
+
+class HandlerTest(HandlerAbstract, unittest.TestCase):
+    if os.name == "posix":
+        fifo_pipe_path = "/tmp/algoout"
+    fifo_pipe = None
+
+    def setUp(self):
+        try:
+            os.mkfifo(self.fifo_pipe_path)
+        except Exception:
+            pass
+
+    def tearDown(self):
+        if os.name == "posix":
+            os.remove(self.fifo_pipe_path)
+
+    def read_in(self):
+        if os.name == "posix":
+            return self.read_from_pipe()
+        if os.name == "nt":
+            return self.read_from_stdin()
+
+    def read_from_stdin(self):
+        return json.loads(sys.stdin)
+
+    def read_from_pipe(self):
+        read_obj = os.read(self.fifo_pipe, 10000)
+        if isinstance(read_obj, bytes):
+            read_obj = read_obj.decode("utf-8")
+        actual_output = json.loads(read_obj)
+        os.close(self.fifo_pipe)
+        return actual_output
+
+    def open_pipe(self):
+        if os.name == "posix":
+            self.fifo_pipe = os.open(self.fifo_pipe_path, os.O_RDONLY | os.O_NONBLOCK)
+
+    def execute_example(self, input, apply, load=lambda: None):
+        self.open_pipe()
+        algo = Algorithmia.handler(apply, load)
+        sys.stdin = input
+        algo.serve()
+        output = self.read_in()
+        return output
+
+    def execute_without_load(self, input, apply):
+        self.open_pipe()
+        algo = Algorithmia.handler(apply)
+        sys.stdin = input
+        algo.serve()
+        output = self.read_in()
+        return output
