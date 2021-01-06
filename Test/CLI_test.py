@@ -133,11 +133,33 @@ class CLITest(unittest.TestCase):
 		key = os.getenv('ALGORITHMIA_API_KEY')
 		address = 'apiAddress'
 		profile = 'default'
-		CLI().auth(key,address,profile)
+		CLI().auth(key,address,profile=profile)
 		resultK = CLI().getAPIkey(profile)
 		resultA = CLI().getAPIaddress(profile)
 		self.assertEqual(resultK, key)
 		self.assertEqual(resultA, address)
+
+	def test_auth_cert(self):
+
+		localfile = "./TestFiles/fakecert.pem"
+
+		testfile = open(localfile, "w")
+		testfile.write("")
+		testfile.close()
+
+		#key for test account
+		key = os.getenv('ALGORITHMIA_API_KEY')
+		address = 'apiAddress'
+		cacert = localfile
+		profile = 'test'
+
+		CLI().auth(key,address,cacert,profile)
+		resultK = CLI().getAPIkey(profile)
+		resultA = CLI().getAPIaddress(profile)
+		resultC = CLI().getCert(profile)
+		self.assertEqual(resultK, key)
+		self.assertEqual(resultA, address)
+		self.assertEqual(resultC, cacert)
 
 	def test_rm(self):
 		localfile = "./TestFiles/testRM.txt"
