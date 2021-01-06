@@ -11,7 +11,7 @@ class CLI():
     def __init__(self):
         self.client = Algorithmia.client()
         # algo auth
-    def auth(self, apikey, apiaddress, profile):
+    def auth(self, apikey, apiaddress, cacert="", profile="default"):
 
         #store api key in local config file and read from it each time a client needs to be created
         key = self.getconfigfile()
@@ -21,10 +21,12 @@ class CLI():
             if(profile in config['profiles'].keys()):
                 config['profiles'][profile]['api_key'] = apikey
                 config['profiles'][profile]['api_server'] = apiaddress
+                config['profiles'][profile]['ca_cert'] = cacert
+                
             else:
-                config['profiles'][profile] = {'api_key':apikey,'api_server':apiaddress}
+                config['profiles'][profile] = {'api_key':apikey,'api_server':apiaddress,'ca_cert':cacert}
         else:
-            config['profiles'] = {profile:{'api_key':apikey,'api_server':apiaddress}}
+            config['profiles'] = {profile:{'api_key':apikey,'api_server':apiaddress,'ca_cert':cacert}}
 
         with open(key, "w") as key:
             toml.dump(config,key)
@@ -309,6 +311,7 @@ class CLI():
                 file.write("[profiles.default]\n")
                 file.write("api_key = ''\n")
                 file.write("api_server = ''\n")
+                file.write("ca_cert = ''\n")
 
 
         key = keyPath+keyFile
@@ -330,3 +333,11 @@ class CLI():
         apiaddress = config_dict['profiles'][profile]['api_server']
 
         return apiaddress
+
+    def getCert(self,profile):
+        key = self.getconfigfile()
+        config_dict = toml.load(key)
+        cert = None
+        if('profiles' in config_dict.keys() and profile in config_dict['profiles'].keys()):
+            cert = config_dict['profiles'][profile]['ca_cert']
+        return cert
