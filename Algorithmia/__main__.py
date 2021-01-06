@@ -1,6 +1,7 @@
 import sys
 import os
 import json
+sys.path = ['../'] + sys.path
 import Algorithmia
 import six
 from Algorithmia.CLI import CLI
@@ -118,12 +119,13 @@ def main():
 
         APIaddress = input("enter API address [https://api.algorithmia.com]: ")
         APIkey = input("enter API key: ")
+        CACert = input('(optional) enter path to custom CA certificate: ')
 
         if len(APIkey) == 28 and APIkey.startswith("sim"):
             if APIaddress == "" or not APIaddress.startswith("https://api."):
                 APIaddress = "https://api.algorithmia.com"
-
-            CLI().auth(APIkey, APIaddress, args.profile)
+            
+            CLI().auth(apikey=APIkey, apiaddress=APIaddress, cacert=CACert, profile=args.profile)
         else:
             print("invalid api key")
 
@@ -134,6 +136,10 @@ def main():
     client = Algorithmia.client()
     if len(CLI().getAPIaddress(args.profile)) > 1:
         client = Algorithmia.client(CLI().getAPIkey(args.profile), CLI().getAPIaddress(args.profile))
+    elif len(CLI().getAPIaddress(args.profile)) > 1 and len(CLI().getCert(args.profile)) > 1:
+        client = Algorithmia.client(CLI().getAPIkey(args.profile), CLI().getAPIaddress(args.profile),CLI().getCert(args.profile))
+    elif len(CLI().getAPIaddress(args.profile)) < 1 and len(CLI().getCert(args.profile)) > 1:
+        client = Algorithmia.client(CLI().getAPIkey(args.profile), CLI().getAPIaddress(args.profile),CLI().getCert(args.profile))
     else:
         client = Algorithmia.client(CLI().getAPIkey(args.profile))
 
