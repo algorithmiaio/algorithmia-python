@@ -1,5 +1,6 @@
 import sys
 import os
+from Algorithmia.errors import AlgorithmException
 # look in ../ BEFORE trying to import Algorithmia.  If you append to the
 # you will load the version installed on the computer.
 sys.path = ['../'] + sys.path
@@ -40,6 +41,12 @@ class AlgoTest(unittest.TestCase):
         result2 = self.client.algo('util/Echo').pipe(result1.result)
         self.assertEquals('text', result2.metadata.content_type)
         self.assertEquals(telephone, result2.result)
+
+    def test_exception_ipa_algo(self):
+        try:
+            result = self.client.algo('zeryx/raise_exception').pipe("")
+        except AlgorithmException as e:
+            self.assertEqual(e.message, "This is an exception")
 
     # def test_json_unicode(self):
     #     telephone = [u"\u260E"]

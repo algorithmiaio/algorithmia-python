@@ -1,4 +1,5 @@
 import re
+from Algorithmia.errors import DataApiError
 
 FNAME_MATCH = re.compile(r'/([^/]+)$')  # From the last slash to the end of the string 
 PREFIX = re.compile(r'([^:]+://)(/)?(.+)')   # Check for a prefix like data://

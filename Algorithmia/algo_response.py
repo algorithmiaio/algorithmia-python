@@ -1,5 +1,7 @@
 import base64
 from Algorithmia.errors import AlgorithmException
+import sys
+
 
 class AlgoResponse(object):
     def __init__(self, result, metadata):
@@ -10,7 +12,10 @@ class AlgoResponse(object):
         return 'AlgoResponse(result=%s,metadata=%s)' % (self.result, self.metadata)
 
     def __repr__(self):
-        return self.__unicode__().encode('utf-8')
+        if sys.version_info[0] >= 3:
+            return self.__unicode__()
+        else:
+            return self.__unicode__().encode('utf-8')
 
     @staticmethod
     def create_algo_response(responseJson):
@@ -44,6 +49,7 @@ def parse_exception(error):
     e.stacktrace = stacktrace
     return e
 
+
 class Metadata(object):
     def __init__(self, metadata):
         self.content_type = metadata['content_type']
@@ -52,6 +58,9 @@ class Metadata(object):
         if 'stdout' in metadata:
             self.stdout = metadata['stdout']
         self.full_metadata = metadata
+
+    def __getitem__(self, key):
+        return self.__dict__[key]
 
     def __repr__(self):
         return "Metadata(content_type='%s',duration=%s,stdout=%s)" % (self.content_type, self.duration, self.stdout)
