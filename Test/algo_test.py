@@ -42,6 +42,18 @@ class AlgoTest(unittest.TestCase):
         self.assertEquals('text', result2.metadata.content_type)
         self.assertEquals(telephone, result2.result)
 
+    def test_get_build_by_id(self):
+        result = self.client.algo("J_bragg/Echo").get_build("1a392e2c-b09f-4bae-a616-56c0830ac8e5")
+        self.assertTrue(result.build_id is not None)
+
+    def test_get_build_logs(self):
+        result = self.client.algo("J_bragg/Echo").get_build_logs("1a392e2c-b09f-4bae-a616-56c0830ac8e5")
+        self.assertTrue(result.logs is not None)
+
+    def test_get_scm_status(self):
+        result = self.client.algo("J_bragg/Echo").get_scm_status()
+        self.assertTrue(result.scm_connection_status is not None)
+
     def test_exception_ipa_algo(self):
         try:
             result = self.client.algo('zeryx/raise_exception').pipe("")

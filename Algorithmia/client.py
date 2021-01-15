@@ -69,6 +69,16 @@ class Client(object):
         url = "/v1/organizations"
         response = self.postJsonHelper(url=url,input_object=requestString)
         return response
+    
+    def get_org(self,org_name):
+        url = "/v1/organizations/"+org_name
+        response = self.getHelper(url)
+        return json.loads(response.content.decode("utf-8"))
+
+    def edit_org(self,org_name,requestString):
+        url = "/v1/organizations/"+org_name
+        response = self.putHelper(url,requestString)
+        return response
 
     def invite_to_org(self,orgname,username):
         url = "/v1/organizations/"+orgname+"/members/"+username
@@ -131,6 +141,13 @@ class Client(object):
         headers = {}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
+            
+        try:
+            j = json.loads(data)
+            headers['Content-Type'] = 'application/json'
+        except TypeError as e:
+            pass
+
         response = self.requestSession.put(self.apiAddress + url, data=data, headers=headers)
         if response._content == b'':
             return response
