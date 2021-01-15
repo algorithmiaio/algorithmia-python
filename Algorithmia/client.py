@@ -69,6 +69,16 @@ class Client(object):
         url = "/v1/organizations"
         response = self.postJsonHelper(url=url,input_object=requestString)
         return response
+    
+    def get_org(self,org_name):
+        url = "/v1/organizations/"+org_name
+        response = self.getHelper(url)
+        return json.loads(response.content.decode("utf-8"))
+
+    def edit_org(self,org_name,requestString):
+        url = "/v1/organizations/"+org_name
+        response = self.putHelper(url,requestString)
+        return response
 
     def invite_to_org(self,orgname,username):
         url = "/v1/organizations/"+orgname+"/members/"+username
@@ -127,11 +137,26 @@ class Client(object):
         return self.requestSession.head(self.apiAddress + url, headers=headers)
 
     # Used internally to http put a file
-    def putHelper(self, url, data):
+    def putHelper(self, url, input_object):
         headers = {}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
-        response = self.requestSession.put(self.apiAddress + url, data=data, headers=headers)
+            
+        input_json = None
+        if input_object is None:
+            input_json = json.dumps(None).encode('utf-8')
+            headers['Content-Type'] = 'application/json'
+        elif isinstance(input_object, six.string_types):
+            input_json = input_object.encode('utf-8')
+            headers['Content-Type'] = 'text/plain'
+        elif isinstance(input_object, bytearray) or isinstance(input_object, bytes):
+            input_json = bytes(input_object)
+            headers['Content-Type'] = 'application/octet-stream'
+        else:
+            input_json = json.dumps(input_object).encode('utf-8')
+            headers['Content-Type'] = 'application/json'
+
+        response = self.requestSession.put(self.apiAddress + url, data=input_json, headers=headers)
         if response._content == b'':
             return response
         return response.json()
