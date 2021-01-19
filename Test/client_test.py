@@ -30,6 +30,27 @@ class client_test(unittest.TestCase):
         response = self.c.create_org({"org_name": self.orgname, "org_label": "some label", "org_contact_name": "Some owner", "org_email": self.orgname+"@algo.com"})
         self.assertEqual(self.orgname,response['org_name'])
 
+    def test_get_org(self):
+        response = self.c.get_org("a_myOrg84")
+        self.assertEqual("a_myOrg84",response['org_name'])
+
+    def test_edit_org(self):
+        orgname="a_myOrg84"
+
+        obj = {
+        "id": "b85d8c4e-7f3c-40b9-9659-6adc2cb0e16f",
+        "org_name": "a_myOrg84",
+        "org_label": "some label",
+        "org_contact_name": "Some owner",
+        "org_email": "a_myOrg84@algo.com",
+        "org_created_at": "2020-11-30T23:51:40",
+        "type_id": "3d40e3b0-d82a-11ea-9a3c-0ee5e2d35097",
+        "resource_type": "organization"
+        }
+
+        response = self.c.edit_org(orgname,obj)
+        self.assertEqual(204,response.status_code)
+
     def test_invite_to_org(self):
         response = self.c.invite_to_org("a_myOrg38","a_Mrtest4")
         self.assertEqual(200,response.status_code)

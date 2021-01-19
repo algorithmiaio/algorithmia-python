@@ -112,6 +112,15 @@ class Algorithm(object):
             error_message = json.loads(e.body)
             raiseAlgoApiError(error_message)
 
+
+    def get_scm_status(self):
+        try:
+            api_response = self.client.manageApi.get_algorithm_scm_connection_status(self.username, self.algoname)
+            return api_response
+        except ApiException as e:
+            error_message = json.loads(e.body)
+            raiseAlgoApiError(error_message)
+
     # Get info on an algorithm
     def info(self, algo_hash=None):
         try:
