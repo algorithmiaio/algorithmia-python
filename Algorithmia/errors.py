@@ -30,6 +30,18 @@ def raiseDataApiError(result):
 def raiseAlgoApiError(result):
     if 'error' in result:
         if 'message' in result['error']:
-            raise AlgorithmException(result['error']['message'])
+            message = result['error']['message']
         else:
-            raise AlgorithmException(result['error'])
+            message = None
+        if 'error_type' in result['error']:
+            err_type = result['error']['error_type']
+        else:
+            err_type = None
+        if 'stack_trace' in result['error']:
+            stacktrace = result['error']['stack_trace']
+        else:
+            stacktrace = None
+        if stacktrace and message:
+            raise AlgorithmException(message="\n".join([message, stacktrace]), error_type=err_type)
+        else:
+            raise AlgorithmException(message=message, error_type=err_type)

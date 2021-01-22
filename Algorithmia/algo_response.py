@@ -1,5 +1,5 @@
 import base64
-from Algorithmia.errors import AlgorithmException
+from Algorithmia.errors import raiseAlgoApiError
 import sys
 
 
@@ -22,7 +22,7 @@ class AlgoResponse(object):
         # Parse response JSON
         if 'error' in responseJson:
             # Failure
-            raise parse_exception(responseJson['error'])
+            raise raiseAlgoApiError(responseJson)
         else:
             metadata = Metadata(responseJson['metadata'])
             # Success, check content_type
@@ -33,22 +33,6 @@ class AlgoResponse(object):
                 return AlgoResponse(None, metadata)
             else:
                 return AlgoResponse(responseJson['result'], metadata)
-
-
-def parse_exception(error):
-    message = error['message']
-    if 'stacktrace' in error:
-        stacktrace = error['stacktrace']
-    else:
-        stacktrace = None
-    if 'error_type' in error:
-        error_type = error['error_type']
-    else:
-        error_type = None
-    e = AlgorithmException(message=message, error_type=error_type)
-    e.stacktrace = stacktrace
-    return e
-
 
 class Metadata(object):
     def __init__(self, metadata):
