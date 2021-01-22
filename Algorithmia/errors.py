@@ -12,11 +12,15 @@ class DataApiError(ApiError):
 
 class AlgorithmException(ApiError):
     '''Base algorithm error exception'''
-    def __init__(self, message, error_type=None):
+    def __init__(self, message, stack_trace=None, error_type=None):
         self.message = message
         self.error_type = error_type
+        self.stack_trace = stack_trace
     def __str__(self):
-        return repr(self.message)
+        if self.stack_trace:
+            return repr(self.message + "\n" + self.stack_trace)
+        else:
+            return repr(self.message)
 
 
 def raiseDataApiError(result):
@@ -30,6 +34,15 @@ def raiseDataApiError(result):
 def raiseAlgoApiError(result):
     if 'error' in result:
         if 'message' in result['error']:
-            raise AlgorithmException(result['error']['message'])
+            message = result['error']['message']
         else:
-            raise AlgorithmException(result['error'])
+            message = None
+        if 'error_type' in result['error']:
+            err_type = result['error']['error_type']
+        else:
+            err_type = None
+        if 'stack_trace' in result['error']:
+            stacktrace = result['error']['stack_trace']
+        else:
+            stacktrace = None
+        raise AlgorithmException(message=message, stack_trace=stacktrace, error_type=err_type)
