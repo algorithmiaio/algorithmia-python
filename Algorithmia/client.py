@@ -77,7 +77,8 @@ class Client(object):
 
     def edit_org(self,org_name,requestString):
         url = "/v1/organizations/"+org_name
-        response = self.putHelper(url,requestString)
+        data = json.dumps(requestString).encode('utf-8')
+        response = self.putHelper(url,data)
         return response
 
     def invite_to_org(self,orgname,username):
@@ -142,7 +143,7 @@ class Client(object):
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
         try:
-            data = json.dumps(data).encode('utf-8')
+            out = json.loads(data)
             headers['Content-Type'] = 'application/json'
         except TypeError as e:
             pass
