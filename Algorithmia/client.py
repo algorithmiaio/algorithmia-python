@@ -12,6 +12,7 @@ import atexit
 import json, re, requests, six, certifi
 import os
 
+
 class Client(object):
     'Algorithmia Common Library'
    
@@ -20,6 +21,7 @@ class Client(object):
     apiKey = None
     apiAddress = None
     requestSession = None
+
 
     def __init__(self, apiKey = None, apiAddress = None, caCert = None):
         # Override apiKey with environment variable
@@ -77,7 +79,8 @@ class Client(object):
 
     def edit_org(self,org_name,requestString):
         url = "/v1/organizations/"+org_name
-        response = self.putHelper(url,requestString)
+        data = json.dumps(requestString).encode('utf-8')
+        response = self.putHelper(url,data)
         return response
 
     def invite_to_org(self,orgname,username):
@@ -136,17 +139,12 @@ class Client(object):
             headers['Authorization'] = self.apiKey
         return self.requestSession.head(self.apiAddress + url, headers=headers)
 
+
     # Used internally to http put a file
     def putHelper(self, url, data):
         headers = {}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
-        try:
-            data = json.dumps(data).encode('utf-8')
-            headers['Content-Type'] = 'application/json'
-        except TypeError as e:
-            pass
-
         response = self.requestSession.put(self.apiAddress + url, data=data, headers=headers)
         if response._content == b'':
             return response
