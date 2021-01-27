@@ -145,6 +145,9 @@ class Client(object):
         headers = {}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
+        if isJson(data):
+            headers['Content-Type'] = 'application/json'
+
         response = self.requestSession.put(self.apiAddress + url, data=data, headers=headers)
         if response._content == b'':
             return response
@@ -180,3 +183,10 @@ class Client(object):
         except OSError as e:
             print(e)   
 
+def isJson(myjson):
+    try:
+        json_object = json.loads(myjson)
+    except (ValueError,TypeError) as e:
+        return False
+
+    return True
