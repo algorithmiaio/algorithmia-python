@@ -42,6 +42,12 @@ class DataFileTest(unittest.TestCase):
         except Exception as e:
             self.fail("set_attributes failed with exception: " + str(e))
 
+    def test_putJson(self):
+        file = '.my/empty/test.json'
+        df = DataFile(self.client,'data://'+file)
+        response = df.putJson({"hello":"world"})
+        self.assertEqual(response.path,file)
+        
 class LocalFileTest(unittest.TestCase):
     DUMMY_TEXT = 'this file gets populated during testing'
     EXISTING_TEXT = 'this file exists before testing'
