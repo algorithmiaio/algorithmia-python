@@ -4,8 +4,11 @@ import json
 sys.path = ['../'] + sys.path
 import Algorithmia
 import six
+import subprocess
+import toml
 from Algorithmia.CLI import CLI
 import argparse
+import shtab
 
 #bind input to raw input
 try:
@@ -39,17 +42,60 @@ General commands include:\n
     --profile <name>\n\n
 """
 
+
+def get_profiles():
+    d = toml.load(CLI().getconfigfile())
+    profiles = []
+    for profile in d['profiles'].keys():
+        profiles.append(profile)
+    return profiles
+
+def gen_completions(parser):
+    script=""
+    shell = os.environ["SHELL"]
+    if "bash" in shell:
+        script = shtab.complete_bash(parser)
+    elif "zsh" in shell:
+        script = shtab.complete_zsh(parser)
+    return script
+
+def install_completions(script):
+    shell = os.environ["SHELL"]
+    print("Installing completions")
+    if "bash" in shell:
+        if(not os.path.exists('/etc/bash_completion.d/algo')):
+            try:
+                with open("/etc/bash_completion.d/algo","w",newline="\n") as file:
+                    file.write(script)
+            except PermissionError:
+                bashCMD = ["echo",script,"|","sudo","tee","-a", "/etc/bash_completion.d/algo"]
+                process = subprocess.Popen(bashCMD,stdout=subprocess.PIPE)
+                output, error = process.communicate()
+                print("Bash completions should be automatically sourced in subsequent shells if 'bash-completion' is installed. You may manually source them by running:")
+                print("source /etc/bash_completion.d/algo")
+    elif "zsh" in shell:
+        if(not os.path.exists('/usr/local/share/zsh/site-functions/_algo')):
+            try:
+                with open("/usr/local/share/zsh/site-functions/_algo","w",newline="\n") as file:
+                    file.write(script)
+            except PermissionError:
+                zCMD = ["sudo tee -a /usr/local/share/zsh/site-functions/_algo 1>/dev/null"]
+                process = subprocess.Popen(zCMD,stdin=subprocess.PIPE,shell=True)
+                output,error = process.communicate(input=bytes(script,'utf-8'))
+                print("Zsh completions should load in subsequent shells if your \$fpath contains '/usr/local/share/zsh/site-functions'. Reload completions in your current shell by running:")
+                print("compinit")
+
 def main():
     parser = argparse.ArgumentParser('algo', description = "algo [<cmd>] [options] [<args>...] [--help] [--profile]")
 
     subparsers = parser.add_subparsers(help = 'sub cmd',dest = 'cmd')
 
     parser_auth = subparsers.add_parser('auth', help = 'save api key and api address for profile')
-    parser_auth.add_argument('--profile', action = 'store', type = str, default = 'default')
+    parser_auth.add_argument('--profile', action = 'store', type = str, default = 'default',choices=get_profiles())
 
     parser_clone = subparsers.add_parser('clone', help = 'clone <algo> clone the algorithm repository')
     parser_clone.add_argument('algo')
-    parser_clone.add_argument('--profile', action = 'store', type = str, default = 'default')
+    parser_clone.add_argument('--profile', action = 'store', type = str, default = 'default',choices=get_profiles())
 
     #parse options for the run command
     parser_run = subparsers.add_parser('run', help = 'algo run <algo> [input options] <args..> [output options] run an algorithm')
@@ -59,13 +105,13 @@ def main():
     parser_run.add_argument('-t','--text', action = 'store', help = 'treat input as text', default = None)
     parser_run.add_argument('-j','--json', action = 'store', help = 'treat input as json data', default = None)
     parser_run.add_argument('-b','--binary', action = 'store', help = 'treat input as binary data', default = None)
-    parser_run.add_argument('-D','--data-file', action = 'store', help = 'specify a path to an input file', default = None)
-    parser_run.add_argument('-T','--text-file', action = 'store', help = 'specify a path to a text file', default = None)
-    parser_run.add_argument('-J','--json-file', action = 'store', help = 'specify a path to a json file', default = None)
-    parser_run.add_argument('-B','--binary-file', action = 'store', help = 'specify a path to a binary file', default = None)
+    parser_run.add_argument('-D','--data-file', action = 'store', help = 'specify a path to an input file', default = None, metavar="DATA_FILE", choices=shtab.Required.FILE)
+    parser_run.add_argument('-T','--text-file', action = 'store', help = 'specify a path to a text file',  default = None, metavar="TEXT_FILE", choices=shtab.Required.FILE)
+    parser_run.add_argument('-J','--json-file', action = 'store', help = 'specify a path to a json file', default = None, metavar="JSON_FILE", choices=shtab.Required.FILE)
+    parser_run.add_argument('-B','--binary-file', action = 'store', help = 'specify a path to a binary file', default = None, metavar="BINARY_FILE", choices=shtab.Required.FILE)
     parser_run.add_argument('--timeout', action = 'store',type = int, default = 300, help = 'specify a timeout (seconds)')
     parser_run.add_argument('--debug', action = 'store_true', help = 'print the stdout from the algo <this only works for the owner>')
-    parser_run.add_argument('--profile', action = 'store', type = str, default = 'default')
+    parser_run.add_argument('--profile', action = 'store', type = str, default = 'default',choices=get_profiles())
     parser_run.add_argument('-o', '--output', action = 'store', default = None, type = str)
 
     #subparser for ls
@@ -73,42 +119,44 @@ def main():
 
     parser_ls.add_argument('-l', '--long', action = 'store_true')
     parser_ls.add_argument('path', nargs  = '?', default = None)
-    parser_ls.add_argument('--profile', action = 'store', type = str, default = 'default')
+    parser_ls.add_argument('--profile', action = 'store', type = str, default = 'default',choices=get_profiles())
 
     #subparser for rm
     parser_rm = subparsers.add_parser('rm', help = 'rm <path> remove a file', )
 
     parser_rm.add_argument('path', nargs  = '?', default = None)
-    parser_rm.add_argument('--profile', action = 'store', type = str, default = 'default')
+    parser_rm.add_argument('--profile', action = 'store', type = str, default = 'default',choices=get_profiles())
 
     #subparser for mkdir
     parser_mkdir = subparsers.add_parser('mkdir', help = 'mkdir <directory> create a directory')
 
     parser_mkdir.add_argument('path', help = 'directory to create')
-    parser_mkdir.add_argument('--profile', action = 'store', type = str, default = 'default')
+    parser_mkdir.add_argument('--profile', action = 'store', type = str, default = 'default',choices=get_profiles())
 
     #subparser for rmdir
     parser_rmdir = subparsers.add_parser('rmdir', help = 'rmdir [-f] <directory> remove a directory')
 
     parser_rmdir.add_argument('-f', '--force', action = 'store_true', help = 'force directory removal if it is not empty')
     parser_rmdir.add_argument('path', help = 'directory to remove')
-    parser_rmdir.add_argument('--profile', action = 'store', type = str, default = 'default')
+    parser_rmdir.add_argument('--profile', action = 'store', type = str, default = 'default',choices=get_profiles())
 
     #subparser for cp
     parser_cp = subparsers.add_parser('cp', help = 'cp <src,...> <dest> copy file(s) to the destination',)
 
     parser_cp.add_argument('src', nargs = '*', type = str, help = 'file(s) to be copied')
     parser_cp.add_argument('dest', help = 'destination for file(s) to be copied to')
-    parser_cp.add_argument('--profile', action = 'store', type = str, default = 'default')
+    parser_cp.add_argument('--profile', action = 'store', type = str, default = 'default',choices=get_profiles())
 
     #sub parser for cat
     parser_cat = subparsers.add_parser('cat', help = 'cat <path,...> concatenate and print file(s)')
 
     parser_cat.add_argument('path', nargs = '*', help = 'file(s) to concatenate and print')
-    parser_cat.add_argument('--profile', action = 'store', type = str, default = 'default')
+    parser_cat.add_argument('--profile', action = 'store', type = str, default = 'default',choices=get_profiles())
 
     subparsers.add_parser('help')
-    parser.add_argument('--profile', action = 'store', type = str, default = 'default')
+    parser.add_argument('--profile', action = 'store', type = str, default = 'default',choices=get_profiles())
+
+    script = gen_completions(parser)
 
     args = parser.parse_args()
 
@@ -120,6 +168,8 @@ def main():
         APIaddress = input("enter API address [https://api.algorithmia.com]: ")
         APIkey = input("enter API key: ")
         CACert = input('(optional) enter path to custom CA certificate: ')
+
+        install_completions(script)
 
         if len(APIkey) == 28 and APIkey.startswith("sim"):
             if APIaddress == "" or not APIaddress.startswith("https://api."):
