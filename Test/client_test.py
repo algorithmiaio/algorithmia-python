@@ -34,6 +34,7 @@ class client_test(unittest.TestCase):
         response = self.c.get_org("a_myOrg84")
         self.assertEqual("a_myOrg84",response['org_name'])
 
+
     def test_edit_org(self):
         orgname="a_myOrg84"
 
