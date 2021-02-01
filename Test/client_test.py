@@ -26,8 +26,12 @@ class client_test(unittest.TestCase):
         response = self.c.create_user({"username":self.username, "email": self.username+"@algo.com", "passwordHash":"", "shouldCreateHello": False})
         self.assertEqual(self.username,response['username']) 
 
+    def test_get_org_types(self):
+        response = self.c.get_org_types()
+        self.assertTrue(len(response)>0)
+
     def test_create_org(self):
-        response = self.c.create_org({"org_name": self.orgname, "org_label": "some label", "org_contact_name": "Some owner", "org_email": self.orgname+"@algo.com"})
+        response = self.c.create_org({"org_name": self.orgname, "org_label": "some label", "org_contact_name": "Some owner", "org_email": self.orgname+"@algo.com","type_id":"basic"})
         self.assertEqual(self.orgname,response['org_name'])
 
     def test_get_org(self):

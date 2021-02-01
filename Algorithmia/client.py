@@ -67,9 +67,27 @@ class Client(object):
         response = self.postJsonHelper(url,input_object=requestString)
         return response
 
+    def get_org_types(self):
+        url = "/v1/organization/types"
+        response = self.getHelper(url)
+        return json.loads(response.content.decode("utf-8"))
+
     def create_org(self,requestString):
         url = "/v1/organizations"
+        type = requestString["type_id"]
+        types = self.get_org_types()
+        error=""
+        for enumtype in types:
+            if type == enumtype["name"]:
+                requestString["type_id"] = enumtype["id"]
+                break
+            else:
+                error = "invalid type_id"
+                
         response = self.postJsonHelper(url=url,input_object=requestString)
+        if (error != "") and (response["error"] is not None):
+            response["error"]["message"] = error
+
         return response
     
     def get_org(self,org_name):
