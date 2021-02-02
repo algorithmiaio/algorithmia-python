@@ -50,7 +50,7 @@ class Algorithm(object):
             return api_response
         except ApiException as e:
             error_message = json.loads(e.body)
-            raiseAlgoApiError(error_message)
+            raise raiseAlgoApiError(error_message)
 
     # Update the settings in an algorithm
     def update(self, details={}, settings={}, version_info={}):
@@ -65,7 +65,7 @@ class Algorithm(object):
             return api_response
         except ApiException as e:
             error_message = json.loads(e.body)
-            raiseAlgoApiError(error_message)
+            raise raiseAlgoApiError(error_message)
 
     # Publish an algorithm
     def publish(self, details={}, settings={}, version_info={}):
@@ -80,7 +80,7 @@ class Algorithm(object):
             return api_response
         except ApiException as e:
             error_message = json.loads(e.body)
-            raiseAlgoApiError(error_message)
+            raise raiseAlgoApiError(error_message)
 
     def builds(self, limit=56, marker=None):
         try:
@@ -91,7 +91,7 @@ class Algorithm(object):
             return api_response
         except ApiException as e:
             error_message = json.loads(e.body)
-            raiseAlgoApiError(error_message)
+            raise raiseAlgoApiError(error_message)
 
     def get_build(self, build_id):
         # Get the build object for a given build_id
@@ -101,7 +101,7 @@ class Algorithm(object):
             return api_response
         except ApiException as e:
             error_message = json.loads(e.body)
-            raiseAlgoApiError(error_message)
+            raise raiseAlgoApiError(error_message)
 
     def get_build_logs(self, build_id):
         # Get the algorithm build logs for a given build_id
@@ -110,7 +110,7 @@ class Algorithm(object):
             return api_response
         except ApiException as e:
             error_message = json.loads(e.body)
-            raiseAlgoApiError(error_message)
+            raise raiseAlgoApiError(error_message)
 
 
     def get_scm_status(self):
@@ -119,7 +119,7 @@ class Algorithm(object):
             return api_response
         except ApiException as e:
             error_message = json.loads(e.body)
-            raiseAlgoApiError(error_message)
+            raise raiseAlgoApiError(error_message)
 
     # Get info on an algorithm
     def info(self, algo_hash=None):
@@ -132,7 +132,7 @@ class Algorithm(object):
             return api_response
         except ApiException as e:
             error_message = json.loads(e.body)
-            raiseAlgoApiError(error_message)
+            raise raiseAlgoApiError(error_message)
 
     # Get all versions of the algorithm, with the given filters
     def versions(self, limit=None, marker=None, published=None, callable=None):
@@ -154,7 +154,7 @@ class Algorithm(object):
             return api_response
         except ApiException as e:
             error_message = json.loads(e.body)
-            raiseAlgoApiError(error_message)
+            raise raiseAlgoApiError(error_message)
 
 
     # Compile an algorithm
@@ -165,7 +165,7 @@ class Algorithm(object):
             return api_response
         except ApiException as e:
             error_message = json.loads(e.body)
-            raiseAlgoApiError(error_message)
+            raise raiseAlgoApiError(error_message)
 
     # Pipe an input into this algorithm
     def pipe(self, input1):
