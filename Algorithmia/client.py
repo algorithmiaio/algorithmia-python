@@ -67,9 +67,22 @@ class Client(object):
         response = self.postJsonHelper(url,input_object=requestString)
         return response
 
+    def get_org_types(self):
+        url = "/v1/organization/types"
+        response = self.getHelper(url)
+        return json.loads(response.content.decode("utf-8"))
+
     def create_org(self,requestString):
         url = "/v1/organizations"
+        type = requestString["type_id"]
+
+        id,error = self.convert_type_id(type)
+        requestString["type_id"] = id
+        
         response = self.postJsonHelper(url=url,input_object=requestString)
+        if (error != "") and (response["error"] is not None):
+            response["error"]["message"] = error
+
         return response
     
     def get_org(self,org_name):
@@ -79,8 +92,17 @@ class Client(object):
 
     def edit_org(self,org_name,requestString):
         url = "/v1/organizations/"+org_name
+        type = requestString["type_id"]
+
+        id,error = self.convert_type_id(type)
+        requestString["type_id"] = id
+
         data = json.dumps(requestString).encode('utf-8')
         response = self.putHelper(url,data)
+
+        if (error != "") and (response["error"] is not None):
+            response["error"]["message"] = error
+
         return response
 
     def invite_to_org(self,orgname,username):
@@ -173,6 +195,21 @@ class Client(object):
                 new_cert = custom_cert.read() + cert.read()
                 ca.write(new_cert)
         atexit.register(self.exit_handler)
+    
+    #User internally to convert type id name to uuid
+    def convert_type_id(self,type):
+        id=""
+        error=""
+        types = self.get_org_types()
+        for enumtype in types:
+            if type == enumtype["name"]:
+                id = enumtype["id"]
+                error=""
+                break
+            else:
+                error = "invalid type_id"
+                
+        return(id,error)
 
 
     # Used internally to clean up temporary files

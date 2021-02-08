@@ -22,7 +22,7 @@ class AlgoResponse(object):
         # Parse response JSON
         if 'error' in responseJson:
             # Failure
-            raiseAlgoApiError(responseJson)
+            raise raiseAlgoApiError(responseJson)
         else:
             metadata = Metadata(responseJson['metadata'])
             # Success, check content_type

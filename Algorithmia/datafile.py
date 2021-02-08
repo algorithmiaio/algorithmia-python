@@ -92,7 +92,7 @@ class DataFile(DataObject):
         if isinstance(data, six.binary_type):
             result = self.client.putHelper(self.url, data)
             if 'error' in result:
-                raiseDataApiError(result)
+                raise raiseDataApiError(result)
             else:
                 return self
         else:
@@ -103,7 +103,7 @@ class DataFile(DataObject):
         jsonElement = json.dumps(data)
         result = self.client.putHelper(self.url, jsonElement)
         if 'error' in result:
-            raiseDataApiError(result)
+            raise raiseDataApiError(result)
         else:
             return self
 
@@ -112,7 +112,7 @@ class DataFile(DataObject):
         with open(path, 'rb') as f:
             result = self.client.putHelper(self.url, f)
             if 'error' in result:
-                raiseDataApiError(result)
+                raise raiseDataApiError(result)
             else:
                 return self
 
@@ -120,7 +120,7 @@ class DataFile(DataObject):
         # Delete from data api
         result = self.client.deleteHelper(self.url)
         if 'error' in result:
-            raiseDataApiError(result)
+            raise raiseDataApiError(result)
         else:
             return True
 
@@ -187,14 +187,14 @@ class LocalDataFile():
         jsonElement = json.dumps(data)
         result = localPutHelper(self.path, jsonElement)
         if 'error' in result:
-            raiseDataApiError(result)
+            raise raiseDataApiError(result)
         else:
             return self
 
     def putFile(self, path):
         result = localPutHelper(path, self.path)
         if 'error' in result:
-            raiseDataApiError(result)
+            raise raiseDataApiError(result)
         else:
             return self
 
