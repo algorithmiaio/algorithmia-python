@@ -6,6 +6,9 @@ For API documentation, see the [PythonDocs](https://algorithmia.com/docs/lang/py
 
 [![PyPI](https://img.shields.io/pypi/v/algorithmia.svg?maxAge=600)]()
 
+## Algorithm Development Kit
+This package contains the [algorithmia-adk](https://github.com/algorithmiaio/algorithmia-adk-python) development kit, simply add `from Algorithmia import ADK` into your workflow to access it.
+
 ## Install from PyPi
 
 The official Algorithmia python client is [available on PyPi](https://pypi.python.org/pypi/algorithmia).
