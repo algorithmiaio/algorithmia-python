@@ -6,9 +6,9 @@ def apply_basic(input):
     return "hello " + input
 
 
-def apply_input_or_context(input, context=None):
-    if isinstance(context, dict):
-        return context
+def apply_input_or_context(input, globals=None):
+    if isinstance(globals, dict):
+        return globals
     else:
         return "hello " + input
 

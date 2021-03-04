@@ -2,7 +2,7 @@ import sys
 import json
 import unittest
 import os
-from Test.handler_algorithms import *
+from adk_algorithms import *
 
 
 class HandlerTest(unittest.TestCase):
@@ -43,18 +43,23 @@ class HandlerTest(unittest.TestCase):
 
     def execute_example(self, input, apply, load=lambda: None):
         self.open_pipe()
-        algo = Algorithmia.handler(apply, load)
+        algo = Algorithmia.ADK(apply, load)
         sys.stdin = input
-        algo.serve()
+        algo.init()
         output = self.read_in()
         return output
 
     def execute_without_load(self, input, apply):
         self.open_pipe()
-        algo = Algorithmia.handler(apply)
+        algo = Algorithmia.ADK(apply)
         sys.stdin = input
-        algo.serve()
+        algo.init()
         output = self.read_in()
+        return output
+
+    def execute_example_local(self, input, apply, load=lambda: None):
+        algo = Algorithmia.ADK(apply, load)
+        output = algo.init(input, pprint=lambda x: x)
         return output
 
 
@@ -128,3 +133,17 @@ class HandlerTest(unittest.TestCase):
         actual_output["error"]["stacktrace"] = ''
         self.assertEqual(expected_output, actual_output)
 
+    def test_local_debugging(self):
+        input = "Algorithmia"
+        expected_output ={'metadata':
+            {
+                'content_type': 'text'
+            },
+            'result': 'hello Algorithmia'
+        }
+        actual_output = self.execute_example_local(input, apply_basic)
+        self.assertEqual(expected_output, actual_output)
+
+
+if __name__ == '__main__':
+    unittest.main()
