@@ -49,6 +49,7 @@ class client_test(unittest.TestCase):
         "org_contact_name": "Some owner",
         "org_email": "a_myOrg84@algo.com",
         "org_created_at": "2020-11-30T23:51:40",
+        "org_url":"https://algorithmia.com",
         "type_id": "basic",
         "resource_type": "organization"
         }
