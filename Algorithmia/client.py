@@ -54,6 +54,10 @@ class Client(object):
     def algo(self, algoRef):
         return Algorithm(self, algoRef)
 
+    def username(self):
+        username = next(self.dir("").list()).path
+        return username
+
     def file(self, dataUrl):
         if dataUrl.startswith('file://'): return LocalDataFile(self, dataUrl)
         else: return DataFile(self, dataUrl)

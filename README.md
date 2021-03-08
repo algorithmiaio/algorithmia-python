@@ -4,7 +4,7 @@ Algorithmia Common Library (python)
 Python client library for accessing the Algorithmia API
 For API documentation, see the [PythonDocs](https://algorithmia.com/docs/lang/python)
 
-[![PyPI](https://img.shields.io/pypi/v/algorithmia.svg?maxAge=2592000)]()
+[![PyPI](https://img.shields.io/pypi/v/algorithmia.svg?maxAge=600)]()
 
 ## Install from PyPi
 
