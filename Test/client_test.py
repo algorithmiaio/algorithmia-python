@@ -26,8 +26,12 @@ class client_test(unittest.TestCase):
         response = self.c.create_user({"username":self.username, "email": self.username+"@algo.com", "passwordHash":"", "shouldCreateHello": False})
         self.assertEqual(self.username,response['username']) 
 
+    def test_get_org_types(self):
+        response = self.c.get_org_types()
+        self.assertTrue(len(response)>0)
+
     def test_create_org(self):
-        response = self.c.create_org({"org_name": self.orgname, "org_label": "some label", "org_contact_name": "Some owner", "org_email": self.orgname+"@algo.com"})
+        response = self.c.create_org({"org_name": self.orgname, "org_label": "some label", "org_contact_name": "Some owner", "org_email": self.orgname+"@algo.com","type_id":"basic"})
         self.assertEqual(self.orgname,response['org_name'])
 
     def test_get_org(self):
@@ -44,7 +48,8 @@ class client_test(unittest.TestCase):
         "org_contact_name": "Some owner",
         "org_email": "a_myOrg84@algo.com",
         "org_created_at": "2020-11-30T23:51:40",
-        "type_id": "3d40e3b0-d82a-11ea-9a3c-0ee5e2d35097",
+        "org_url":"https://algorithmia.com",
+        "type_id": "basic",
         "resource_type": "organization"
         }
 

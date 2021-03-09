@@ -12,6 +12,7 @@ import atexit
 import json, re, requests, six, certifi
 import os
 
+
 class Client(object):
     'Algorithmia Common Library'
    
@@ -20,6 +21,7 @@ class Client(object):
     apiKey = None
     apiAddress = None
     requestSession = None
+
 
     def __init__(self, apiKey = None, apiAddress = None, caCert = None):
         # Override apiKey with environment variable
@@ -52,6 +54,10 @@ class Client(object):
     def algo(self, algoRef):
         return Algorithm(self, algoRef)
 
+    def username(self):
+        username = next(self.dir("").list()).path
+        return username
+
     def file(self, dataUrl):
         if dataUrl.startswith('file://'): return LocalDataFile(self, dataUrl)
         else: return DataFile(self, dataUrl)
@@ -65,9 +71,42 @@ class Client(object):
         response = self.postJsonHelper(url,input_object=requestString)
         return response
 
+    def get_org_types(self):
+        url = "/v1/organization/types"
+        response = self.getHelper(url)
+        return json.loads(response.content.decode("utf-8"))
+
     def create_org(self,requestString):
         url = "/v1/organizations"
+        type = requestString["type_id"]
+
+        id,error = self.convert_type_id(type)
+        requestString["type_id"] = id
+        
         response = self.postJsonHelper(url=url,input_object=requestString)
+        if (error != "") and (response["error"] is not None):
+            response["error"]["message"] = error
+
+        return response
+    
+    def get_org(self,org_name):
+        url = "/v1/organizations/"+org_name
+        response = self.getHelper(url)
+        return json.loads(response.content.decode("utf-8"))
+
+    def edit_org(self,org_name,requestString):
+        url = "/v1/organizations/"+org_name
+        type = requestString["type_id"]
+
+        id,error = self.convert_type_id(type)
+        requestString["type_id"] = id
+
+        data = json.dumps(requestString).encode('utf-8')
+        response = self.putHelper(url,data)
+
+        if (error != "") and (response["error"] is not None):
+            response["error"]["message"] = error
+
         return response
     
     def get_org(self,org_name):
@@ -136,16 +175,14 @@ class Client(object):
             headers['Authorization'] = self.apiKey
         return self.requestSession.head(self.apiAddress + url, headers=headers)
 
+
     # Used internally to http put a file
     def putHelper(self, url, data):
         headers = {}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
-        try:
-            data = json.dumps(data).encode('utf-8')
+        if isJson(data):
             headers['Content-Type'] = 'application/json'
-        except TypeError as e:
-            pass
 
         response = self.requestSession.put(self.apiAddress + url, data=data, headers=headers)
         if response._content == b'':
@@ -172,6 +209,21 @@ class Client(object):
                 new_cert = custom_cert.read() + cert.read()
                 ca.write(new_cert)
         atexit.register(self.exit_handler)
+    
+    #User internally to convert type id name to uuid
+    def convert_type_id(self,type):
+        id=""
+        error=""
+        types = self.get_org_types()
+        for enumtype in types:
+            if type == enumtype["name"]:
+                id = enumtype["id"]
+                error=""
+                break
+            else:
+                error = "invalid type_id"
+                
+        return(id,error)
 
 
     # Used internally to clean up temporary files
@@ -182,3 +234,10 @@ class Client(object):
         except OSError as e:
             print(e)   
 
+def isJson(myjson):
+    try:
+        json_object = json.loads(myjson)
+    except (ValueError,TypeError) as e:
+        return False
+
+    return True
