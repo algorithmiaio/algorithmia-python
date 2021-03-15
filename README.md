@@ -358,5 +358,4 @@ python algo_test.py
 python datadirectorytest.py
 python datafile_test.py
 python utiltest.py
-python adk_test.py
 ```
