@@ -5,13 +5,15 @@ import sys
 sys.path = ['../'] + sys.path
 
 import unittest, os, uuid
-
+import numpy as np
 import Algorithmia
 from Algorithmia.datafile import DataFile, LocalDataFile
 
 class DataFileTest(unittest.TestCase):
     def setUp(self):
         self.client = Algorithmia.client()
+        if not self.client.dir("data://.my/empty").exists():
+            self.client.dir("data://.my/empty").create()
 
     def test_get_nonexistant(self):
         df = self.client.file('data://.my/nonexistant/nonreal')
@@ -42,11 +44,24 @@ class DataFileTest(unittest.TestCase):
         except Exception as e:
             self.fail("set_attributes failed with exception: " + str(e))
 
-    def test_putJson(self):
+    def test_putJson_getJson(self):
         file = '.my/empty/test.json'
         df = DataFile(self.client,'data://'+file)
-        response = df.putJson({"hello":"world"})
+        payload = {"hello":"world"}
+        response = df.putJson(payload)
         self.assertEqual(response.path,file)
+        result = self.client.file(file).getJson()
+        self.assertEqual(str(result), str(payload))
+
+    def test_putNumpy_getNumpy(self):
+        file = ".my/empty/numpy.json"
+        df = DataFile(self.client, 'data://' + file)
+        arr = np.array([0, 0, 0, 0], dtype=np.int64)
+        response = df.putNumpy(arr)
+        self.assertEqual(response.path, file)
+        result = self.client.file(file).getNumpy()
+        self.assertEqual(str(arr), str(result))
+
         
 class LocalFileTest(unittest.TestCase):
     DUMMY_TEXT = 'this file gets populated during testing'

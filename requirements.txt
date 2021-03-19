@@ -5,3 +5,4 @@ toml
 argparse
 algorithmia-api-client>=1.3,<1.4
 algorithmia-adk>=1.0,<1.1
+numpy>=1.20,<1.21

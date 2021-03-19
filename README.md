@@ -350,6 +350,7 @@ $ algo run kenny/factor -d 17 --profile second_user
 
 # Running tests
 
+Make sure you have `numpy` installed before running `datafile_test.py`
 ```bash
 export ALGORITHMIA_API_KEY={{Your API key here}}
 cd Test
