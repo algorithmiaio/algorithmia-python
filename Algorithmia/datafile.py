@@ -138,7 +138,7 @@ class DataFile(DataObject):
             self.putJson(encoded_array)
             return self
         else:
-            raise DataApiError("Attempted to .getNumpy() file without numpy available, please install numpy.")
+            raise DataApiError("Attempted to .putNumpy() a file without numpy available, please install numpy.")
 
     def delete(self):
         # Delete from data api
