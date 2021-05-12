@@ -152,6 +152,13 @@ class Client(object):
             headers['Authorization'] = self.apiKey
         return self.requestSession.get(self.apiAddress + url, headers=headers, params=query_parameters)
 
+    # Used internally to http get a file
+    def getHelperStream(self, url, **query_parameters):
+        headers = {}
+        if self.apiKey is not None:
+            headers['Authorization'] = self.apiKey
+        return self.requestSession.get(self.apiAddress + url, headers=headers, params=query_parameters, stream=True)
+
     def patchHelper(self, url, params):
         headers = {'content-type': 'application/json'}
         if self.apiKey is not None:

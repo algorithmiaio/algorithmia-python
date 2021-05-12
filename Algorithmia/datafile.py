@@ -37,7 +37,7 @@ class DataFile(DataObject):
         if not exists:
             raise DataApiError('unable to get file {} - {}'.format(self.path, error))
         # Make HTTP get request
-        response = self.client.getHelper(self.url)
+        response = self.client.getHelperStream(self.url)
         with tempfile.NamedTemporaryFile(delete = False) as f:
             for block in response.iter_content(1024):
                 if not block:
@@ -45,6 +45,15 @@ class DataFile(DataObject):
                 f.write(block)
             f.flush()
             return open(f.name)
+
+    # Get file iterable from the data api
+    def getStream(self):
+        exists, error = self.existsWithError()
+        if not exists:
+            raise DataApiError('unable to get file {} - {}'.format(self.path, error))
+        # Make HTTP get request
+        response = self.client.getHelperStream(self.url)
+        return response.iter_content(1024)
 
     def getName(self):
         _, name = getParentAndBase(self.path)
