@@ -36,8 +36,8 @@ class AlgoResponse(object):
 
 class Metadata(object):
     def __init__(self, metadata):
-        self.content_type = metadata['content_type']
-        self.duration = metadata['duration']
+        self.content_type = metadata.get('content_type', None)
+        self.duration = metadata.get('duration', None)
         self.stdout = None
         if 'stdout' in metadata:
             self.stdout = metadata['stdout']
