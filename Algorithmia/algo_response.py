@@ -20,10 +20,7 @@ class AlgoResponse(object):
     @staticmethod
     def create_algo_response(responseJson):
         # Parse response JSON
-        if 'error' in responseJson:
-            # Failure
-            raise raiseAlgoApiError(responseJson)
-        else:
+        if 'metadata' in responseJson:
             metadata = Metadata(responseJson['metadata'])
             # Success, check content_type
             if responseJson['metadata']['content_type'] == 'binary':
@@ -33,6 +30,9 @@ class AlgoResponse(object):
                 return AlgoResponse(None, metadata)
             else:
                 return AlgoResponse(responseJson['result'], metadata)
+        else:
+            # Failure
+            raise raiseAlgoApiError(responseJson)
 
 class Metadata(object):
     def __init__(self, metadata):
