@@ -20,7 +20,7 @@ class AlgoResponse(object):
     @staticmethod
     def create_algo_response(responseJson):
         # Parse response JSON
-        if 'metadata' in responseJson:
+        if 'result' in responseJson:
             metadata = Metadata(responseJson['metadata'])
             # Success, check content_type
             if metadata.content_type == 'binary':
