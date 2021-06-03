@@ -23,10 +23,10 @@ class AlgoResponse(object):
         if 'metadata' in responseJson:
             metadata = Metadata(responseJson['metadata'])
             # Success, check content_type
-            if responseJson['metadata']['content_type'] == 'binary':
+            if metadata.content_type == 'binary':
                 # Decode Base64 encoded binary file
                 return AlgoResponse(base64.b64decode(responseJson['result']), metadata)
-            elif responseJson['metadata']['content_type'] == 'void':
+            elif metadata.content_type == 'void':
                 return AlgoResponse(None, metadata)
             else:
                 return AlgoResponse(responseJson['result'], metadata)
