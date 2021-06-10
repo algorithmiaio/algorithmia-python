@@ -6,6 +6,7 @@ import six
 import tempfile
 from datetime import datetime
 import os.path
+import pkgutil
 
 from Algorithmia.util import getParentAndBase
 from Algorithmia.data import DataObject, DataObjectType
@@ -70,6 +71,18 @@ class DataFile(DataObject):
         # Make HTTP get request
         return self.client.getHelper(self.url).json()
 
+    def getNumpy(self):
+        exists, error = self.existsWithError()
+        if not exists:
+            raise DataApiError('unable to get file {} - {}'.format(self.path, error))
+        np_loader = pkgutil.find_loader('numpy')
+        if np_loader is not None:
+            import numpy as np
+            payload = self.client.getHelper(self.url).json()
+            return np.array(payload)
+        else:
+            raise DataApiError("Attempted to .getNumpy() file without numpy available, please install numpy.")
+
     def exists(self):
         # In order to not break backward compatability keeping this method to only return
         # a boolean
@@ -78,9 +91,10 @@ class DataFile(DataObject):
 
     def existsWithError(self):
         response = self.client.headHelper(self.url)
-        error = None
         if 'X-Error-Message' in response.headers:
             error = response.headers['X-Error-Message']
+        else:
+            error = response.text
         return (response.status_code == 200, error)
 
     def put(self, data):
@@ -92,7 +106,7 @@ class DataFile(DataObject):
         if isinstance(data, six.binary_type):
             result = self.client.putHelper(self.url, data)
             if 'error' in result:
-                raiseDataApiError(result)
+                raise raiseDataApiError(result)
             else:
                 return self
         else:
@@ -103,7 +117,7 @@ class DataFile(DataObject):
         jsonElement = json.dumps(data)
         result = self.client.putHelper(self.url, jsonElement)
         if 'error' in result:
-            raiseDataApiError(result)
+            raise raiseDataApiError(result)
         else:
             return self
 
@@ -112,15 +126,25 @@ class DataFile(DataObject):
         with open(path, 'rb') as f:
             result = self.client.putHelper(self.url, f)
             if 'error' in result:
-                raiseDataApiError(result)
+                raise raiseDataApiError(result)
             else:
                 return self
+    def putNumpy(self, array):
+        # Post numpy array as json payload
+        np_loader = pkgutil.find_loader('numpy')
+        if np_loader is not None:
+            import numpy as np
+            encoded_array = array.tolist()
+            self.putJson(encoded_array)
+            return self
+        else:
+            raise DataApiError("Attempted to .putNumpy() a file without numpy available, please install numpy.")
 
     def delete(self):
         # Delete from data api
         result = self.client.deleteHelper(self.url)
         if 'error' in result:
-            raiseDataApiError(result)
+            raise raiseDataApiError(result)
         else:
             return True
 
@@ -187,14 +211,14 @@ class LocalDataFile():
         jsonElement = json.dumps(data)
         result = localPutHelper(self.path, jsonElement)
         if 'error' in result:
-            raiseDataApiError(result)
+            raise raiseDataApiError(result)
         else:
             return self
 
     def putFile(self, path):
         result = localPutHelper(path, self.path)
         if 'error' in result:
-            raiseDataApiError(result)
+            raise raiseDataApiError(result)
         else:
             return self
 

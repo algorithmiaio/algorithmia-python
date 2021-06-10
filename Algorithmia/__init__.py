@@ -2,6 +2,11 @@
 
 from Algorithmia.client import Client
 from Algorithmia.handler import Handler
+import sys
+
+import sys
+if sys.version_info[0] >= 3:
+    from adk import ADK
 import os
 
 apiKey = None

@@ -65,4 +65,4 @@ pypirc
 
 #Visual Studio Code
 .vscode
-
+venv

@@ -4,7 +4,10 @@ Algorithmia Common Library (python)
 Python client library for accessing the Algorithmia API
 For API documentation, see the [PythonDocs](https://algorithmia.com/docs/lang/python)
 
-[![PyPI](https://img.shields.io/pypi/v/algorithmia.svg?maxAge=2592000)]()
+[![PyPI](https://img.shields.io/pypi/v/algorithmia.svg?maxAge=600)]()
+
+## Algorithm Development Kit
+This package contains the [algorithmia-adk](https://github.com/algorithmiaio/algorithmia-adk-python) development kit, simply add `from Algorithmia import ADK` into your workflow to access it.
 
 ## Install from PyPi
 
@@ -347,6 +350,7 @@ $ algo run kenny/factor -d 17 --profile second_user
 
 # Running tests
 
+Make sure you have `numpy` installed before running `datafile_test.py`
 ```bash
 export ALGORITHMIA_API_KEY={{Your API key here}}
 cd Test
