@@ -28,7 +28,7 @@ class Client(object):
         self.requestSession = requests.Session()
         if dummy:
             self.apiKey = "API_KEY"
-            self.apiaddress = "localhost"
+            self.apiAddress = "http://localhost:8080"
         else:
             if apiKey is None and 'ALGORITHMIA_API_KEY' in os.environ:
                 apiKey = os.environ['ALGORITHMIA_API_KEY']
@@ -145,7 +145,7 @@ class Client(object):
 
         response = self.requestSession.post(self.apiAddress + url, data=input_json, headers=headers, params=query_parameters)
 
-        if parse_response_as_json:
+        if parse_response_as_json and response.status_code == 200:
             return response.json()
         return response
 
