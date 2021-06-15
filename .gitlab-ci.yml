@@ -1,5 +1,10 @@
 stages:
-  - test
+  - pylint
+  - py27
+  - py36
+  - py37
+  - py38
+  - py39
 
 variables:
   PROJECT_NAME: algorithmia-python
@@ -7,18 +12,19 @@ variables:
   DOCKER_DRIVER: overlay2
   RUNNING_ON_BUILD_SERVER: "true"
 
-test:
-  stage: test
-  script:
-    - if [ -z $ALGORITHMIA_API_KEY ]; then echo "Algorithmia API key not defined"; exit 1; fi
+#test:
+#  stage: test
+#  script:
+#    - if [ -z $ALGORITHMIA_API_KEY ]; then echo "Algorithmia API key not defined"; exit 1; fi
 
-test:pylint:36:
+pylint:
+  stage: pylint
   image: python:3.6
   script:
     - pip install pylint --quiet
     - pylint --ignored-classes=_socketobject *.py || echo $?
 
-test:pytest:36:
+py36:
   image: python:3.6
   script:
     - pip install -r requirements.txt --quiet
@@ -26,31 +32,32 @@ test:pytest:36:
     - pytest
 
 
-test:pytest:37:
-  image: python:3.7
-  script:
-    - pip install -r requirements.txt --quiet
-    - pip install pytest --quiet
-    - pytest
-
-test:pytest:38:
-  image: python:3.8
-  script:
-    - pip install -r requirements.txt --quiet
-    - pip install pytest --quiet
-    - pytest
-
-test:pytest:39:
-  image: python:3.9
-  script:
-    - pip install -r requirements.txt --quiet
-    - pip install pytest --quiet
-    - pytest
-
-test:pytest:27:
+py27:
+  stage: py27
   image: python:2.7
   script:
     - pip install -r requirements.txt --quiet
     - pip install pytest --quiet
     - pytest
 
+
+py37:
+  image: python:3.7
+  script:
+    - pip install -r requirements.txt --quiet
+    - pip install pytest --quiet
+    - pytest
+
+py38:
+  image: python:3.8
+  script:
+    - pip install -r requirements.txt --quiet
+    - pip install pytest --quiet
+    - pytest
+
+py39:
+  image: python:3.9
+  script:
+    - pip install -r requirements.txt --quiet
+    - pip install pytest --quiet
+    - pytest
