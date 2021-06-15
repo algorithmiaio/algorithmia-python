@@ -23,27 +23,31 @@ class Client(object):
     requestSession = None
 
 
-    def __init__(self, apiKey = None, apiAddress = None, caCert = None):
+    def __init__(self, apiKey = None, apiAddress = None, caCert = None, dummy = False):
         # Override apiKey with environment variable
         self.requestSession = requests.Session()
-        if apiKey is None and 'ALGORITHMIA_API_KEY' in os.environ:
-            apiKey = os.environ['ALGORITHMIA_API_KEY']
-        self.apiKey = apiKey
-        if apiAddress is not None:
-            self.apiAddress = apiAddress
+        if dummy:
+            self.apiKey = "API_KEY"
+            self.apiAddress = "http://localhost:8080"
         else:
-            self.apiAddress = Algorithmia.getApiAddress()
-        if caCert is None and 'REQUESTS_CA_BUNDLE' in os.environ:
-            caCert = os.environ.get('REQUESTS_CA_BUNDLE')
-            self.catCerts(caCert)
-            self.requestSession.verify = self.ca_cert
-        elif caCert is not None and 'REQUESTS_CA_BUNDLE' not in os.environ:
-            self.catCerts(caCert)
-            self.requestSession.verify = self.ca_cert
-        elif caCert is not None and 'REQUESTS_CA_BUNDLE' in os.environ:
-            #if both are available, use the one supplied in the constructor. I assume that a user supplying a cert in initialization wants to use that one.
-            self.catCerts(caCert)
-            self.requestSession.verify = self.ca_cert
+            if apiKey is None and 'ALGORITHMIA_API_KEY' in os.environ:
+                apiKey = os.environ['ALGORITHMIA_API_KEY']
+            self.apiKey = apiKey
+            if apiAddress is not None:
+                self.apiAddress = apiAddress
+            else:
+                self.apiAddress = Algorithmia.getApiAddress()
+            if caCert is None and 'REQUESTS_CA_BUNDLE' in os.environ:
+                caCert = os.environ.get('REQUESTS_CA_BUNDLE')
+                self.catCerts(caCert)
+                self.requestSession.verify = self.ca_cert
+            elif caCert is not None and 'REQUESTS_CA_BUNDLE' not in os.environ:
+                self.catCerts(caCert)
+                self.requestSession.verify = self.ca_cert
+            elif caCert is not None and 'REQUESTS_CA_BUNDLE' in os.environ:
+                #if both are available, use the one supplied in the constructor. I assume that a user supplying a cert in initialization wants to use that one.
+                self.catCerts(caCert)
+                self.requestSession.verify = self.ca_cert
 
 
             config = Configuration()
