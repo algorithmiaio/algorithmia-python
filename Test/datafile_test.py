@@ -54,7 +54,6 @@ class DataFileTest(unittest.TestCase):
         response = df.putJson(payload)
         self.assertEqual(response.path,file)
         result = self.client.file(file).getJson()
-        import sys
         self.assertEqual(str(result), str(payload))
 
     def test_putNumpy_getNumpy(self):
