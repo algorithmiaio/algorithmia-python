@@ -1,6 +1,9 @@
 stages:
   - test
+  - python27
   - python37
+  - python38
+  - python39
 
 variables:
   PROJECT_NAME: algorithmia-python
@@ -26,6 +29,13 @@ test:pytest:36:
     - pip install pytest --quiet
     - pytest
 
+python27:
+  stage: python27
+  image: python:2.7
+  script:
+    - pip install -r requirements.txt --quiet
+    - pip install pytest --quiet
+    - pytest
 
 python37:
   stage: python37
@@ -35,24 +45,18 @@ python37:
     - pip install pytest --quiet
     - pytest
 
-#test:pytest:38:
-#  image: python:3.8
-#  script:
-#    - pip install -r requirements.txt --quiet
-#    - pip install pytest --quiet
-#    - pytest
-#
-#test:pytest:39:
-#  image: python:3.9
-#  script:
-#    - pip install -r requirements.txt --quiet
-#    - pip install pytest --quiet
-#    - pytest
-#
-#test:pytest:27:
-#  image: python:2.7
-#  script:
-#    - pip install -r requirements.txt --quiet
-#    - pip install pytest --quiet
-#    - pytest
-#
+python38:
+  stage: python38
+  image: python:3.8
+  script:
+    - pip install -r requirements.txt --quiet
+    - pip install pytest --quiet
+    - pytest
+
+python39:
+  stage: python39
+  image: python:3.9
+  script:
+    - pip install -r requirements.txt --quiet
+    - pip install pytest --quiet
+    - pytest
