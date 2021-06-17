@@ -69,7 +69,7 @@ class CLITest(unittest.TestCase):
 		self.assertEqual(result, fileContents)
 
 	def test_get_build_logs(self):
-		user="J_Bragg2"
+		user="util"
 		algo="Echo"
 		
 		result = json.loads(CLI().getBuildLogs(user,algo,self.client))
