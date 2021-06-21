@@ -18,7 +18,7 @@ class AlgoTest(unittest.TestCase):
     error_500.status_code = 500
 
     def setUp(self):
-        self.client = Algorithmia.client(dummy=True)
+        self.client = Algorithmia.client(api_address="http://localhost:8080")
         self.uvi_p = Process(target=start_webserver)
         self.uvi_p.start()
         time.sleep(1)
