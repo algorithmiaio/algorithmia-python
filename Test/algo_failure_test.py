@@ -9,7 +9,7 @@ import Algorithmia
 import uvicorn
 import time
 from requests import Response
-from api import app
+from Test.api import app
 
 def start_webserver():
     uvicorn.run(app, host="127.0.0.1", port=8080, log_level="debug")
