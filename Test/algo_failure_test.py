@@ -1,28 +1,22 @@
-import sys
-import os
-from Algorithmia.errors import AlgorithmException
-import Algorithmia.local_api as local_api
+
 from multiprocessing import Process
-from requests import HTTPError
-# look in ../ BEFORE trying to import Algorithmia.  If you append to the
-# you will load the version installed on the computer.
-sys.path = ['../'] + sys.path
 
 import unittest
 import Algorithmia
 import uvicorn
 import time
 from requests import Response
+from api import app
 
 def start_webserver():
-    uvicorn.run(local_api.app, host="127.0.0.1", port=8080, log_level="debug")
+    uvicorn.run(app, host="127.0.0.1", port=8080, log_level="debug")
 
 class AlgoTest(unittest.TestCase):
     error_500 = Response()
     error_500.status_code = 500
 
     def setUp(self):
-        self.client = Algorithmia.client(dummy=True)
+        self.client = Algorithmia.client(api_address="http://localhost:8080", api_key="")
         self.uvi_p = Process(target=start_webserver)
         self.uvi_p.start()
         time.sleep(1)
