@@ -13,3 +13,4 @@ def create_endpoint(algoname):
     @app.get("/invocations")
     def invocations(data):
          return module.apply(data)
+
