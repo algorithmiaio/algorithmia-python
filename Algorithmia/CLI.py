@@ -132,6 +132,7 @@ class CLI():
 
         return output
 
+
     # algo mkdir <path>
     def mkdir(self, path, client):
         #make a dir in data collection

@@ -18,21 +18,21 @@ class AlgoResponse(object):
             return self.__unicode__().encode('utf-8')
 
     @staticmethod
-    def create_algo_response(response):
+    def create_algo_response(responseJson):
         # Parse response JSON, if it's indeed JSON
-        if 'error' in response or 'metadata' not in response:
+        if 'error' in responseJson or 'metadata' not in responseJson:
             # Failure
-            raise raiseAlgoApiError(response)
+            raise raiseAlgoApiError(responseJson)
         else:
-            metadata = Metadata(response['metadata'])
+            metadata = Metadata(responseJson['metadata'])
             # Success, check content_type
-            if response['metadata']['content_type'] == 'binary':
+            if responseJson['metadata']['content_type'] == 'binary':
                 # Decode Base64 encoded binary file
-                return AlgoResponse(base64.b64decode(response['result']), metadata)
-            elif response['metadata']['content_type'] == 'void':
+                return AlgoResponse(base64.b64decode(responseJson['result']), metadata)
+            elif responseJson['metadata']['content_type'] == 'void':
                 return AlgoResponse(None, metadata)
             else:
-                return AlgoResponse(response['result'], metadata)
+                return AlgoResponse(responseJson['result'], metadata)
 
 class Metadata(object):
     def __init__(self, metadata):
