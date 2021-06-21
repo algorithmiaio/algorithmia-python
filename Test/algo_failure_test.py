@@ -1,9 +1,5 @@
 import sys
-import os
-from Algorithmia.errors import AlgorithmException
-import Algorithmia.local_api as local_api
 from multiprocessing import Process
-from requests import HTTPError
 # look in ../ BEFORE trying to import Algorithmia.  If you append to the
 # you will load the version installed on the computer.
 sys.path = ['../'] + sys.path
