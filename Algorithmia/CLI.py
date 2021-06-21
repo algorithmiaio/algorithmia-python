@@ -1,9 +1,7 @@
 import Algorithmia
 import os
-import sys
 from Algorithmia.errors import DataApiError
 from Algorithmia.algo_response import AlgoResponse
-from Algorithmia import local_api
 import json, re, requests, six
 import toml
 import shutil
@@ -133,35 +131,6 @@ class CLI():
                 print(error)
 
         return output
-
-    def servealgo(self, options, client):
-        target_dir = os.path.join(os.getcwd(), options.path)
-
-        # Verify algorithmia.conf and src dir
-        conf_file = os.path.join(target_dir, "algorithmia.conf")
-        src_dir = os.path.join(target_dir, "src")
-        if not os.path.exists(conf_file):
-            print("algorithmia.conf file doesn't exist on the target directory")
-            sys.exit(1)
-        if not os.path.exists(src_dir):
-            print("src directory doesn't exist on the target directory")
-            sys.exit(1)
-
-        with open(conf_file, "r") as fp:
-            conf = json.load(fp)
-
-        # Add the src directory to the Python Path
-        # We do this so the entrypoint is importable
-        sys.path.insert(0, src_dir)
-
-        # Create endpoint based on the algoname
-        algoname = conf["algoname"]
-        local_api.create_endpoint(algoname)
-
-        # Start API
-        import uvicorn
-        uvicorn.run(local_api.app, host="127.0.0.1", port=8080, log_level="debug")
-        # uvicorn.run(f"Algorithmia.local_api:app", host="127.0.0.1", port=8080, log_level="debug", reload=True)
 
     # algo mkdir <path>
     def mkdir(self, path, client):

@@ -51,15 +51,6 @@ def main():
     parser_clone.add_argument('algo')
     parser_clone.add_argument('--profile', action = 'store', type = str, default = 'default')
 
-    parser_serve = subparsers.add_parser('serve', help = 'Serve an algorithm locally')
-    def dir_path(string):
-        if os.path.isdir(string):
-            return string
-        else:
-            raise NotADirectoryError(string)
-    parser_serve.add_argument('path', action='store', type=dir_path)
-
-
     #parse options for the run command
     parser_run = subparsers.add_parser('run', help = 'algo run <algo> [input options] <args..> [output options] run an algorithm')
 
@@ -155,10 +146,6 @@ def main():
     if args.cmd == 'run':
 
         print(CLI().runalgo(args, client))
-
-    if args.cmd == 'serve':
-
-        print(CLI().servealgo(args, client))
 
     elif args.cmd == 'clone':
 
