@@ -22,7 +22,7 @@ class CLI():
                 config['profiles'][profile]['api_key'] = apikey
                 config['profiles'][profile]['api_server'] = apiaddress
                 config['profiles'][profile]['ca_cert'] = cacert
-                
+
             else:
                 config['profiles'][profile] = {'api_key':apikey,'api_server':apiaddress,'ca_cert':cacert}
         else:
@@ -299,7 +299,7 @@ class CLI():
             #%LOCALAPPDATA%\Algorithmia\config
             #create the api key file if it does not exist
             keyPath = os.path.expandvars("%LOCALAPPDATA%\\Algorithmia\\")
-        
+
         keyFile = "config"
 
         if(not os.path.exists(keyPath)):
