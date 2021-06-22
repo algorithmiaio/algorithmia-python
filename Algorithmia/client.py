@@ -41,7 +41,7 @@ class Client(object):
             self.catCerts(caCert)
             self.requestSession.verify = self.ca_cert
         elif caCert is not None and 'REQUESTS_CA_BUNDLE' in os.environ:
-            #if both are available, use the one supplied in the constructor. I assume that a user supplying a cert in initialization wants to use that one. 
+            #if both are available, use the one supplied in the constructor. I assume that a user supplying a cert in initialization wants to use that one.
             self.catCerts(caCert)
             self.requestSession.verify = self.ca_cert
 
@@ -141,7 +141,7 @@ class Client(object):
 
         response = self.requestSession.post(self.apiAddress + url, data=input_json, headers=headers, params=query_parameters)
 
-        if parse_response_as_json:
+        if parse_response_as_json and response.status_code == 200:
             return response.json()
         return response
 
