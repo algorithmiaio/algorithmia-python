@@ -130,7 +130,7 @@ def main():
         if len(APIkey) == 28 and APIkey.startswith("sim"):
             if APIaddress == "" or not APIaddress.startswith("https://api."):
                 APIaddress = "https://api.algorithmia.com"
-            
+
             CLI().auth(apikey=APIkey, apiaddress=APIaddress, cacert=CACert, profile=args.profile)
         else:
             print("invalid api key")
