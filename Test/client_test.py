@@ -39,7 +39,7 @@ class client_test(unittest.TestCase):
         self.assertEqual("a_myOrg84",response['org_name'])
 
     def test_get_build_logs(self):
-        client = Algorithmia.client(api_address="https://test.algorithmia.com",api_key=os.environ.get('ALGORITHMIA_API_KEY'))
+        client = Algorithmia.client(api_key=os.environ.get('ALGORITHMIA_API_KEY'))
         user = os.environ.get('ALGO_USER_NAME')
         algo = "Echo"
         result = client.get_build_logs(user,algo)
