@@ -287,6 +287,11 @@ class CLI():
                 else:
                     print("at least one of the operands must be a path to a remote data source data://")
 
+    def list_languages(self, client):
+        response = client.get_supported_languages()
+        return response
+        
+
     def getconfigfile(self):
         if(os.name == "posix"):
             #if!windows
