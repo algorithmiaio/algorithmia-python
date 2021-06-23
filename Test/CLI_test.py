@@ -163,6 +163,8 @@ class CLITest(unittest.TestCase):
 
 	def test_list_languages(self):
 		result = CLI().list_languages(self.client)
+		if("error" in result):
+			print(result)
 		self.assertTrue(result is not None and "name" in result[0])
 
 
