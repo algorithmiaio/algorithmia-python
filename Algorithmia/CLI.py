@@ -288,8 +288,7 @@ class CLI():
                     print("at least one of the operands must be a path to a remote data source data://")
 
     def getBuildLogs(self, user, algo, client):
-        url = '/v1/algorithms/'+user+'/'+algo+'/builds'
-        api_response = json.loads(client.getHelper(url).content.decode('utf-8'))
+        api_response = client.get_build_logs(user,algo)
         
         if "error" in api_response:
             return json.dumps(api_response)

@@ -114,6 +114,11 @@ class Client(object):
         response = self.putHelper(url,data={})
         return response
 
+    def get_build_logs(self,user,algo):
+        url = '/v1/algorithms/'+user+'/'+algo+'/builds'
+        response = json.loads(self.getHelper(url).content.decode('utf-8'))
+        return response
+
     # Used to send insight data to Algorithm Queue Reader in cluster
     def report_insights(self, insights):
         return Insights(insights)
