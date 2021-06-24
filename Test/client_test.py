@@ -62,7 +62,7 @@ class client_test(unittest.TestCase):
         filename = "./temptest"
         client =Algorithmia.client(api_key=os.environ.get('ALGORITHMIA_API_KEY'))
         response = client.get_template("400883fb-af98-44c7-8431-0439a56cea40",filename)
-        self.assertTrue(response.status_code == 200)
+        self.assertTrue(response['status_code'] == 200)
         try:
             shutil.rmtree(filename)
         except OSError as e:
