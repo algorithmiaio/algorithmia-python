@@ -107,6 +107,10 @@ def main():
     parser_cat.add_argument('path', nargs = '*', help = 'file(s) to concatenate and print')
     parser_cat.add_argument('--profile', action = 'store', type = str, default = 'default')
 
+    #sub parser for getting environment by language name
+    parser_env = subparsers.add_parser('environment', help = 'environment <language> gets environment info by language')
+    parser_env.add_argument('language', help='supported language name')
+
     subparsers.add_parser('help')
     parser.add_argument('--profile', action = 'store', type = str, default = 'default')
 
@@ -179,6 +183,10 @@ def main():
 
     elif args.cmd == 'cat':
         print(CLI().cat(args.path, client))
+
+    elif args.cmd == 'environment':
+        response = CLI().get_environment_by_language(args.language,client)
+        print(response)
     else:
         parser.parse_args(['-h'])
 

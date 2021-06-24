@@ -38,6 +38,12 @@ class client_test(unittest.TestCase):
         response = self.c.get_org("a_myOrg84")
         self.assertEqual("a_myOrg84",response['org_name'])
 
+    def test_get_environment(self):
+        client =Algorithmia.client(api_key=os.environ.get('ALGORITHMIA_API_KEY'))
+        response = client.get_environment("python2")
+        if("error" in response):
+            print(response)
+        self.assertTrue(response is not None and "environments" in response)
 
     def test_edit_org(self):
         orgname="a_myOrg84"

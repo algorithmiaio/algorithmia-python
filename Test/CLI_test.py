@@ -160,6 +160,12 @@ class CLITest(unittest.TestCase):
 		self.assertEqual(resultK, key)
 		self.assertEqual(resultA, address)
 		self.assertEqual(resultC, cacert)
+	
+	def test_get_environment(self):
+		result = CLI().get_environment_by_language("python2",self.client)
+		if("error" in result):
+			print(result)
+		self.assertTrue(result is not None and "display_name" in result)
 
 	def test_rm(self):
 		localfile = "./TestFiles/testRM.txt"

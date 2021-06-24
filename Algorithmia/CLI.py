@@ -287,6 +287,12 @@ class CLI():
                 else:
                     print("at least one of the operands must be a path to a remote data source data://")
 
+    def get_environment_by_language(self,language,client):
+        response = client.get_environment(language)
+        if "error" in response:
+            return json.dumps(response)
+        return json.dumps(response['environments'],indent=1)
+        
     def getconfigfile(self):
         if(os.name == "posix"):
             #if!windows
