@@ -1,4 +1,5 @@
 from datetime import datetime, time
+import shutil
 import sys
 import os
 from random import seed
@@ -56,6 +57,17 @@ class client_test(unittest.TestCase):
 
         response = self.c.edit_org(orgname,obj)
         self.assertEqual(204,response.status_code)
+
+    def test_get_template(self):
+        filename = "./temptest"
+        client =Algorithmia.client(api_key=os.environ.get('ALGORITHMIA_API_KEY'))
+        response = client.get_template("400883fb-af98-44c7-8431-0439a56cea40",filename)
+        self.assertTrue(response.status_code == 200)
+        try:
+            shutil.rmtree(filename)
+        except OSError as e:
+            print(e)
+
 
     def test_invite_to_org(self):
         response = self.c.invite_to_org("a_myOrg38","a_Mrtest4")

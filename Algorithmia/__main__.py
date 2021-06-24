@@ -107,6 +107,11 @@ def main():
     parser_cat.add_argument('path', nargs = '*', help = 'file(s) to concatenate and print')
     parser_cat.add_argument('--profile', action = 'store', type = str, default = 'default')
 
+    #sub parser for getting environment template
+    parser_template = subparsers.add_parser('template',help='template <envid> <dest> downloads an environment template to the destination')
+    parser_template.add_argument('envid',help='environment specification id')
+    parser_template.add_argument('dest',help='destination for template download')
+
     subparsers.add_parser('help')
     parser.add_argument('--profile', action = 'store', type = str, default = 'default')
 
@@ -179,6 +184,9 @@ def main():
 
     elif args.cmd == 'cat':
         print(CLI().cat(args.path, client))
+    
+    elif args.cmd == 'template':
+        CLI().get_template(args.envid,args.dest,client)
     else:
         parser.parse_args(['-h'])
 
