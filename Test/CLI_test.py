@@ -186,7 +186,7 @@ class CLITest(unittest.TestCase):
 		envid = "36fd467e-fbfe-4ea6-aa66-df3f403b7132"
 		response = CLI().get_template(envid,filename,self.client)
 		print(response)
-		self.assertTrue(response['status_code'] == 200)
+		self.assertTrue(response.ok)
 		try:
 			shutil.rmtree(filename)
 		except OSError as e:
