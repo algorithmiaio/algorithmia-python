@@ -183,7 +183,7 @@ class CLITest(unittest.TestCase):
 
 	def test_get_template(self):
 		filename = "./temptest"
-		envid = "400883fb-af98-44c7-8431-0439a56cea40"
+		envid = "36fd467e-fbfe-4ea6-aa66-df3f403b7132"
 		response = CLI().get_template(envid,filename,self.client)
 		print(response)
 		self.assertTrue(response['status_code'] == 200)
