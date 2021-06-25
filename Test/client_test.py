@@ -42,7 +42,7 @@ class client_test(unittest.TestCase):
         client = Algorithmia.client(api_key=os.environ.get('ALGORITHMIA_API_KEY'))
         user = os.environ.get('ALGO_USER_NAME')
         algo = "Echo"
-        result = client.get_build_logs(user,algo)
+        result = client.algo(user+'/'+algo).build_logs()
         if "error" in result:
             print(result)
         self.assertTrue("error" not in result)
