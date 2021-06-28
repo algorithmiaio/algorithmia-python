@@ -22,7 +22,7 @@ deploy:
     - export CLIENT_VERSION=$(git describe --abbrev=0 2>/dev/null || echo '')
     - python -m pip install --upgrade pip
     - pip install wheel twine setuptools
-    - python setup.py bdist_wheel sdist --universal
+    - python setup.py sdist bdist_wheel
     - twine upload -r pypitest  dist/*
 
 test:
