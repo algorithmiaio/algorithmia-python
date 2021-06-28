@@ -146,10 +146,6 @@ class Client(object):
         else:  
             return json.loads(response.content.decode("utf-8"))
 
-       
-
-        
-        
 
     # Used to send insight data to Algorithm Queue Reader in cluster
     def report_insights(self, insights):
