@@ -19,11 +19,11 @@ deploy:
     - tags
   image: python:3.7
   script:
-    - CLIENT_VERSION=$(git describe --abbrev=0 2>/dev/null || echo '')
+    - export CLIENT_VERSION=$(git describe --abbrev=0 2>/dev/null || echo '')
     - python -m pip install --upgrade pip
     - pip install wheel twine setuptools
     - python setup.py bdist_wheel sdist --universal
-    -twine upload -r pypi dist/*
+    - twine upload -r pypitest  dist/*
 
 test:
   stage: test
