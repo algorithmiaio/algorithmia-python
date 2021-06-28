@@ -23,6 +23,7 @@ deploy:
     - python -m pip install --upgrade pip
     - pip install wheel twine setuptools
     - python setup.py sdist bdist_wheel
+    - echo  $PYPIRC >> ~/.pypirc
     - twine upload -r pypitest  dist/*
 
 test:
