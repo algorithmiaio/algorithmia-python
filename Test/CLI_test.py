@@ -5,6 +5,7 @@ sys.path = ['../'] + sys.path
 
 import unittest
 import os
+import json
 import Algorithmia
 from Algorithmia.CLI import CLI
 import argparse
@@ -66,6 +67,15 @@ class CLITest(unittest.TestCase):
 
 		result = CLI().cat([file],self.client)
 		self.assertEqual(result, fileContents)
+
+	def test_get_build_logs(self):
+		user=os.environ.get('ALGO_USER_NAME')
+		algo="Echo"
+		
+		result = json.loads(CLI().getBuildLogs(user,algo,self.client))
+		if "error" in result:
+			print(result)
+		self.assertTrue("error" not in result)
 
 
 #local to remote

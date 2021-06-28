@@ -111,6 +111,12 @@ def main():
     parser_env = subparsers.add_parser('environment', help = 'environment <language> gets environment info by language')
     parser_env.add_argument('language', help='supported language name')
 
+    #sub parser for builds
+    parser_builds = subparsers.add_parser('builds', help = 'builds <user> <algo> gets build logs for algorithm')
+    parser_builds.add_argument('user')
+    parser_builds.add_argument('algo',help='algorithm name')
+
+    #sub parser for help
     subparsers.add_parser('help')
     parser.add_argument('--profile', action = 'store', type = str, default = 'default')
 
@@ -187,6 +193,10 @@ def main():
     elif args.cmd == 'environment':
         response = CLI().get_environment_by_language(args.language,client)
         print(response)
+
+    elif args.cmd == 'builds':
+        print(CLI().getBuildLogs(args.user, args.algo, client))
+
     else:
         parser.parse_args(['-h'])
 

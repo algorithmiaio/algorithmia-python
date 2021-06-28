@@ -119,6 +119,7 @@ class Client(object):
         response = self.getHelper(url)
         return response.json()
 
+
     # Used to send insight data to Algorithm Queue Reader in cluster
     def report_insights(self, insights):
         return Insights(insights)

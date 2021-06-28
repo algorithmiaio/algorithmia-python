@@ -46,6 +46,16 @@ class client_test(unittest.TestCase):
             print(response)
         self.assertTrue(response is not None and "environments" in response)
 
+    def test_get_build_logs(self):
+        client = Algorithmia.client(api_key=os.environ.get('ALGORITHMIA_API_KEY'))
+        user = os.environ.get('ALGO_USER_NAME')
+        algo = "Echo"
+        result = client.algo(user+'/'+algo).build_logs()
+        if "error" in result:
+            print(result)
+        self.assertTrue("error" not in result)
+
+
     def test_edit_org(self):
         orgname="a_myOrg84"
 
