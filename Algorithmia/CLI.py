@@ -287,11 +287,17 @@ class CLI():
                 else:
                     print("at least one of the operands must be a path to a remote data source data://")
 
+    def get_environment_by_language(self,language,client):
+        response = client.get_environment(language)
+        if "error" in response:
+            return json.dumps(response)
+        return json.dumps(response['environments'],indent=1)
+
 
     def list_languages(self, client):
         response = client.get_supported_languages()
         return response
-        
+
 
     def getBuildLogs(self, user, algo, client):
         api_response = client.algo(user+'/'+algo).build_logs()
