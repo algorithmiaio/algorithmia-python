@@ -112,6 +112,11 @@ def main():
     parser_template.add_argument('envid',help='environment specification id')
     parser_template.add_argument('dest',help='destination for template download')
 
+    #sub parser for getting environment by language name
+    parser_env = subparsers.add_parser('environment', help = 'environment <language> gets environment info by language')
+    parser_env.add_argument('language', help='supported language name')
+
+
     #sub parser for listing languages
     subparsers.add_parser('languages', help = 'lists supported languages')
 
@@ -204,8 +209,13 @@ def main():
     elif args.cmd == 'template':
         CLI().get_template(args.envid,args.dest,client)
 
+    elif args.cmd == 'environment':
+        response = CLI().get_environment_by_language(args.language,client)
+        print(response)
+
     elif args.cmd == 'builds':
         print(CLI().getBuildLogs(args.user, args.algo, client))
+
     else:
         parser.parse_args(['-h'])
 

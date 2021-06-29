@@ -115,6 +115,7 @@ class Client(object):
         response = self.putHelper(url,data={})
         return response
 
+
     def get_template(self,envid,dest,save_tar=False):
         url = "/v1/algorithm-environments/edge/environment-specifications/"+envid+"/template"
         filename="template.tar.gz"
@@ -145,6 +146,11 @@ class Client(object):
             return response
         else:  
             return json.loads(response.content.decode("utf-8"))
+
+    def get_environment(self,language):
+        url = "/v1/algorithm-environments/edge/languages/"+language+"/environments"
+        response = self.getHelper(url)
+        return response.json()
 
     def get_supported_languages(self):
         url ="/v1/algorithm-environments/edge/languages"
