@@ -119,6 +119,11 @@ class Client(object):
         response = self.getHelper(url)
         return response.json()
 
+    def get_supported_languages(self):
+        url ="/v1/algorithm-environments/edge/languages"
+        response = self.getHelper(url)
+        return response.json()
+
 
     # Used to send insight data to Algorithm Queue Reader in cluster
     def report_insights(self, insights):
