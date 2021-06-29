@@ -172,6 +172,13 @@ class CLITest(unittest.TestCase):
 		self.assertEqual(resultA, address)
 		self.assertEqual(resultC, cacert)
 
+	def test_list_languages(self):
+		result = CLI().list_languages(self.client)
+		if("error" in result):
+			print(result)
+		self.assertTrue(result is not None and "name" in result[0])
+
+
 	def test_rm(self):
 		localfile = "./TestFiles/testRM.txt"
 
