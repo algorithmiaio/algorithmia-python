@@ -1,4 +1,5 @@
 from datetime import datetime, time
+import shutil
 import sys
 import os
 from random import seed
@@ -38,6 +39,14 @@ class client_test(unittest.TestCase):
         response = self.c.get_org("a_myOrg84")
         self.assertEqual("a_myOrg84",response['org_name'])
 
+    def test_get_environment(self):
+        client =Algorithmia.client(api_key=os.environ.get('ALGORITHMIA_API_KEY'))
+        response = client.get_environment("python2")
+        print(response)
+        if("error" in response):
+            print(response)
+        self.assertTrue(response is not None and "environments" in response)
+
     def test_get_build_logs(self):
         client = Algorithmia.client(api_key=os.environ.get('ALGORITHMIA_API_KEY'))
         user = os.environ.get('ALGO_USER_NAME')
@@ -46,8 +55,7 @@ class client_test(unittest.TestCase):
         if "error" in result:
             print(result)
         self.assertTrue("error" not in result)
-        
-			
+
 
     def test_edit_org(self):
         orgname="a_myOrg84"
@@ -67,6 +75,17 @@ class client_test(unittest.TestCase):
         response = self.c.edit_org(orgname,obj)
         self.assertEqual(204,response.status_code)
 
+    def test_get_template(self):
+        filename = "./temptest"
+        client =Algorithmia.client(api_key=os.environ.get('ALGORITHMIA_API_KEY'))
+        response = client.get_template("36fd467e-fbfe-4ea6-aa66-df3f403b7132",filename)
+        print(response)
+        self.assertTrue(response.ok)
+        try:
+            shutil.rmtree(filename)
+        except OSError as e:
+            print(e)
+
     def test_get_supported_languages(self):
         client = Algorithmia.client(api_key=os.environ.get('ALGORITHMIA_API_KEY'))
         response = client.get_supported_languages()
@@ -74,6 +93,7 @@ class client_test(unittest.TestCase):
         if("error" in response):
             print(response)
         self.assertTrue(response is not None and language_found)
+
 
     def test_invite_to_org(self):
         response = self.c.invite_to_org("a_myOrg38","a_Mrtest4")

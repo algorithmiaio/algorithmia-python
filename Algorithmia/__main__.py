@@ -107,6 +107,15 @@ def main():
     parser_cat.add_argument('path', nargs = '*', help = 'file(s) to concatenate and print')
     parser_cat.add_argument('--profile', action = 'store', type = str, default = 'default')
 
+    #sub parser for getting environment template
+    parser_template = subparsers.add_parser('template',help='template <envid> <dest> downloads an environment template to the destination')
+    parser_template.add_argument('envid',help='environment specification id')
+    parser_template.add_argument('dest',help='destination for template download')
+
+    #sub parser for getting environment by language name
+    parser_env = subparsers.add_parser('environment', help = 'environment <language> gets environment info by language')
+    parser_env.add_argument('language', help='supported language name')
+
 
     #sub parser for listing languages
     subparsers.add_parser('languages', help = 'lists supported languages')
@@ -197,8 +206,16 @@ def main():
         for lang in response:
             print("{:<25} {:<35}".format(lang['name'],lang['display_name']))
 
+    elif args.cmd == 'template':
+        CLI().get_template(args.envid,args.dest,client)
+
+    elif args.cmd == 'environment':
+        response = CLI().get_environment_by_language(args.language,client)
+        print(response)
+
     elif args.cmd == 'builds':
         print(CLI().getBuildLogs(args.user, args.algo, client))
+
     else:
         parser.parse_args(['-h'])
 

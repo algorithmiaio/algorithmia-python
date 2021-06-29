@@ -9,6 +9,7 @@ import json
 import Algorithmia
 from Algorithmia.CLI import CLI
 import argparse
+import shutil
 
 class CLITest(unittest.TestCase):
 	def setUp(self):
@@ -170,6 +171,13 @@ class CLITest(unittest.TestCase):
 		self.assertEqual(resultK, key)
 		self.assertEqual(resultA, address)
 		self.assertEqual(resultC, cacert)
+	
+	def test_get_environment(self):
+		result = CLI().get_environment_by_language("python2",self.client)
+		print(result)
+		if("error" in result):
+			print(result)
+		self.assertTrue(result is not None and "display_name" in result)
 
 	def test_list_languages(self):
 		result = CLI().list_languages(self.client)
@@ -196,6 +204,18 @@ class CLITest(unittest.TestCase):
 		result2 = CLI().ls(dest,self.client)
 
 		self.assertTrue("testRM.txt" in result1 and "testRM.txt" not in result2)
+
+	def test_get_template(self):
+		filename = "./temptest"
+		envid = "36fd467e-fbfe-4ea6-aa66-df3f403b7132"
+		response = CLI().get_template(envid,filename,self.client)
+		print(response)
+		self.assertTrue(response.ok)
+		try:
+			shutil.rmtree(filename)
+		except OSError as e:
+			print(e)
+		
 
 
 if __name__ == '__main__':
