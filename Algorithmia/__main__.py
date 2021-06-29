@@ -107,6 +107,17 @@ def main():
     parser_cat.add_argument('path', nargs = '*', help = 'file(s) to concatenate and print')
     parser_cat.add_argument('--profile', action = 'store', type = str, default = 'default')
 
+
+    #sub parser for listing languages
+    subparsers.add_parser('languages', help = 'lists supported languages')
+
+    #sub parser for builds
+    parser_builds = subparsers.add_parser('builds', help = 'builds <user> <algo> gets build logs for algorithm')
+    parser_builds.add_argument('user')
+    parser_builds.add_argument('algo',help='algorithm name')
+
+    #sub parser for help
+
     subparsers.add_parser('help')
     parser.add_argument('--profile', action = 'store', type = str, default = 'default')
 
@@ -179,6 +190,15 @@ def main():
 
     elif args.cmd == 'cat':
         print(CLI().cat(args.path, client))
+        
+    elif args.cmd == 'languages':
+        response = CLI().list_languages(client)
+        print("{:<25} {:<35}".format('Name','Description'))
+        for lang in response:
+            print("{:<25} {:<35}".format(lang['name'],lang['display_name']))
+
+    elif args.cmd == 'builds':
+        print(CLI().getBuildLogs(args.user, args.algo, client))
     else:
         parser.parse_args(['-h'])
 
