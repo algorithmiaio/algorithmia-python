@@ -11,6 +11,8 @@ variables:
   DOCKER_HOST: tcp://docker:2375/
   DOCKER_DRIVER: overlay2
   RUNNING_ON_BUILD_SERVER: "true"
+  TWINE_USERNAME: __token__
+  TWINE_PASSWORD: TWINE_PASSWORD
 
 
 deploy:
@@ -23,8 +25,8 @@ deploy:
     - python -m pip install --upgrade pip
     - pip install wheel twine setuptools
     - python setup.py sdist bdist_wheel
-    - echo  $PYPIRC >> ~/.pypirc
-    - twine upload -r pypitest  dist/*
+    - python3 setup.py sdist bdist_wheel --universal
+    - twine upload -r pypitest dist/*
 
 test:
   stage: test
