@@ -67,6 +67,14 @@ class client_test(unittest.TestCase):
         response = self.c.edit_org(orgname,obj)
         self.assertEqual(204,response.status_code)
 
+    def test_get_supported_languages(self):
+        client = Algorithmia.client(api_key=os.environ.get('ALGORITHMIA_API_KEY'))
+        response = client.get_supported_languages()
+        language_found = any('anaconda3' in languages['name'] for languages in response)
+        if("error" in response):
+            print(response)
+        self.assertTrue(response is not None and language_found)
+
     def test_invite_to_org(self):
         response = self.c.invite_to_org("a_myOrg38","a_Mrtest4")
         self.assertEqual(200,response.status_code)
