@@ -338,6 +338,10 @@ class CLI():
 
         return key
 
+    def get_template(self,envid,dest,client):
+        response = client.get_template(envid,dest)
+        return response
+
     def getAPIkey(self,profile):
         key = self.getconfigfile()
         config_dict = toml.load(key)

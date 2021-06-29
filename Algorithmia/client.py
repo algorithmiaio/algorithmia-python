@@ -10,6 +10,7 @@ from algorithmia_api_client import Configuration, DefaultApi, ApiClient
 from tempfile import mkstemp
 import atexit
 import json, re, requests, six, certifi
+import tarfile
 import os
 
 
@@ -114,6 +115,38 @@ class Client(object):
         response = self.putHelper(url,data={})
         return response
 
+
+    def get_template(self,envid,dest,save_tar=False):
+        url = "/v1/algorithm-environments/edge/environment-specifications/"+envid+"/template"
+        filename="template.tar.gz"
+
+        if not os.path.exists(dest):
+            os.makedirs(dest)
+
+        filepath = os.path.join(dest, filename)
+        response = self.getStreamHelper(url)
+
+        if response.ok:
+            with open(filepath, 'wb') as f:
+                for chunk in response.iter_content(chunk_size=1024 * 8):
+                    if chunk:
+                        f.write(chunk)
+                        f.flush()
+                        os.fsync(f.fileno())
+
+            tar = tarfile.open(filepath, "r:gz")
+            tar.extractall(dest)
+            tar.close()
+
+            if not save_tar:
+                try:
+                    os.remove(filepath)
+                except OSError as e:
+                    print(e)
+            return response
+        else:  
+            return json.loads(response.content.decode("utf-8"))
+
     def get_environment(self,language):
         url = "/v1/algorithm-environments/edge/languages/"+language+"/environments"
         response = self.getHelper(url)
@@ -123,6 +156,7 @@ class Client(object):
         url ="/v1/algorithm-environments/edge/languages"
         response = self.getHelper(url)
         return response.json()
+
 
 
     # Used to send insight data to Algorithm Queue Reader in cluster
@@ -162,6 +196,12 @@ class Client(object):
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
         return self.requestSession.get(self.apiAddress + url, headers=headers, params=query_parameters)
+
+    def getStreamHelper(self, url, **query_parameters):
+        headers = {}
+        if self.apiKey is not None:
+            headers['Authorization'] = self.apiKey
+        return self.requestSession.get(self.apiAddress + url, headers=headers, params=query_parameters, stream=True)
 
     def patchHelper(self, url, params):
         headers = {'content-type': 'application/json'}
