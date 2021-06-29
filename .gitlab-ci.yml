@@ -1,9 +1,9 @@
 stages:
-  - test
-  - python27
-  - python37
-  - python38
-  - python39
+#  - test
+#  - python27
+#  - python37
+#  - python38
+#  - python39
   - deploy
 
 variables:
@@ -13,6 +13,7 @@ variables:
   RUNNING_ON_BUILD_SERVER: "true"
   TWINE_USERNAME: __token__
   TWINE_PASSWORD: TWINE_PASSWORD
+  CLIENT_VERSION: CI_COMMIT_REF_SLUG
 
 
 deploy:
@@ -21,59 +22,60 @@ deploy:
     - tags
   image: python:3.7
   script:
-    - export CLIENT_VERSION=$(git describe --abbrev=0 2>/dev/null || echo '')
-    - python -m pip install --upgrade pip
-    - pip install wheel twine setuptools
-    - python setup.py sdist bdist_wheel
-    - python3 setup.py sdist bdist_wheel --universal
-    - twine upload -r pypi dist/*
+#    - export CLIENT_VERSION=$(git describe --abbrev=0 2>/dev/null || echo '')
+    - echo $CLIENT_VERSION
+#    - python -m pip install --upgrade pip
+#    - pip install wheel twine setuptools
+#    - python setup.py sdist bdist_wheel
+#    - python3 setup.py sdist bdist_wheel --universal
+#    - twine upload -r pypi dist/*
 
-test:
-  stage: test
-  script:
-    - if [ -z $ALGORITHMIA_API_KEY ]; then echo "Algorithmia API key not defined"; exit 1; fi
-
-test:pylint:36:
-  image: python:3.6
-  script:
-    - pip install pylint --quiet
-    - pylint --ignored-classes=_socketobject *.py || echo $?
-
-test:pytest:36:
-  image: python:3.6
-  script:
-    - pip install -r requirements.txt --quiet
-    - pip install pytest --quiet
-    - pytest
-
-python27:
-  stage: python27
-  image: python:2.7
-  script:
-    - pip install -r requirements27.txt --quiet
-    - pip install pytest --quiet
-    - pytest
-
-python37:
-  stage: python37
-  image: python:3.7
-  script:
-    - pip install -r requirements.txt --quiet
-    - pip install pytest --quiet
-    - pytest
-
-python38:
-  stage: python38
-  image: python:3.8
-  script:
-    - pip install -r requirements.txt --quiet
-    - pip install pytest --quiet
-    - pytest
-
-python39:
-  stage: python39
-  image: python:3.9
-  script:
-    - pip install -r requirements.txt --quiet
-    - pip install pytest --quiet
-    - pytest
+#test:
+#  stage: test
+#  script:
+#    - if [ -z $ALGORITHMIA_API_KEY ]; then echo "Algorithmia API key not defined"; exit 1; fi
+#
+#test:pylint:36:
+#  image: python:3.6
+#  script:
+#    - pip install pylint --quiet
+#    - pylint --ignored-classes=_socketobject *.py || echo $?
+#
+#test:pytest:36:
+#  image: python:3.6
+#  script:
+#    - pip install -r requirements.txt --quiet
+#    - pip install pytest --quiet
+#    - pytest
+#
+#python27:
+#  stage: python27
+#  image: python:2.7
+#  script:
+#    - pip install -r requirements27.txt --quiet
+#    - pip install pytest --quiet
+#    - pytest
+#
+#python37:
+#  stage: python37
+#  image: python:3.7
+#  script:
+#    - pip install -r requirements.txt --quiet
+#    - pip install pytest --quiet
+#    - pytest
+#
+#python38:
+#  stage: python38
+#  image: python:3.8
+#  script:
+#    - pip install -r requirements.txt --quiet
+#    - pip install pytest --quiet
+#    - pytest
+#
+#python39:
+#  stage: python39
+#  image: python:3.9
+#  script:
+#    - pip install -r requirements.txt --quiet
+#    - pip install pytest --quiet
+#    - pytest
