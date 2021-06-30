@@ -202,15 +202,15 @@ def main():
 
     elif args.cmd == 'languages':
         response = CLI().list_languages(client)
-        print("{:<25} {:<35}".format('Name','Display Name'))
+        print("{:<25} {:<35}".format('Name', 'Display Name'))
         for lang in response:
-            print("{:<25} {:<35}".format(lang['name'],lang['display_name']))
+            print("{:<25} {:<35}".format(lang['name'], lang['display_name']))
 
     elif args.cmd == 'template':
         CLI().get_template(args.envid,args.dest,client)
 
     elif args.cmd == 'environment':
-        response = CLI().get_environment_by_language(args.language,client)
+        response = CLI().get_environment_by_language(args.language, client)
         print(response)
 
     elif args.cmd == 'builds':
