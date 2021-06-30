@@ -302,7 +302,7 @@ class CLI():
             for lang in response:
                 table.append("{:<25} {:<35}".format(lang['name'],lang['display_name']))
         else:
-            print(json.dumps(response))
+            table.append(json.dumps(response))
         return table
 
 
