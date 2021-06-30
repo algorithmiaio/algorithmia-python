@@ -296,7 +296,14 @@ class CLI():
 
     def list_languages(self, client):
         response = client.get_supported_languages()
-        return response
+        table = []
+        if "error" not in response:
+            table.append("{:<25} {:<35}".format('Name','Description'))
+            for lang in response:
+                table.append("{:<25} {:<35}".format(lang['name'],lang['display_name']))
+        else:
+            print(json.dumps(response))
+        return table
 
 
     def getBuildLogs(self, user, algo, client):
