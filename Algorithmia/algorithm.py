@@ -112,6 +112,11 @@ class Algorithm(object):
             error_message = json.loads(e.body)
             raise raiseAlgoApiError(error_message)
 
+    def build_logs(self):
+        url = '/v1/algorithms/'+self.username+'/'+self.algoname+'/builds'
+        response = json.loads(self.client.getHelper(url).content.decode('utf-8'))
+        return response
+
 
     def get_scm_status(self):
         try:

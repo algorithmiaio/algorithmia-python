@@ -4,12 +4,30 @@ stages:
   - python37
   - python38
   - python39
+  - deploy
 
 variables:
   PROJECT_NAME: algorithmia-python
   DOCKER_HOST: tcp://docker:2375/
   DOCKER_DRIVER: overlay2
   RUNNING_ON_BUILD_SERVER: "true"
+  TWINE_USERNAME: __token__
+  CLIENT_VERSION: $CI_COMMIT_TAG
+
+
+deploy:
+  stage: deploy
+  only:
+    - tags
+  image: python:3.7
+  script:
+#    - export CLIENT_VERSION=$(git describe --abbrev=0 2>/dev/null || echo '')
+    - echo $CLIENT_VERSION
+    - python -m pip install --upgrade pip
+    - pip install wheel twine setuptools
+    - python setup.py sdist bdist_wheel
+    - python3 setup.py sdist bdist_wheel --universal
+    - twine upload -r pypi dist/*
 
 test:
   stage: test
