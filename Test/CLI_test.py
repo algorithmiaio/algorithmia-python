@@ -181,9 +181,9 @@ class CLITest(unittest.TestCase):
 
 	def test_list_languages(self):
 		result = CLI().list_languages(self.client)
-		if("error" in result):
+		if("error" in result[0]):
 			print(result)
-		self.assertTrue(result is not None and "name" in result[0])
+		self.assertTrue(result is not None and "anaconda3" in result[1])
 
 
 	def test_rm(self):

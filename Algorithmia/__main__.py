@@ -202,9 +202,8 @@ def main():
         
     elif args.cmd == 'languages':
         response = CLI().list_languages(client)
-        print("{:<25} {:<35}".format('Name','Description'))
-        for lang in response:
-            print("{:<25} {:<35}".format(lang['name'],lang['display_name']))
+        for line in response:
+            print(line)
 
     elif args.cmd == 'template':
         CLI().get_template(args.envid,args.dest,client)
