@@ -199,7 +199,7 @@ def main():
 
     elif args.cmd == 'cat':
         print(CLI().cat(args.path, client))
-        
+
     elif args.cmd == 'languages':
         response = CLI().list_languages(client)
         print("{:<25} {:<35}".format('Name','Display Name'))
