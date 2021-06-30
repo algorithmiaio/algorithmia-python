@@ -5,9 +5,11 @@ sys.path = ['../'] + sys.path
 
 import unittest
 import os
+import json
 import Algorithmia
 from Algorithmia.CLI import CLI
 import argparse
+import shutil
 
 class CLITest(unittest.TestCase):
 	def setUp(self):
@@ -66,6 +68,15 @@ class CLITest(unittest.TestCase):
 
 		result = CLI().cat([file],self.client)
 		self.assertEqual(result, fileContents)
+
+	def test_get_build_logs(self):
+		user=os.environ.get('ALGO_USER_NAME')
+		algo="Echo"
+		
+		result = json.loads(CLI().getBuildLogs(user,algo,self.client))
+		if "error" in result:
+			print(result)
+		self.assertTrue("error" not in result)
 
 
 #local to remote
@@ -160,6 +171,20 @@ class CLITest(unittest.TestCase):
 		self.assertEqual(resultK, key)
 		self.assertEqual(resultA, address)
 		self.assertEqual(resultC, cacert)
+	
+	def test_get_environment(self):
+		result = CLI().get_environment_by_language("python2",self.client)
+		print(result)
+		if("error" in result):
+			print(result)
+		self.assertTrue(result is not None and "display_name" in result)
+
+	def test_list_languages(self):
+		result = CLI().list_languages(self.client)
+		if("error" in result):
+			print(result)
+		self.assertTrue(result is not None and "name" in result[0])
+
 
 	def test_rm(self):
 		localfile = "./TestFiles/testRM.txt"
@@ -179,6 +204,18 @@ class CLITest(unittest.TestCase):
 		result2 = CLI().ls(dest,self.client)
 
 		self.assertTrue("testRM.txt" in result1 and "testRM.txt" not in result2)
+
+	def test_get_template(self):
+		filename = "./temptest"
+		envid = "36fd467e-fbfe-4ea6-aa66-df3f403b7132"
+		response = CLI().get_template(envid,filename,self.client)
+		print(response)
+		self.assertTrue(response.ok)
+		try:
+			shutil.rmtree(filename)
+		except OSError as e:
+			print(e)
+		
 
 
 if __name__ == '__main__':
