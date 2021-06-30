@@ -202,7 +202,7 @@ def main():
         
     elif args.cmd == 'languages':
         response = CLI().list_languages(client)
-        print("{:<25} {:<35}".format('Name','Description'))
+        print("{:<25} {:<35}".format('Name','Display Name'))
         for lang in response:
             print("{:<25} {:<35}".format(lang['name'],lang['display_name']))
 
