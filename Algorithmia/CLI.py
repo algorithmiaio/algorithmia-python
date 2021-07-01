@@ -289,10 +289,15 @@ class CLI():
 
     def get_environment_by_language(self,language,client):
         response = client.get_environment(language)
-        if "error" in response:
-            return json.dumps(response)
-        return json.dumps(response['environments'],indent=1)
-
+        table = []
+        if "error" not in response:
+            table.append("{:<45} {:<40}".format('Name', 'Environment Specification ID'))
+            for env in response['environments']:
+                table.append("{:<45} {:<40}".format(
+                    env['display_name'], env['environment_specification_id']))
+        else:
+            table.append(json.dumps(response))
+        return table
 
     def list_languages(self, client):
         response = client.get_supported_languages()

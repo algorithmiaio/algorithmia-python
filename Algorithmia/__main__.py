@@ -210,7 +210,8 @@ def main():
 
     elif args.cmd == 'environment':
         response = CLI().get_environment_by_language(args.language, client)
-        print(response)
+        for line in response:
+            print(line)
 
     elif args.cmd == 'builds':
         print(CLI().getBuildLogs(args.user, args.algo, client))
