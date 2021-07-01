@@ -298,7 +298,7 @@ class CLI():
                     (env['display_name'], env['environment_specification_id']))
             # sort environments by display_name
             subset_props = sorted(subset_props, key=lambda tup: tup[0] )
-            table.append("{:<45} {:<40}".format('Name', 'Environment Specification ID'))
+            table.append("{:<45} {:<40}".format('Display Name', 'Specification ID'))
             table.append('*' * 80)
             for tup in subset_props:
                 table.append("{:<45} {:<40}".format(
@@ -311,7 +311,7 @@ class CLI():
         response = client.get_supported_languages()
         table = []
         if "error" not in response:
-            table.append("{:<25} {:<35}".format('Name','Description'))
+            table.append("{:<25} {:<35}".format('Name','Display Name'))
             table.append('*' * 80)
             for lang in response:
                 table.append("{:<25} {:<35}".format(lang['name'],lang['display_name']))
