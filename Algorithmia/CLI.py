@@ -291,10 +291,18 @@ class CLI():
         response = client.get_environment(language)
         table = []
         if "error" not in response:
-            table.append("{:<45} {:<40}".format('Name', 'Environment Specification ID'))
+            # extract properties of interest for faster sort
+            subset_props = []
             for env in response['environments']:
+                subset_props.append(
+                    (env['display_name'], env['environment_specification_id']))
+            # sort environments by display_name
+            subset_props = sorted(subset_props, key=lambda tup: tup[0] )
+            table.append("{:<45} {:<40}".format('Name', 'Environment Specification ID'))
+            table.append('*' * 80)
+            for tup in subset_props:
                 table.append("{:<45} {:<40}".format(
-                    env['display_name'], env['environment_specification_id']))
+                    tup[0], tup[1]))
         else:
             table.append(json.dumps(response))
         return table
@@ -304,6 +312,7 @@ class CLI():
         table = []
         if "error" not in response:
             table.append("{:<25} {:<35}".format('Name','Description'))
+            table.append('*' * 80)
             for lang in response:
                 table.append("{:<25} {:<35}".format(lang['name'],lang['display_name']))
         else:
