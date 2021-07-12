@@ -11,7 +11,7 @@ class CLI():
     def __init__(self):
         self.client = Algorithmia.client()
         # algo auth
-    def auth(self, apikey, apiaddress, cacert="", profile="default"):
+    def auth(self, apikey, apiaddress, cacert="", bearer="", profile="default"):
 
         #store api key in local config file and read from it each time a client needs to be created
         key = self.getconfigfile()
@@ -22,16 +22,17 @@ class CLI():
                 config['profiles'][profile]['api_key'] = apikey
                 config['profiles'][profile]['api_server'] = apiaddress
                 config['profiles'][profile]['ca_cert'] = cacert
+                config['profiles'][profile]['bearer_token'] = bearer
 
             else:
-                config['profiles'][profile] = {'api_key':apikey,'api_server':apiaddress,'ca_cert':cacert}
+                config['profiles'][profile] = {'api_key':apikey,'api_server':apiaddress,'ca_cert':cacert,'bearer_token':bearer}
         else:
-            config['profiles'] = {profile:{'api_key':apikey,'api_server':apiaddress,'ca_cert':cacert}}
+            config['profiles'] = {profile:{'api_key':apikey,'api_server':apiaddress,'ca_cert':cacert,'bearer_token':bearer }}
 
         with open(key, "w") as key:
             toml.dump(config,key)
 
-        self.ls(path = None,client = Algorithmia.client(self.getAPIkey(profile)))
+        self.ls(path = None,client = CLI().getClient(profile))
 
     # algo run <algo> <args..>    run the the specified algo
     def runalgo(self, options, client):
@@ -339,6 +340,7 @@ class CLI():
                 file.write("api_key = ''\n")
                 file.write("api_server = ''\n")
                 file.write("ca_cert = ''\n")
+                file.write("bearer_token = ''\n")
 
 
         key = keyPath+keyFile
@@ -356,6 +358,14 @@ class CLI():
         if('profiles' in config_dict.keys() and profile in config_dict['profiles'].keys()):
             apikey = config_dict['profiles'][profile]['api_key']
         return apikey
+    
+    def getBearerToken(self,profile):
+        key = self.getconfigfile()
+        config_dict = toml.load(key)
+        bearer = None
+        if('profiles' in config_dict.keys() and profile in config_dict['profiles'].keys()):
+            bearer = config_dict['profiles'][profile]['bearer_token']
+        return bearer
 
     def getAPIaddress(self,profile):
         key = self.getconfigfile()
@@ -372,3 +382,34 @@ class CLI():
         if('profiles' in config_dict.keys() and profile in config_dict['profiles'].keys()):
             cert = config_dict['profiles'][profile]['ca_cert']
         return cert
+
+    def getClient(self,profile):
+        
+        apiAddress = None
+        apiKey = None
+        caCert = None
+        bearer = None
+
+        if len(CLI().getAPIaddress(profile)) > 1:
+            apiKey = self.getAPIkey(profile)
+            apiAddress = self.getAPIaddress(profile)
+            #client = Algorithmia.client(CLI().getAPIkey(profile), CLI().getAPIaddress(profile))
+        elif len(CLI().getAPIaddress(profile)) > 1 and len(CLI().getCert(profile)) > 1:
+            apiKey = self.getAPIkey(profile)
+            apiAddress = self.getAPIaddress(profile)
+            caCert = self.getCert(profile)
+            #client = Algorithmia.client(CLI().getAPIkey(profile), CLI().getAPIaddress(profile),CLI().getCert(profile))
+        elif len(CLI().getAPIaddress(profile)) < 1 and len(CLI().getCert(profile)) > 1:
+            apiKey = self.getAPIkey(profile)
+            apiAddress = self.getAPIaddress(profile)
+            caCert = self.getCert(profile)
+            #client = Algorithmia.client(CLI().getAPIkey(profile), CLI().getAPIaddress(profile),CLI().getCert(profile))
+        else:
+            apiKey = self.getAPIkey(profile)
+            #client = Algorithmia.client(CLI().getAPIkey(profile))
+            
+        if len(self.getAPIkey(profile)) < 1:
+            apiKey = None
+            bearer = self.getBearerToken(profile)
+
+        return Algorithmia.client(api_key=apiKey,api_address=apiAddress,ca_cert=caCert,bearer_token = bearer)

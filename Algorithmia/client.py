@@ -22,13 +22,19 @@ class Client(object):
     apiKey = None
     apiAddress = None
     requestSession = None
+    bearerToken = None
 
 
-    def __init__(self, apiKey = None, apiAddress = None, caCert = None):
+    def __init__(self, apiKey = None, apiAddress = None, caCert = None, bearerToken=None):
         # Override apiKey with environment variable
         self.requestSession = requests.Session()
         if apiKey is None and 'ALGORITHMIA_API_KEY' in os.environ:
             apiKey = os.environ['ALGORITHMIA_API_KEY']
+        if apiKey is None:
+            if bearerToken is None and 'ALGORITHMIA_BEARER_TOKEN' in os.environ:
+                bearerToken = os.environ['ALGORITHMIA_BEARER_TOKEN']
+            self.bearerToken = bearerToken
+
         self.apiKey = apiKey
         if apiAddress is not None:
             self.apiAddress = apiAddress
@@ -171,6 +177,8 @@ class Client(object):
         headers = {}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
+        else: 
+            headers['Authorization'] = "Bearer "+ self.bearerToken
 
         input_json = None
         if input_object is None:
@@ -197,18 +205,24 @@ class Client(object):
         headers = {}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
+        else: 
+            headers['Authorization'] = 'Bearer '+ self.bearerToken
         return self.requestSession.get(self.apiAddress + url, headers=headers, params=query_parameters)
 
     def getStreamHelper(self, url, **query_parameters):
         headers = {}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
+        else: 
+            headers['Authorization'] = 'Bearer '+ self.bearerToken
         return self.requestSession.get(self.apiAddress + url, headers=headers, params=query_parameters, stream=True)
 
     def patchHelper(self, url, params):
         headers = {'content-type': 'application/json'}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
+        else: 
+            headers['Authorization'] = 'Bearer '+ self.bearerToken
         return self.requestSession.patch(self.apiAddress + url, headers=headers, data=json.dumps(params))
 
     # Used internally to get http head result
@@ -216,6 +230,8 @@ class Client(object):
         headers = {}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
+        else: 
+            headers['Authorization'] = 'Bearer '+ self.bearerToken
         return self.requestSession.head(self.apiAddress + url, headers=headers)
 
 
@@ -224,6 +240,8 @@ class Client(object):
         headers = {}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
+        else: 
+            headers['Authorization'] = 'Bearer '+ self.bearerToken
         if isJson(data):
             headers['Content-Type'] = 'application/json'
 
@@ -237,6 +255,8 @@ class Client(object):
         headers = {}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
+        else: 
+            headers['Authorization'] = 'Bearer '+ self.bearerToken
         response = self.requestSession.delete(self.apiAddress + url, headers=headers)
         if response.reason == "No Content":
             return response
