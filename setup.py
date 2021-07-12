@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='algorithmia',
-    version='1.8.1',
+    version=os.environ.get('CLIENT_VERSION', '0.0.0'),
     description='Algorithmia Python Client',
     long_description='Algorithmia Python Client is a client library for accessing Algorithmia from python code. This library also gets bundled with any Python algorithms in Algorithmia.',
     url='http://github.com/algorithmiaio/algorithmia-python',
@@ -21,7 +21,7 @@ setup(
         'enum-compat',
         'toml',
         'argparse',
-        'algorithmia-api-client==1.3.1',
+        'algorithmia-api-client>=1.3,<1.4',
         'algorithmia-adk>=1.0.2,<1.1'
     ],
     include_package_data=True,

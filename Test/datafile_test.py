@@ -47,7 +47,10 @@ class DataFileTest(unittest.TestCase):
     def test_putJson_getJson(self):
         file = '.my/empty/test.json'
         df = DataFile(self.client,'data://'+file)
-        payload = {"hello":"world"}
+        if sys.version_info[0] < 3:
+            payload = {u"hello":u"world"}
+        else:
+            payload = {"hello": "world"}
         response = df.putJson(payload)
         self.assertEqual(response.path,file)
         result = self.client.file(file).getJson()

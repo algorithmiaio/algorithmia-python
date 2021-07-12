@@ -317,6 +317,33 @@ class CLI():
                 else:
                     print("at least one of the operands must be a path to a remote data source data://")
 
+    def get_environment_by_language(self,language,client):
+        response = client.get_environment(language)
+        if "error" in response:
+            return json.dumps(response)
+        return json.dumps(response['environments'],indent=1)
+
+
+    def list_languages(self, client):
+        response = client.get_supported_languages()
+        table = []
+        if "error" not in response:
+            table.append("{:<25} {:<35}".format('Name','Description'))
+            for lang in response:
+                table.append("{:<25} {:<35}".format(lang['name'],lang['display_name']))
+        else:
+            table.append(json.dumps(response))
+        return table
+
+
+    def getBuildLogs(self, user, algo, client):
+        api_response = client.algo(user+'/'+algo).build_logs()
+        
+        if "error" in api_response:
+            return json.dumps(api_response)
+        return json.dumps(api_response['results'], indent=1)
+
+
     def getconfigfile(self):
         if(os.name == "posix"):
             #if!windows
@@ -347,6 +374,10 @@ class CLI():
         key = keyPath+keyFile
 
         return key
+
+    def get_template(self,envid,dest,client):
+        response = client.get_template(envid,dest)
+        return response
 
     def getAPIkey(self,profile):
         key = self.getconfigfile()
