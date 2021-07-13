@@ -38,7 +38,7 @@ class Client(object):
         if caCert == False:
             self.requestSession.verify = False
             config = Configuration(use_ssl=False)
-        if caCert is None and 'REQUESTS_CA_BUNDLE' in os.environ:
+        elif caCert is None and 'REQUESTS_CA_BUNDLE' in os.environ:
             caCert = os.environ.get('REQUESTS_CA_BUNDLE')
             self.catCerts(caCert)
             self.requestSession.verify = self.ca_cert
