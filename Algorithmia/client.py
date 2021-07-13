@@ -35,11 +35,9 @@ class Client(object):
         else:
             self.apiAddress = Algorithmia.getApiAddress()
         if caCert == False:
-            print("cacert is false")
             self.requestSession.verify = False
             config = Configuration(use_ssl=False)
         else:
-            print("cacert is not false")
             config = Configuration()
             if caCert is None and 'REQUESTS_CA_BUNDLE' in os.environ:
                 caCert = os.environ.get('REQUESTS_CA_BUNDLE')

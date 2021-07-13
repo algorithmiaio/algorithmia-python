@@ -35,6 +35,7 @@ class client_test(unittest.TestCase):
         response = self.c.create_org({"org_name": self.orgname, "org_label": "some label", "org_contact_name": "Some owner", "org_email": self.orgname+"@algo.com","type_id":"basic"})
         self.assertEqual(self.orgname,response['org_name'])
 
+
     def test_get_org(self):
         response = self.c.get_org("a_myOrg84")
         self.assertEqual("a_myOrg84",response['org_name'])
@@ -52,6 +53,15 @@ class client_test(unittest.TestCase):
         user = os.environ.get('ALGO_USER_NAME')
         algo = "Echo"
         result = client.algo(user+'/'+algo).build_logs()
+        if "error" in result:
+            print(result)
+        self.assertTrue("error" not in result)
+
+    def test_get_build_logs_no_ssl(self):
+        client = Algorithmia.client(api_key=os.environ.get('ALGORITHMIA_API_KEY'), ca_cert=False)
+        user = os.environ.get('ALGO_USER_NAME')
+        algo = "Echo"
+        result = client.algo(user + '/' + algo).build_logs()
         if "error" in result:
             print(result)
         self.assertTrue("error" not in result)
@@ -93,6 +103,7 @@ class client_test(unittest.TestCase):
         if("error" in response):
             print(response)
         self.assertTrue(response is not None and language_found)
+
 
 
     def test_invite_to_org(self):
