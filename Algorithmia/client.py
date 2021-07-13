@@ -35,21 +35,25 @@ class Client(object):
         else:
             self.apiAddress = Algorithmia.getApiAddress()
         if caCert == False:
+            print("cacert is false")
             self.requestSession.verify = False
-        elif caCert is None and 'REQUESTS_CA_BUNDLE' in os.environ:
-            caCert = os.environ.get('REQUESTS_CA_BUNDLE')
-            self.catCerts(caCert)
-            self.requestSession.verify = self.ca_cert
-        elif caCert is not None and 'REQUESTS_CA_BUNDLE' not in os.environ:
-            self.catCerts(caCert)
-            self.requestSession.verify = self.ca_cert
-        elif caCert is not None and 'REQUESTS_CA_BUNDLE' in os.environ:
-            #if both are available, use the one supplied in the constructor. I assume that a user supplying a cert in initialization wants to use that one.
-            self.catCerts(caCert)
-            self.requestSession.verify = self.ca_cert
+            config = Configuration(use_ssl=False)
+        else:
+            print("cacert is not false")
+            config = Configuration()
+            if caCert is None and 'REQUESTS_CA_BUNDLE' in os.environ:
+                caCert = os.environ.get('REQUESTS_CA_BUNDLE')
+                self.catCerts(caCert)
+                self.requestSession.verify = self.ca_cert
+            elif caCert is not None and 'REQUESTS_CA_BUNDLE' not in os.environ:
+                self.catCerts(caCert)
+                self.requestSession.verify = self.ca_cert
+            elif caCert is not None and 'REQUESTS_CA_BUNDLE' in os.environ:
+                #if both are available, use the one supplied in the constructor. I assume that a user supplying a cert in initialization wants to use that one.
+                self.catCerts(caCert)
+                self.requestSession.verify = self.ca_cert
 
 
-        config = Configuration()
         config.api_key['Authorization'] = self.apiKey
         config.host = "{}/v1".format(self.apiAddress)
         self.manageApi = DefaultApi(ApiClient(config))
