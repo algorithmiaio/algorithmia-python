@@ -26,6 +26,7 @@ class Client(object):
 
     def __init__(self, apiKey = None, apiAddress = None, caCert = None):
         # Override apiKey with environment variable
+        config = None
         self.requestSession = requests.Session()
         if apiKey is None and 'ALGORITHMIA_API_KEY' in os.environ:
             apiKey = os.environ['ALGORITHMIA_API_KEY']
@@ -37,21 +38,20 @@ class Client(object):
         if caCert == False:
             self.requestSession.verify = False
             config = Configuration(use_ssl=False)
-        else:
+        if caCert is None and 'REQUESTS_CA_BUNDLE' in os.environ:
+            caCert = os.environ.get('REQUESTS_CA_BUNDLE')
+            self.catCerts(caCert)
+            self.requestSession.verify = self.ca_cert
+        elif caCert is not None and 'REQUESTS_CA_BUNDLE' not in os.environ:
+            self.catCerts(caCert)
+            self.requestSession.verify = self.ca_cert
+        elif caCert is not None and 'REQUESTS_CA_BUNDLE' in os.environ:
+            #if both are available, use the one supplied in the constructor. I assume that a user supplying a cert in initialization wants to use that one.
+            self.catCerts(caCert)
+            self.requestSession.verify = self.ca_cert
+
+        if not config:
             config = Configuration()
-            if caCert is None and 'REQUESTS_CA_BUNDLE' in os.environ:
-                caCert = os.environ.get('REQUESTS_CA_BUNDLE')
-                self.catCerts(caCert)
-                self.requestSession.verify = self.ca_cert
-            elif caCert is not None and 'REQUESTS_CA_BUNDLE' not in os.environ:
-                self.catCerts(caCert)
-                self.requestSession.verify = self.ca_cert
-            elif caCert is not None and 'REQUESTS_CA_BUNDLE' in os.environ:
-                #if both are available, use the one supplied in the constructor. I assume that a user supplying a cert in initialization wants to use that one.
-                self.catCerts(caCert)
-                self.requestSession.verify = self.ca_cert
-
-
         config.api_key['Authorization'] = self.apiKey
         config.host = "{}/v1".format(self.apiAddress)
         self.manageApi = DefaultApi(ApiClient(config))

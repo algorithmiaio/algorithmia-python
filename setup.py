@@ -21,7 +21,7 @@ setup(
         'enum-compat',
         'toml',
         'argparse',
-        'algorithmia-api-client>=1.3,<1.6',
+        'algorithmia-api-client==1.5.1',
         'algorithmia-adk>=1.0.2,<1.1'
     ],
     include_package_data=True,
