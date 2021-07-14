@@ -94,10 +94,21 @@ class client_test(unittest.TestCase):
             print(response)
         self.assertTrue(response is not None and language_found)
 
-
     def test_invite_to_org(self):
         response = self.c.invite_to_org("a_myOrg38","a_Mrtest4")
         self.assertEqual(200,response.status_code)
+
+    def test_get_organization_errors(self):
+        response = self.c.get_organization_errors(self.orgname)
+        self.assertEqual(200, response.status_code)
+
+    def test_get_user_errors(self):
+        response = self.c.get_user_errors(self.username)
+        self.assertEqual(200, response.status_code)
+
+    def test_get_algorithm_errors(self):
+        response = self.c.get_algorithm_errors('hello')
+        self.assertEqual(404, response.status_code)
 
 
 if __name__ == '__main__':
