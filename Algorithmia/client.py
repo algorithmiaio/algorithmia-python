@@ -24,6 +24,7 @@ class Client(object):
 
     def __init__(self, apiKey=None, apiAddress=None, caCert=None):
         # Override apiKey with environment variable
+        config = None
         self.requestSession = requests.Session()
         if apiKey is None and 'ALGORITHMIA_API_KEY' in os.environ:
             apiKey = os.environ['ALGORITHMIA_API_KEY']
@@ -34,6 +35,7 @@ class Client(object):
             self.apiAddress = Algorithmia.getApiAddress()
         if caCert == False:
             self.requestSession.verify = False
+            config = Configuration(use_ssl=False)
         elif caCert is None and 'REQUESTS_CA_BUNDLE' in os.environ:
             caCert = os.environ.get('REQUESTS_CA_BUNDLE')
             self.catCerts(caCert)
@@ -46,7 +48,9 @@ class Client(object):
             self.catCerts(caCert)
             self.requestSession.verify = self.ca_cert
 
-        config = Configuration()
+        if not config:
+            config = Configuration()
+
         config.api_key['Authorization'] = self.apiKey
         config.host = "{}/v1".format(self.apiAddress)
         self.manageApi = DefaultApi(ApiClient(config))
