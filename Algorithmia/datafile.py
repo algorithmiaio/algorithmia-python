@@ -266,20 +266,29 @@ class AdvancedDatafile(DataFile, RawIOBase):
     def read(self, __size=None):
         if not self.local_file:
             self.local_file = self.getFile()
-        output = self.local_file.read(__size)
+        if __size:
+            output = self.local_file.read(__size)
+        else:
+            output = self.local_file.read()
         return output
 
     def readline(self, __size=None):
         if not self.local_file:
             self.local_file = self.getFile()
         with self.local_file as f:
-            output = f.readline(__size)
+            if __size:
+                output = f.readline(__size)
+            else:
+                output = f.readline()
         return output
 
     def readlines(self, __hint=None):
         if not self.local_file:
             self.local_file = self.getFile()
-        output = self.local_file.readlines(__hint)
+        if __hint:
+            output = self.local_file.readlines(__hint)
+        else:
+            output = self.local_file.readlines()
         return output
 
     def tell(self):
