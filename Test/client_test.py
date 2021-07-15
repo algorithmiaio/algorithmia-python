@@ -60,6 +60,16 @@ class ClientTest(unittest.TestCase):
             print(result)
         self.assertTrue("error" not in result)
 
+    def test_get_build_logs_no_ssl(self):
+        client = Algorithmia.client(api_key=os.environ.get('ALGORITHMIA_API_KEY'), ca_cert=False)
+        user = os.environ.get('ALGO_USER_NAME')
+        algo = "Echo"
+        result = client.algo(user + '/' + algo).build_logs()
+        if "error" in result:
+            print(result)
+        self.assertTrue("error" not in result)
+
+
     def test_edit_org(self):
         org_name = "a_myOrg84"
 
