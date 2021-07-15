@@ -66,6 +66,20 @@ class client_test(unittest.TestCase):
             print(result)
         self.assertTrue("error" not in result)
 
+    def test_get_build_logs_customCert(self):
+        with open("./test.pem",'w'):
+            client = Algorithmia.client(api_key=os.environ.get('ALGORITHMIA_API_KEY'), ca_cert="./test.pem")
+            user = os.environ.get('ALGO_USER_NAME')
+            algo = "Echo"
+            result = client.algo(user + '/' + algo).build_logs()
+            if "error" in result:
+                print(result)
+            self.assertTrue("error" not in result)
+        try:
+            os.remove("./test.pem")
+        except OSError as e:
+            print(e)
+
 
     def test_edit_org(self):
         orgname="a_myOrg84"
