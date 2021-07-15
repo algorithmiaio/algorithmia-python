@@ -249,7 +249,6 @@ class AdvancedDatafile(DataFile, RawIOBase):
         self.local_file = None
 
     def __del__(self):
-        print("destructor called")
         if self.local_file:
             self.local_file.close()
             if self.cleanup:
