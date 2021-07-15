@@ -7,7 +7,7 @@ sys.path = ['../'] + sys.path
 import unittest, os, uuid
 import numpy as np
 import Algorithmia
-from Algorithmia.datafile import DataFile, LocalDataFile
+from Algorithmia.datafile import DataFile, LocalDataFile, AdvancedDatafile
 
 class DataFileTest(unittest.TestCase):
     def setUp(self):
@@ -112,6 +112,42 @@ class LocalFileTest(unittest.TestCase):
         # Check getFile
         txt = self.client.file(self.EXISTING_FILE).getFile().read()
         self.assertEqual(txt, self.EXISTING_TEXT)
+
+class AdvancedDataFileTest(unittest.TestCase):
+    def setUp(self):
+        self.client = Algorithmia.client()
+        if not self.client.dir("data://.my/empty").exists():
+            self.client.dir("data://.my/empty").create()
+
+    def test_get_nonexistant(self):
+        try:
+            with self.client.file('data://.my/nonexistant/nonreal', advanced=True) as f:
+                output = f.read()
+            retrieved_file = True
+        except Exception as e:
+            retrieved_file = False
+        self.assertFalse(retrieved_file)
+
+    def test_get_str(self):
+        df = self.client.file('data://.my/nonexistant/nonreal', advanced=True)
+        try:
+            print(df.getString())
+            retrieved_file = True
+        except Exception as e:
+            retrieved_file = False
+        self.assertFalse(retrieved_file)
+
+    def test_putJson_getJson(self):
+        file = '.my/empty/test.json'
+        df = AdvancedDatafile(self.client,'data://'+file, cleanup=True)
+        if sys.version_info[0] < 3:
+            payload = {u"hello":u"world"}
+        else:
+            payload = {"hello": "world"}
+        response = df.putJson(payload)
+        self.assertEqual(response.path,file)
+        result = df.read()
+        self.assertEqual(str(result), str(payload))
 
 if __name__ == '__main__':
     unittest.main()
