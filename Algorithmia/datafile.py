@@ -34,20 +34,18 @@ class DataFile(DataObject):
 
     # Get file from the data api
     def getFile(self):
-        if not self.local_file:
-            exists, error = self.existsWithError()
-            if not exists:
-                raise DataApiError('unable to get file {} - {}'.format(self.path, error))
-            # Make HTTP get request
-            response = self.client.getHelper(self.url)
-            with tempfile.NamedTemporaryFile(delete=False) as f:
-                for block in response.iter_content(1024):
-                    if not block:
-                        break
-                    f.write(block)
-                f.flush()
-                self.local_file = open(f.name)
-        return open(self.local_file.name)
+        exists, error = self.existsWithError()
+        if not exists:
+            raise DataApiError('unable to get file {} - {}'.format(self.path, error))
+        # Make HTTP get request
+        response = self.client.getHelper(self.url)
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            for block in response.iter_content(1024):
+                if not block:
+                    break
+                f.write(block)
+            f.flush()
+        return open(f.name)
 
     def getName(self):
         _, name = getParentAndBase(self.path)
@@ -268,30 +266,32 @@ class AdvancedDatafile(DataFile, RawIOBase):
 
     def read(self, __size=None):
         if not self.local_file:
-            self.getFile()
+            self.local_file = self.getFile()
         output = self.local_file.read(__size)
         return output
 
     def readline(self, __size=None):
-        with self.getFile() as f:
+        if not self.local_file:
+            self.local_file = self.getFile()
+        with self.local_file as f:
             output = f.readline(__size)
         return output
 
     def readlines(self, __hint=None):
         if not self.local_file:
-            self.getFile()
+            self.local_file = self.getFile()
         output = self.local_file.readlines(__hint)
         return output
 
     def tell(self):
         if not self.local_file:
-            self.getFile()
+            self.local_file = self.getFile()
         output = self.local_file.tell()
         return output
 
     def seek(self, __offset, __whence=None):
         if not self.local_file:
-            self.getFile()
+            self.local_file = self.getFile()
         if __whence:
             output = self.local_file.seek(__offset, __whence)
         else:

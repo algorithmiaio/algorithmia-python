@@ -7,6 +7,7 @@ sys.path = ['../'] + sys.path
 import unittest, os, uuid
 import numpy as np
 import Algorithmia
+import json
 from Algorithmia.datafile import DataFile, LocalDataFile, AdvancedDatafile
 
 class DataFileTest(unittest.TestCase):
@@ -122,7 +123,7 @@ class AdvancedDataFileTest(unittest.TestCase):
     def test_get_nonexistant(self):
         try:
             with self.client.file('data://.my/nonexistant/nonreal', advanced=True) as f:
-                output = f.read()
+                _ = f.read()
             retrieved_file = True
         except Exception as e:
             retrieved_file = False
@@ -146,7 +147,8 @@ class AdvancedDataFileTest(unittest.TestCase):
             payload = {"hello": "world"}
         response = df.putJson(payload)
         self.assertEqual(response.path,file)
-        result = df.read()
+        result = json.loads(df.read())
+        self.assertDictEqual(result, payload)
         self.assertEqual(str(result), str(payload))
 
 if __name__ == '__main__':
