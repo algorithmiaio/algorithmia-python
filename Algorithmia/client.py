@@ -63,21 +63,21 @@ class Client(object):
         username = next(self.dir("").list()).path
         return username
 
-    def file(self, dataUrl, advanced=False):
+    def file(self, dataUrl, legacy=True, cleanup=False):
         if dataUrl.startswith('file://'):
             return LocalDataFile(self, dataUrl)
-        elif advanced:
-            return AdvancedDatafile(self, dataUrl)
-        else:
+        elif legacy:
             return DataFile(self, dataUrl)
+        else:
+            return AdvancedDatafile(self, dataUrl, cleanup)
 
-    def dir(self, dataUrl, advanced=False):
+    def dir(self, dataUrl, legacy=True):
         if dataUrl.startswith('file://'):
             return LocalDataDirectory(self, dataUrl)
-        elif advanced:
-            return AdvancedDataDirectory(self, dataUrl)
-        else:
+        elif legacy:
             return DataDirectory(self, dataUrl)
+        else:
+            return AdvancedDataDirectory(self, dataUrl)
 
     def create_user(self, requestString):
         url = "/v1/users" 

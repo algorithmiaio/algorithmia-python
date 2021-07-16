@@ -122,7 +122,7 @@ class AdvancedDataFileTest(unittest.TestCase):
 
     def test_get_nonexistant(self):
         try:
-            with self.client.file('data://.my/nonexistant/nonreal', advanced=True) as f:
+            with self.client.file('data://.my/nonexistant/nonreal') as f:
                 _ = f.read()
             retrieved_file = True
         except Exception as e:
@@ -130,7 +130,7 @@ class AdvancedDataFileTest(unittest.TestCase):
         self.assertFalse(retrieved_file)
 
     def test_get_str(self):
-        df = self.client.file('data://.my/nonexistant/nonreal', advanced=True)
+        df = self.client.file('data://.my/nonexistant/nonreal', cleanup=True)
         try:
             print(df.getString())
             retrieved_file = True
