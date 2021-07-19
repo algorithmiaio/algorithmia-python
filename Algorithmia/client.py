@@ -63,19 +63,15 @@ class Client(object):
         username = next(self.dir("").list()).path
         return username
 
-    def file(self, dataUrl, legacy=True, cleanup=False):
+    def file(self, dataUrl, cleanup=False):
         if dataUrl.startswith('file://'):
             return LocalDataFile(self, dataUrl)
-        elif legacy:
-            return DataFile(self, dataUrl)
         else:
             return AdvancedDatafile(self, dataUrl, cleanup)
 
-    def dir(self, dataUrl, legacy=True):
+    def dir(self, dataUrl):
         if dataUrl.startswith('file://'):
             return LocalDataDirectory(self, dataUrl)
-        elif legacy:
-            return DataDirectory(self, dataUrl)
         else:
             return AdvancedDataDirectory(self, dataUrl)
 
