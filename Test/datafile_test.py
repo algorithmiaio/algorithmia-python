@@ -8,7 +8,7 @@ import unittest, os, uuid
 import numpy as np
 import Algorithmia
 import json
-from Algorithmia.datafile import DataFile, LocalDataFile, AdvancedDatafile
+from Algorithmia.datafile import DataFile, LocalDataFile, AdvancedDataFile
 
 class DataFileTest(unittest.TestCase):
     def setUp(self):
@@ -140,7 +140,7 @@ class AdvancedDataFileTest(unittest.TestCase):
 
     def test_putJson_getJson(self):
         file = '.my/empty/test.json'
-        df = AdvancedDatafile(self.client,'data://'+file, cleanup=True)
+        df = AdvancedDataFile(self.client, 'data://' + file, cleanup=True)
         if sys.version_info[0] < 3:
             payload = {u"hello":u"world"}
         else:

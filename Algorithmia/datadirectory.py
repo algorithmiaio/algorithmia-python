@@ -7,7 +7,7 @@ import six
 import tempfile
 import Algorithmia
 
-from Algorithmia.datafile import DataFile, AdvancedDatafile, LocalDataFile
+from Algorithmia.datafile import DataFile, AdvancedDataFile, LocalDataFile
 from Algorithmia.data import DataObject, DataObjectType
 from Algorithmia.errors import DataApiError
 from Algorithmia.util import getParentAndBase, pathJoin
@@ -190,4 +190,4 @@ class AdvancedDataDirectory(DataDirectory):
         super(AdvancedDataDirectory, self).__init__(client, dataUrl)
 
     def file(self, name, cleanup=True):
-        return AdvancedDatafile(self.client, pathJoin(self.path, name), cleanup)
+        return AdvancedDataFile(self.client, pathJoin(self.path, name), cleanup)

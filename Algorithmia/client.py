@@ -3,7 +3,7 @@
 import Algorithmia
 from Algorithmia.insights import Insights
 from Algorithmia.algorithm import Algorithm
-from Algorithmia.datafile import DataFile, LocalDataFile, AdvancedDatafile
+from Algorithmia.datafile import DataFile, LocalDataFile, AdvancedDataFile
 from Algorithmia.datadirectory import DataDirectory, LocalDataDirectory, AdvancedDataDirectory
 from algorithmia_api_client import Configuration, DefaultApi, ApiClient
 
@@ -67,7 +67,7 @@ class Client(object):
         if dataUrl.startswith('file://'):
             return LocalDataFile(self, dataUrl)
         else:
-            return AdvancedDatafile(self, dataUrl, cleanup)
+            return AdvancedDataFile(self, dataUrl, cleanup)
 
     def dir(self, dataUrl):
         if dataUrl.startswith('file://'):

@@ -242,9 +242,9 @@ def localPutHelper(path, contents):
         return dict(error=str(e))
 
 
-class AdvancedDatafile(DataFile, RawIOBase):
+class AdvancedDataFile(DataFile, RawIOBase):
     def __init__(self, client, dataUrl, cleanup=True):
-        super(AdvancedDatafile, self).__init__(client, dataUrl)
+        super(AdvancedDataFile, self).__init__(client, dataUrl)
         self.cleanup = cleanup
         self.local_file = None
 
