@@ -3,8 +3,8 @@
 import Algorithmia
 from Algorithmia.insights import Insights
 from Algorithmia.algorithm import Algorithm
-from Algorithmia.datafile import DataFile, LocalDataFile
-from Algorithmia.datadirectory import DataDirectory, LocalDataDirectory
+from Algorithmia.datafile import DataFile, LocalDataFile, AdvancedDataFile
+from Algorithmia.datadirectory import DataDirectory, LocalDataDirectory, AdvancedDataDirectory
 from algorithmia_api_client import Configuration, DefaultApi, ApiClient
 
 from tempfile import mkstemp
@@ -63,13 +63,17 @@ class Client(object):
         username = next(self.dir("").list()).path
         return username
 
-    def file(self, dataUrl):
-        if dataUrl.startswith('file://'): return LocalDataFile(self, dataUrl)
-        else: return DataFile(self, dataUrl)
+    def file(self, dataUrl, cleanup=False):
+        if dataUrl.startswith('file://'):
+            return LocalDataFile(self, dataUrl)
+        else:
+            return AdvancedDataFile(self, dataUrl, cleanup)
 
     def dir(self, dataUrl):
-        if dataUrl.startswith('file://'): return LocalDataDirectory(self, dataUrl)
-        else: return DataDirectory(self, dataUrl)
+        if dataUrl.startswith('file://'):
+            return LocalDataDirectory(self, dataUrl)
+        else:
+            return AdvancedDataDirectory(self, dataUrl)
 
     def create_user(self, requestString):
         url = "/v1/users" 
