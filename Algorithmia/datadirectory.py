@@ -182,7 +182,8 @@ class LocalDataDirectory():
 
     def files(self, content):
         for x in os.listdir(self.path):
-            if os.path.isfile(self.path + '/' + x): yield x
+            if os.path.isfile(self.path + '/' + x):
+                yield x
 
 
 class AdvancedDataDirectory(DataDirectory):
