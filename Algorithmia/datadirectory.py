@@ -5,13 +5,14 @@ import re
 import os
 import six
 import tempfile
-
 import Algorithmia
-from Algorithmia.datafile import DataFile
+
+from Algorithmia.datafile import DataFile, AdvancedDataFile, LocalDataFile
 from Algorithmia.data import DataObject, DataObjectType
 from Algorithmia.errors import DataApiError
 from Algorithmia.util import getParentAndBase, pathJoin
 from Algorithmia.acl import Acl
+
 
 class DataDirectory(DataObject):
     def __init__(self, client, dataUrl):
@@ -41,7 +42,7 @@ class DataDirectory(DataObject):
     def create(self, acl=None):
         '''Creates a directory, optionally include Acl argument to set permissions'''
         parent, name = getParentAndBase(self.path)
-        json = { 'name': name }
+        json = {'name': name}
         if acl is not None:
             json['acl'] = acl.to_api_param()
         response = self.client.postJsonHelper(DataDirectory._getUrl(parent), json, False)
@@ -90,7 +91,7 @@ class DataDirectory(DataObject):
             return None
 
     def update_permissions(self, acl):
-        params = {'acl':acl.to_api_param()}
+        params = {'acl': acl.to_api_param()}
         response = self.client.patchHelper(self.url, params)
         if response.status_code != 200:
             raise DataApiError('Unable to update permissions: ' + response.json()['error']['message'])
@@ -102,7 +103,7 @@ class DataDirectory(DataObject):
         while first or (marker is not None and len(marker) > 0):
             first = False
             url = self.url
-            query_params= {}
+            query_params = {}
             if marker:
                 query_params['marker'] = marker
             response = self.client.getHelper(url, **query_params)
@@ -177,8 +178,17 @@ class LocalDataDirectory():
 
     def dirs(self, content):
         for x in os.listdir(self.path):
-            if os.path.isdir(self.path+'/'+x): yield x
+            if os.path.isdir(self.path + '/' + x): yield x
 
     def files(self, content):
         for x in os.listdir(self.path):
-            if os.path.isfile(self.path+'/'+x): yield x
+            if os.path.isfile(self.path + '/' + x):
+                yield x
+
+
+class AdvancedDataDirectory(DataDirectory):
+    def __init__(self, client, dataUrl):
+        super(AdvancedDataDirectory, self).__init__(client, dataUrl)
+
+    def file(self, name, cleanup=True):
+        return AdvancedDataFile(self.client, pathJoin(self.path, name), cleanup)
