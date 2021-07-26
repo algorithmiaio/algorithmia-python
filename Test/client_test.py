@@ -10,6 +10,8 @@ sys.path = ['../'] + sys.path
 import unittest
 import Algorithmia
 
+if sys.version_info.major == 3:
+    unicode = str
 
 class ClientTest(unittest.TestCase):
     seed(datetime.now().microsecond)
