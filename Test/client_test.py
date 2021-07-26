@@ -133,6 +133,9 @@ class ClientTest(unittest.TestCase):
         response = self.c.get_organization_errors(self.org_name)
         self.assertTrue(response is not None)
 
+        if type(response) is list:
+            self.assertEqual(0, len(response), 'Received unexpected result, should have been 0.')
+
     def test_get_user_errors(self):
         response = self.c.get_user_errors(self.username)
 
