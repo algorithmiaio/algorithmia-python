@@ -31,7 +31,11 @@ class ClientTest(unittest.TestCase):
         response = self.c.create_user(
             {"username": self.username, "email": self.username + "@algo.com", "passwordHash": "",
              "shouldCreateHello": False})
-        self.assertEqual(self.username, response['username'])
+
+        if type(response) is dict:
+            self.assertEqual(self.username, response['username'])
+        else:
+            self.assertIsNotNone(response)
 
     def test_get_org_types(self):
         response = self.c.get_org_types()
