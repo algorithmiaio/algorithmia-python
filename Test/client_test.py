@@ -57,7 +57,7 @@ class ClientTest(unittest.TestCase):
 
     def test_get_build_logs(self):
         client = Algorithmia.client(api_address='https://test.algorithmia.com',
-                                    api_key=unicode(os.environ.get('ALGORITHMIA_API_KEY')))
+                                    api_key=unicode(os.environ.get('ALGORITHMIA_A_KEY')))
         user = unicode(os.environ.get('ALGO_USER_NAME'))
         algo = unicode('echo')
         algo_path = u'%s/%s' % (user, algo)
@@ -70,7 +70,7 @@ class ClientTest(unittest.TestCase):
 
     def test_get_build_logs_no_ssl(self):
         client = Algorithmia.client(api_address='https://test.algorithmia.com',
-                                    api_key=unicode(os.environ.get('ALGORITHMIA_API_KEY')), ca_cert=False)
+                                    api_key=unicode(os.environ.get('ALGORITHMIA_A_KEY')), ca_cert=False)
         user = unicode(os.environ.get('ALGO_USER_NAME'))
         algo = u'Echo'
         result = client.algo(user + '/' + algo).build_logs()
