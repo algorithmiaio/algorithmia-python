@@ -266,6 +266,7 @@ class AdvancedDataFile(DataFile, RawIOBase):
     def read(self, __size=None):
         if not self.local_file:
             self.local_file = self.getFile()
+            output = self.local_file.read()
         if __size:
             output = self.local_file.read(__size)
         else:
