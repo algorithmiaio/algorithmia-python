@@ -17,7 +17,7 @@ except NameError:
 usage = """CLI for interaction with Algorithmia\n
 Usage:\n
 algo [<cmd>] [options] [<args>...]\n
-algo[<cmd>] [--help | --version]\n\n
+algo [<cmd>] [--help | --version]\n\n
 
 General commands include:\n
   auth	configure authentication\n\n
