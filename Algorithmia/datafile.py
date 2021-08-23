@@ -252,7 +252,7 @@ class AdvancedDataFile(DataFile, RawIOBase):
         if self.local_file:
             self.local_file.close()
             if self.cleanup:
-                    os.remove(self.local_file)
+                    os.remove(self.local_file.name)
 
     def readable(self):
         return True

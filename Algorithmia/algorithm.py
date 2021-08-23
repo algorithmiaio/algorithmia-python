@@ -41,31 +41,23 @@ class Algorithm(object):
     def create(self, details={}, settings={}, version_info={}):
         detailsObj = Details(**details)
         settingsObj = SettingsMandatory(**settings)
-        createRequestVersionInfoObj = CreateRequestVersionInfo(**version_info)
+        createRequestVersionInfoObj = VersionInfo(**version_info)
         create_parameters = {"name": self.algoname, "details": detailsObj, "settings": settingsObj, "version_info": createRequestVersionInfoObj}
         create_request = CreateRequest(**create_parameters)
-        try:
-            # Create Algorithm
-            api_response = self.client.manageApi.create_algorithm(self.username, create_request)
-            return api_response
-        except ApiException as e:
-            error_message = json.loads(e.body)
-            raise raiseAlgoApiError(error_message)
+        # Create Algorithm
+        api_response = self.client.algorithmApi.create_algorithm(self.username, create_request)
+        return api_response
 
     # Update the settings in an algorithm
     def update(self, details={}, settings={}, version_info={}):
         detailsObj = Details(**details)
         settingsObj = Settings(**settings)
-        createRequestVersionInfoObj = CreateRequestVersionInfo(**version_info)
+        createRequestVersionInfoObj = VersionInfo(**version_info)
         update_parameters = {"details": detailsObj, "settings": settingsObj, "version_info": createRequestVersionInfoObj}
         update_request = UpdateRequest(**update_parameters)
-        try:
-            # Update Algorithm
-            api_response = self.client.manageApi.update_algorithm(self.username, self.algoname, update_request)
-            return api_response
-        except ApiException as e:
-            error_message = json.loads(e.body)
-            raise raiseAlgoApiError(error_message)
+        # Update Algorithm
+        api_response = self.client.algorithmApi.update_algorithm(self.username, self.algoname, update_request)
+        return api_response
 
     # Publish an algorithm
     def publish(self, details={}, settings={}, version_info={}):
@@ -74,53 +66,36 @@ class Algorithm(object):
         versionRequestObj = VersionInfoPublish(**version_info)
         publish_parameters = {"details": detailsObj, "settings": settingsObj, "version_info": versionRequestObj}
         version_request = VersionRequest(**publish_parameters) # VersionRequest | Publish Version Request
-        try:
-            # Publish Algorithm
-            api_response = self.client.manageApi.publish_algorithm(self.username, self.algoname, version_request)
-            return api_response
-        except ApiException as e:
-            error_message = json.loads(e.body)
-            raise raiseAlgoApiError(error_message)
+        # Publish Algorithm
+        api_response = self.client.algorithmApi.publish_algorithm(self.username, self.algoname, version_request)
+        return api_response
 
     def builds(self, limit=56, marker=None):
-        try:
-            if marker is not None:
-                api_response = self.client.manageApi.get_algorithm_builds(self.username, self.algoname, limit=limit, marker=marker)
-            else:
-                api_response = self.client.manageApi.get_algorithm_builds(self.username, self.algoname, limit=limit)
-            return api_response
-        except ApiException as e:
-            error_message = json.loads(e.body)
-            raise raiseAlgoApiError(error_message)
+        if marker is not None:
+            api_response = self.client.buildsApi.get_algorithm_builds(self.username, self.algoname, limit=limit, marker=marker)
+        else:
+            api_response = self.client.buildsApi.get_algorithm_builds(self.username, self.algoname, limit=limit)
+        return api_response
 
     def get_build(self, build_id):
         # Get the build object for a given build_id
         # The build status can have one of the following value: succeeded, failed, in-progress
-        try:
-            api_response = self.client.manageApi.get_algorithm_build_by_id(self.username, self.algoname, build_id)
-            return api_response
-        except ApiException as e:
-            error_message = json.loads(e.body)
-            raise raiseAlgoApiError(error_message)
+        api_response = self.client.algorithmApi.get_algorithm_build_by_id(self.username, self.algoname, build_id)
+        return api_response
 
     def get_build_logs(self, build_id):
         # Get the algorithm build logs for a given build_id
-        try:
-            api_response = self.client.manageApi.get_algorithm_build_logs(self.username, self.algoname, build_id)
-            return api_response
-        except ApiException as e:
-            error_message = json.loads(e.body)
-            raise raiseAlgoApiError(error_message)
+        api_response = self.client.algorithmApi.get_algorithm_build_logs(self.username, self.algoname, build_id)
+        return api_response
 
     def build_logs(self):
-        url = '/v1/algorithms/'+self.username+'/'+self.algoname+'/builds'
-        response = json.loads(self.client.getHelper(url).content.decode('utf-8'))
-        return response
+        api_response = self.client.algorithmApi.get_algorithm_builds(self.username, self.algoname)
+        return api_response.results
 
 
     def get_scm_status(self):
         try:
-            api_response = self.client.manageApi.get_algorithm_scm_connection_status(self.username, self.algoname)
+            api_response = self.client.algorithmApi.get_algorithm_scm_connection_status(self.username, self.algoname)
             return api_response
         except ApiException as e:
             error_message = json.loads(e.body)
@@ -131,9 +106,9 @@ class Algorithm(object):
         try:
             # Get Algorithm
             if algo_hash:
-                api_response = self.client.manageApi.get_algorithm_hash_version(self.username, self.algoname, algo_hash)
+                api_response = self.client.algorithmApi.get_algorithm_hash_version(self.username, self.algoname, algo_hash)
             else:
-                api_response = self.client.manageApi.get_algorithm(self.username, self.algoname)
+                api_response = self.client.algorithmApi.get_algorithm(self.username, self.algoname)
             return api_response
         except ApiException as e:
             error_message = json.loads(e.body)
@@ -155,7 +130,7 @@ class Algorithm(object):
             kwargs["callable"] = str(c).lower() if str(c) in bools else c
         try:
             # Get Algorithm versions
-            api_response = self.client.manageApi.get_algorithm_versions(self.username, self.algoname, **kwargs)
+            api_response = self.client.algorithmApi.get_algorithm_versions(self.username, self.algoname, **kwargs)
             return api_response
         except ApiException as e:
             error_message = json.loads(e.body)
@@ -166,7 +141,7 @@ class Algorithm(object):
     def compile(self):
         try:
             # Compile algorithm
-            api_response = self.client.manageApi.algorithms_username_algoname_compile_post(self.username, self.algoname)
+            api_response = self.client.algorithmApi.algorithms_username_algoname_compile_post(self.username, self.algoname)
             return api_response
         except ApiException as e:
             error_message = json.loads(e.body)

@@ -9,7 +9,7 @@ from random import random
 sys.path = ['../'] + sys.path
 
 import unittest
-
+from algorithmia_api_client.models import Build, PagedBuildsList, BuildLogs
 import Algorithmia
 
 class client_test(unittest.TestCase):
@@ -53,18 +53,14 @@ class client_test(unittest.TestCase):
         user = os.environ.get('ALGO_USER_NAME')
         algo = "Echo"
         result = client.algo(user+'/'+algo).build_logs()
-        if "error" in result:
-            print(result)
-        self.assertTrue("error" not in result)
+        self.assertTrue(isinstance(result, list))
 
     def test_get_build_logs_no_ssl(self):
         client = Algorithmia.client(api_key=os.environ.get('ALGORITHMIA_API_KEY'), ca_cert=False)
         user = os.environ.get('ALGO_USER_NAME')
         algo = "Echo"
         result = client.algo(user + '/' + algo).build_logs()
-        if "error" in result:
-            print(result)
-        self.assertTrue("error" not in result)
+        self.assertTrue(isinstance(result, list))
 
 
     def test_edit_org(self):

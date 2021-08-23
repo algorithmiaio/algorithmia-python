@@ -5,7 +5,7 @@ from Algorithmia.insights import Insights
 from Algorithmia.algorithm import Algorithm
 from Algorithmia.datafile import DataFile, LocalDataFile, AdvancedDataFile
 from Algorithmia.datadirectory import DataDirectory, LocalDataDirectory, AdvancedDataDirectory
-from algorithmia_api_client import Configuration, DefaultApi, ApiClient
+from algorithmia_api_client import Configuration, BuildsApi, AlgorithmsApi, ScmApi, ApiClient
 
 from tempfile import mkstemp
 import atexit
@@ -53,9 +53,11 @@ class Client(object):
         if not config:
             config = Configuration()
         config.api_key['Authorization'] = self.apiKey
-        config.host = "{}/v1".format(self.apiAddress)
-        self.manageApi = DefaultApi(ApiClient(config))
-        
+        config.host = "{}".format(self.apiAddress)
+        self.buildsApi = BuildsApi(ApiClient(config))
+        self.algorithmApi = AlgorithmsApi(ApiClient(config))
+        self.scmApi = ScmApi(ApiClient(config))
+
     def algo(self, algoRef):
         return Algorithm(self, algoRef)
 

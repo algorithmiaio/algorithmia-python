@@ -307,11 +307,8 @@ class CLI():
 
 
     def getBuildLogs(self, user, algo, client):
-        api_response = client.algo(user+'/'+algo).build_logs()
-        
-        if "error" in api_response:
-            return json.dumps(api_response)
-        return json.dumps(api_response['results'], indent=1)
+        api_response = [ log.to_dict() for log in client.algo(user+'/'+algo).build_logs() ]
+        return json.dumps(api_response, indent=1, default=str)
 
 
     def getconfigfile(self):
