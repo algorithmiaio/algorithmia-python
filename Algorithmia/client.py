@@ -54,9 +54,8 @@ class Client(object):
             config = Configuration()
         config.api_key['Authorization'] = self.apiKey
         config.host = "{}".format(self.apiAddress)
-        self.buildsApi = BuildsApi(ApiClient(config))
+        # self.buildsApi = BuildsApi(ApiClient(config))
         self.algorithmApi = AlgorithmsApi(ApiClient(config))
-        self.scmApi = ScmApi(ApiClient(config))
 
     def algo(self, algoRef):
         return Algorithm(self, algoRef)

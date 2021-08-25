@@ -8,8 +8,8 @@ from Algorithmia.algo_response import AlgoResponse
 from Algorithmia.errors import ApiError, ApiInternalError, raiseAlgoApiError
 from enum import Enum
 from algorithmia_api_client.rest import ApiException
-from algorithmia_api_client import CreateRequest, UpdateRequest, VersionRequest, Details, Settings, SettingsMandatory, SettingsPublish, \
-    CreateRequestVersionInfo, VersionInfo, VersionInfoPublish
+from algorithmia_api_client import CreateRequest, UpdateRequest, VersionRequest, Details, Settings, SettingsMandatory, \
+    SettingsPublish,  VersionInfo, VersionInfoPublish
 
 OutputType = Enum('OutputType','default raw void')
 
@@ -71,10 +71,7 @@ class Algorithm(object):
         return api_response
 
     def builds(self, limit=56, marker=None):
-        if marker is not None:
-            api_response = self.client.buildsApi.get_algorithm_builds(self.username, self.algoname, limit=limit, marker=marker)
-        else:
-            api_response = self.client.buildsApi.get_algorithm_builds(self.username, self.algoname, limit=limit)
+        api_response = self.client.algorithmApi.get_algorithm_builds(self.username, self.algoname, limit=limit, marker=marker)
         return api_response
 
     def get_build(self, build_id):
