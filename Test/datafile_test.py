@@ -147,8 +147,7 @@ class AdvancedDataFileTest(unittest.TestCase):
             payload = {"hello": "world"}
         response = df.putJson(payload)
         self.assertEqual(response.path,file)
-        with df as f:
-            result = json.loads(f.read())
+        result = json.loads(df.read())
         self.assertDictEqual(result, payload)
         self.assertEqual(str(result), str(payload))
 
