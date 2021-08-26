@@ -16,15 +16,13 @@ import os
 
 class Client(object):
     'Algorithmia Common Library'
-   
 
-    handle, ca_cert = None,None
+    handle, ca_cert = None, None
     apiKey = None
     apiAddress = None
     requestSession = None
 
-
-    def __init__(self, apiKey = None, apiAddress = None, caCert = None):
+    def __init__(self, apiKey=None, apiAddress=None, caCert=None):
         # Override apiKey with environment variable
         config = None
         self.requestSession = requests.Session()
@@ -46,15 +44,15 @@ class Client(object):
             self.catCerts(caCert)
             self.requestSession.verify = self.ca_cert
         elif caCert is not None and 'REQUESTS_CA_BUNDLE' in os.environ:
-            #if both are available, use the one supplied in the constructor. I assume that a user supplying a cert in initialization wants to use that one.
+            # if both are available, use the one supplied in the constructor. I assume that a user supplying a cert in initialization wants to use that one.
             self.catCerts(caCert)
             self.requestSession.verify = self.ca_cert
 
         if not config:
             config = Configuration()
+
         config.api_key['Authorization'] = self.apiKey
         config.host = "{}".format(self.apiAddress)
-        # self.buildsApi = BuildsApi(ApiClient(config))
         self.algorithmApi = AlgorithmsApi(ApiClient(config))
 
     def algo(self, algoRef):
@@ -77,8 +75,8 @@ class Client(object):
             return AdvancedDataDirectory(self, dataUrl)
 
     def create_user(self, requestString):
-        url = "/v1/users" 
-        response = self.postJsonHelper(url,input_object=requestString)
+        url = "/v1/users"
+        response = self.postJsonHelper(url, input_object=requestString)
         return response
 
     def get_org_types(self):
@@ -86,48 +84,47 @@ class Client(object):
         response = self.getHelper(url)
         return json.loads(response.content.decode("utf-8"))
 
-    def create_org(self,requestString):
+    def create_org(self, requestString):
         url = "/v1/organizations"
         type = requestString["type_id"]
 
-        id,error = self.convert_type_id(type)
+        id, error = self.convert_type_id(type)
         requestString["type_id"] = id
-        
-        response = self.postJsonHelper(url=url,input_object=requestString)
+
+        response = self.postJsonHelper(url=url, input_object=requestString)
         if (error != "") and (response["error"] is not None):
             response["error"]["message"] = error
 
         return response
-    
-    def get_org(self,org_name):
-        url = "/v1/organizations/"+org_name
+
+    def get_org(self, org_name):
+        url = "/v1/organizations/" + org_name
         response = self.getHelper(url)
         return json.loads(response.content.decode("utf-8"))
 
-    def edit_org(self,org_name,requestString):
-        url = "/v1/organizations/"+org_name
+    def edit_org(self, org_name, requestString):
+        url = "/v1/organizations/" + org_name
         type = requestString["type_id"]
 
-        id,error = self.convert_type_id(type)
+        id, error = self.convert_type_id(type)
         requestString["type_id"] = id
 
         data = json.dumps(requestString).encode('utf-8')
-        response = self.putHelper(url,data)
+        response = self.putHelper(url, data)
 
         if (error != "") and (response["error"] is not None):
             response["error"]["message"] = error
 
         return response
 
-    def invite_to_org(self,orgname,username):
-        url = "/v1/organizations/"+orgname+"/members/"+username
-        response = self.putHelper(url,data={})
+    def invite_to_org(self, orgname, username):
+        url = "/v1/organizations/" + orgname + "/members/" + username
+        response = self.putHelper(url, data={})
         return response
 
-
-    def get_template(self,envid,dest,save_tar=False):
-        url = "/v1/algorithm-environments/edge/environment-specifications/"+envid+"/template"
-        filename="template.tar.gz"
+    def get_template(self, envid, dest, save_tar=False):
+        url = "/v1/algorithm-environments/edge/environment-specifications/" + envid + "/template"
+        filename = "template.tar.gz"
 
         if not os.path.exists(dest):
             os.makedirs(dest)
@@ -153,25 +150,67 @@ class Client(object):
                 except OSError as e:
                     print(e)
             return response
-        else:  
+        else:
             return json.loads(response.content.decode("utf-8"))
 
-    def get_environment(self,language):
-        url = "/v1/algorithm-environments/edge/languages/"+language+"/environments"
+    def get_environment(self, language):
+        url = "/v1/algorithm-environments/edge/languages/" + language + "/environments"
         response = self.getHelper(url)
         return response.json()
 
     def get_supported_languages(self):
-        url ="/v1/algorithm-environments/edge/languages"
+        url = "/v1/algorithm-environments/edge/languages"
         response = self.getHelper(url)
         return response.json()
 
+    def get_organization_errors(self, org_name):
+        """Gets the errors for the organization.
 
+        Args:
+            self (Client): The instance of the Client class.
+            org_name (str): The identifier for the organization.
+
+        Returns:
+            Any: A JSON-encoded response from the API.
+        """
+
+        url = '/v1/organizations/%s/errors' % org_name
+        response = self.getHelper(url)
+        return response.json()
+
+    def get_user_errors(self, user_id):
+        """Gets the errors for a specific user.
+
+        Args:
+            self (Client): The instance of the Client class.
+            user_id (str): The identifier for the user.
+
+        Returns:
+            Any: A JSON-encoded response from the API.
+        """
+
+        url = '/v1/users/%s/errors' % user_id
+        response = self.getHelper(url)
+        return response.json()
+
+    def get_algorithm_errors(self, algorithm_id):
+        """Gets the errors for a specific algorithm.
+
+        Args:
+            self (Client): The instance of the Client class.
+            algorithm_id (str): The identifier for the algorithm.
+
+        Returns:
+            Any: A JSON-encoded response from the API.
+        """
+
+        url = '/v1/algorithms/%s/errors' % algorithm_id
+        response = self.getHelper(url)
+        return response.json()
 
     # Used to send insight data to Algorithm Queue Reader in cluster
     def report_insights(self, insights):
         return Insights(insights)
-
 
     # Used internally to post json to the api and parse json response
     def postJsonHelper(self, url, input_object, parse_response_as_json=True, **query_parameters):
@@ -193,7 +232,8 @@ class Client(object):
             input_json = json.dumps(input_object).encode('utf-8')
             headers['Content-Type'] = 'application/json'
 
-        response = self.requestSession.post(self.apiAddress + url, data=input_json, headers=headers, params=query_parameters)
+        response = self.requestSession.post(self.apiAddress + url, data=input_json, headers=headers,
+                                            params=query_parameters)
 
         if parse_response_as_json and response.status_code == 200:
             return response.json()
@@ -225,7 +265,6 @@ class Client(object):
             headers['Authorization'] = self.apiKey
         return self.requestSession.head(self.apiAddress + url, headers=headers)
 
-
     # Used internally to http put a file
     def putHelper(self, url, data):
         headers = {}
@@ -250,31 +289,30 @@ class Client(object):
         return response.json()
 
     # Used internally to concatonate given custom cert with built in certificate store. 
-    def catCerts(self,customCert):
-        self.handle, self.ca_cert = mkstemp(suffix = ".pem")
-        #wrapped all in the with context handler to prevent unclosed files
-        with open(customCert,'r') as custom_cert, \
-            open(self.ca_cert,'w') as ca,\
-            open(certifi.where(),'r') as cert:
-                new_cert = custom_cert.read() + cert.read()
-                ca.write(new_cert)
+    def catCerts(self, customCert):
+        self.handle, self.ca_cert = mkstemp(suffix=".pem")
+        # wrapped all in the with context handler to prevent unclosed files
+        with open(customCert, 'r') as custom_cert, \
+                open(self.ca_cert, 'w') as ca, \
+                open(certifi.where(), 'r') as cert:
+            new_cert = custom_cert.read() + cert.read()
+            ca.write(new_cert)
         atexit.register(self.exit_handler)
-    
-    #User internally to convert type id name to uuid
-    def convert_type_id(self,type):
-        id=""
-        error=""
+
+    # User internally to convert type id name to uuid
+    def convert_type_id(self, type):
+        id = ""
+        error = ""
         types = self.get_org_types()
         for enumtype in types:
             if type == enumtype["name"]:
                 id = enumtype["id"]
-                error=""
+                error = ""
                 break
             else:
                 error = "invalid type_id"
-                
-        return(id,error)
 
+        return (id, error)
 
     # Used internally to clean up temporary files
     def exit_handler(self):
@@ -282,12 +320,13 @@ class Client(object):
             os.close(self.handle)
             os.unlink(self.ca_cert)
         except OSError as e:
-            print(e)   
+            print(e)
+
 
 def isJson(myjson):
     try:
         json_object = json.loads(myjson)
-    except (ValueError,TypeError) as e:
+    except (ValueError, TypeError) as e:
         return False
 
     return True
