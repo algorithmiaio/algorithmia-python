@@ -250,9 +250,10 @@ class AdvancedDataFile(DataFile, RawIOBase):
 
     def __del__(self):
         if self.local_file:
+            filepath = self.local_file.name
             self.local_file.close()
             if self.cleanup:
-                    os.remove(self.local_file)
+                    os.remove(filepath)
 
     def readable(self):
         return True
@@ -267,7 +268,7 @@ class AdvancedDataFile(DataFile, RawIOBase):
         if not self.local_file:
             self.local_file = self.getFile()
             output = self.local_file.read()
-        if __size:
+        elif __size:
             output = self.local_file.read(__size)
         else:
             output = self.local_file.read()
