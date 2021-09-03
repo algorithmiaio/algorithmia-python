@@ -20,7 +20,7 @@ class ClientTest(unittest.TestCase):
     # against test.algorithmia.com.
     admin_username = "a_Mrtest"
     admin_org_name = "a_myOrg"
-    environment_id = "b4ffe0a8-1d34-44e3-90ba-bbe630bdd643"
+    environment_name = "Python 3.9"
 
     def setUp(self):
         self.admin_api_key = unicode(os.environ.get('ALGORITHMIA_A_KEY'))
@@ -32,6 +32,11 @@ class ClientTest(unittest.TestCase):
                                                api_key=self.admin_api_key)
         self.regular_client = Algorithmia.client(api_address='https://api.algorithmia.com',
                                     api_key=self.regular_api_key)
+
+        environments = self.regular_client.get_environment("python3")
+        for environment in environments['environments']:
+            if environment['display_name'] == self.environment_name:
+                self.environment_id = environment['id']
 
     def test_create_user(self):
         response = self.admin_client.create_user(
@@ -180,7 +185,7 @@ class ClientTest(unittest.TestCase):
         }
         created_algo = self.regular_client.algo(full_path)
         response = created_algo.create(details=details,settings=settings)
-        self.assertEqual(response.name, algorithm_name)
+        self.assertEqual(response.name, algorithm_name, "algorithm creation failed")
 
         # --- Creation complete, compiling
 
@@ -191,7 +196,7 @@ class ClientTest(unittest.TestCase):
 
         # --- compiling complete, now testing algorithm request
         response = algo_with_build.pipe(payload).result
-        self.assertEqual(response, expected_response)
+        self.assertEqual(response, expected_response, "compiling failed")
 
         # --- testing complete, now publishing new release.
 
@@ -208,7 +213,13 @@ class ClientTest(unittest.TestCase):
             settings=pub_settings,
             version_info=pub_version_info
         )
-        self.assertEqual(response.version_info.semantic_version, "0.1.0")
+        self.assertEqual(response.version_info.semantic_version, "0.1.0", "Publishing failed, semantic version is not correct.")
+
+        # --- publishing complete, getting additional information
+
+        response = created_algo.info(git_hash)
+
+        self.assertEqual(response.version_info.semantic_version, "0.1.0", "information is incorrect")
 
 
 if __name__ == '__main__':
