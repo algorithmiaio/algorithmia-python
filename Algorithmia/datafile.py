@@ -250,10 +250,10 @@ class AdvancedDataFile(DataFile, RawIOBase):
 
     def __del__(self):
         if self.local_file:
+            filepath = self.local_file.name
             self.local_file.close()
             if self.cleanup:
-                    os.remove(self.local_file.name)
-
+                    os.remove(filepath)
     def readable(self):
         return True
 

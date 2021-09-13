@@ -138,7 +138,7 @@ class Algorithm(object):
     def compile(self):
         try:
             # Compile algorithm
-            api_response = self.client.algorithmApi.algorithms_username_algoname_compile_post(self.username, self.algoname)
+            api_response = self.client.manageApi.compile_algorithm(self.username, self.algoname)
             return api_response
         except ApiException as e:
             error_message = json.loads(e.body)
