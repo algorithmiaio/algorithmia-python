@@ -4,7 +4,7 @@ enum-compat
 toml
 argparse
 algorithmia-api-client==1.5.1
-algorithmia-adk>=1.0.2,<1.1
+algorithmia-adk>=1.0.4,<1.1
 numpy<2
 uvicorn==0.14.0
 fastapi==0.65.2
