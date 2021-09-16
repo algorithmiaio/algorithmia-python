@@ -79,7 +79,6 @@ class DataDirectory(DataObject):
             correct_filename = file.getName()
             correct_file_path = os.path.join(directory, correct_filename)
             local_file = file.getFile(as_path=True)
-            print(correct_file_path)
             os.rename(local_file, correct_file_path)
         return directory
 
