@@ -73,6 +73,17 @@ class DataDirectory(DataObject):
     def dirs(self):
         return self._get_directory_iterator(DataObjectType.directory)
 
+    def getDir(self):
+        directory = tempfile.mkdtemp()
+        for file in self.files():
+            correct_filename = file.getName()
+            correct_file_path = os.path.join(directory, correct_filename)
+            local_file = file.getFile(as_path=True)
+            print(correct_file_path)
+            os.rename(local_file, correct_file_path)
+        return directory
+
+
     def list(self):
         return self._get_directory_iterator()
 
