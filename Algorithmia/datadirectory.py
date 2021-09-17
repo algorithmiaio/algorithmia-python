@@ -82,7 +82,6 @@ class DataDirectory(DataObject):
             os.rename(local_file, correct_file_path)
         return directory
 
-
     def list(self):
         return self._get_directory_iterator()
 

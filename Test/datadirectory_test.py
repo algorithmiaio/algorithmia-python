@@ -95,7 +95,7 @@ class DataDirectoryTest(unittest.TestCase):
 
     def get_files(self, collectionName):
         dd = self.client.dir(collectionName)
-        if (dd.exists()):
+        if dd.exists():
             dd.delete(True)
 
         dd.create()
