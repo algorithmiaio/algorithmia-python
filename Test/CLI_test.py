@@ -10,6 +10,7 @@ import Algorithmia
 from Algorithmia.CLI import CLI
 import argparse
 import shutil
+import toml
 
 class CLITest(unittest.TestCase):
 	def setUp(self):
@@ -215,6 +216,18 @@ class CLITest(unittest.TestCase):
 			shutil.rmtree(filename)
 		except OSError as e:
 			print(e)
+
+	def test_api_address_auth(self):
+		api_key = os.getenv('ALGORITHMIA_A_KEY')
+		api_address = "https://api.test.algorithmia.com"
+		cli = CLI()
+		cli.auth(api_key, api_address)
+		profile = toml.load(cli.getconfigfile())
+
+		client = Algorithmia.client(cli.getAPIkey(profile), cli.getAPIaddress(profile), cli.getCert(profile))
+		result2 = cli.ls("data://.my", client)
+
+		self.assertTrue(result2 != "")
 		
 
 

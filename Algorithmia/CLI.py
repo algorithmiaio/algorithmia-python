@@ -7,7 +7,7 @@ import toml
 import shutil
 
 
-class CLI():
+class CLI:
     def __init__(self):
         self.client = Algorithmia.client()
         # algo auth
@@ -30,8 +30,12 @@ class CLI():
 
         with open(key, "w") as key:
             toml.dump(config,key)
-
-        self.ls(path = None,client = Algorithmia.client(self.getAPIkey(profile)))
+        client = Algorithmia.client(
+            api_key=self.getAPIkey(profile),
+            api_address=self.getAPIaddress(profile),
+            ca_cert=self.getCert(profile)
+        )
+        self.ls(path=None, client=client)
 
     # algo run <algo> <args..>    run the the specified algo
     def runalgo(self, options, client):
@@ -354,14 +358,18 @@ class CLI():
         config_dict = toml.load(key)
         apikey = None
         if('profiles' in config_dict.keys() and profile in config_dict['profiles'].keys()):
-            apikey = config_dict['profiles'][profile]['api_key']
+            if config_dict['profiles'][profile]['api_key'] != "":
+                apikey = config_dict['profiles'][profile]['api_key']
         return apikey
 
     def getAPIaddress(self,profile):
         key = self.getconfigfile()
         config_dict = toml.load(key)
 
-        apiaddress = config_dict['profiles'][profile]['api_server']
+        if config_dict['profiles'][profile]['api_server'] != "":
+            apiaddress = config_dict['profiles'][profile]['api_server']
+        else:
+            apiaddress = None
 
         return apiaddress
 
@@ -370,5 +378,6 @@ class CLI():
         config_dict = toml.load(key)
         cert = None
         if('profiles' in config_dict.keys() and profile in config_dict['profiles'].keys()):
-            cert = config_dict['profiles'][profile]['ca_cert']
+            if config_dict['profiles'][profile]['ca_cert'] != "":
+                cert = config_dict['profiles'][profile]['ca_cert']
         return cert
