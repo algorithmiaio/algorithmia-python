@@ -218,10 +218,10 @@ class CLITest(unittest.TestCase):
 			print(e)
 
 	def test_api_address_auth(self):
-		api_key = os.getenv('ALGORITHMIA_A_KEY')
+		api_key = os.getenv('ALGORITHMIA_TEST_API_KEY')
 		api_address = "https://api.test.algorithmia.com"
 		CLI().auth(api_key, api_address)
-		profile = toml.load(CLI().getconfigfile())
+		profile = "default"
 
 		client = Algorithmia.client(CLI().getAPIkey(profile), CLI().getAPIaddress(profile), CLI().getCert(profile))
 		result2 = CLI().ls("data://.my", client)
