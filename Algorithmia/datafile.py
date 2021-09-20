@@ -33,7 +33,7 @@ class DataFile(DataObject):
         return self.client.getHelper(self.url)
 
     # Get file from the data api
-    def getFile(self):
+    def getFile(self, as_path=False):
         exists, error = self.existsWithError()
         if not exists:
             raise DataApiError('unable to get file {} - {}'.format(self.path, error))
@@ -45,7 +45,10 @@ class DataFile(DataObject):
                     break
                 f.write(block)
             f.flush()
-        return open(f.name)
+        if as_path:
+            return f.name
+        else:
+            return open(f.name)
 
     def getName(self):
         _, name = getParentAndBase(self.path)

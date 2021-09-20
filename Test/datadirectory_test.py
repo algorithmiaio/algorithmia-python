@@ -93,11 +93,32 @@ class DataDirectoryTest(unittest.TestCase):
 
         dd.delete(True)
 
+    def get_files(self, collectionName):
+        dd = self.client.dir(collectionName)
+        if dd.exists():
+            dd.delete(True)
+
+        dd.create()
+
+        f1 = dd.file('a')
+        f1.put('data')
+
+        f2 = dd.file('b')
+        f2.put('data')
+
+        local_path = dd.getDir()
+        self.assertTrue(os.path.isfile(os.path.join(local_path, "a")))
+        self.assertTrue(os.path.isfile(os.path.join(local_path, "b")))
+
+
     def test_list_files_small_without_trailing_slash(self):
         self.list_files_small('data://.my/test_list_files_small')
 
     def test_list_files_small_with_trailing_slash(self):
         self.list_files_small('data://.my/test_list_files_small/')
+
+    def test_get_directory(self):
+        self.get_files("data://.my/test_list_files_small")
 
     def test_list_folders(self):
         dd = DataDirectory(self.client, 'data://.my/')
