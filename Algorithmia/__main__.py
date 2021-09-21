@@ -199,18 +199,19 @@ def main():
 
     elif args.cmd == 'cat':
         print(CLI().cat(args.path, client))
-        
+
     elif args.cmd == 'languages':
         response = CLI().list_languages(client)
         for line in response:
             print(line)
 
     elif args.cmd == 'template':
-        CLI().get_template(args.envid,args.dest,client)
+        CLI().get_template(args.envid,args.dest, client)
 
     elif args.cmd == 'environment':
-        response = CLI().get_environment_by_language(args.language,client)
-        print(response)
+        response = CLI().get_environment_by_language(args.language, client)
+        for line in response:
+            print(line)
 
     elif args.cmd == 'builds':
         print(CLI().getBuildLogs(args.user, args.algo, client))

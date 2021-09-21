@@ -289,16 +289,30 @@ class CLI():
 
     def get_environment_by_language(self,language,client):
         response = client.get_environment(language)
-        if "error" in response:
-            return json.dumps(response)
-        return json.dumps(response['environments'],indent=1)
-
+        table = []
+        if "error" not in response:
+            # extract properties of interest for faster sort
+            subset_props = []
+            for env in response['environments']:
+                subset_props.append(
+                    (env['display_name'], env['environment_specification_id']))
+            # sort environments by display_name
+            subset_props = sorted(subset_props, key=lambda tup: tup[0] )
+            table.append("{:<45} {:<40}".format('Display Name', 'Specification ID'))
+            table.append('*' * 80)
+            for tup in subset_props:
+                table.append("{:<45} {:<40}".format(
+                    tup[0], tup[1]))
+        else:
+            table.append(json.dumps(response))
+        return table
 
     def list_languages(self, client):
         response = client.get_supported_languages()
         table = []
         if "error" not in response:
-            table.append("{:<25} {:<35}".format('Name','Description'))
+            table.append("{:<25} {:<35}".format('Name','Display Name'))
+            table.append('*' * 80)
             for lang in response:
                 table.append("{:<25} {:<35}".format(lang['name'],lang['display_name']))
         else:

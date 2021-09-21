@@ -177,7 +177,7 @@ class CLITest(unittest.TestCase):
 		print(result)
 		if("error" in result):
 			print(result)
-		self.assertTrue(result is not None and "display_name" in result)
+		self.assertTrue(result is not None and "Python 2.7" in result)
 
 	def test_list_languages(self):
 		result = CLI().list_languages(self.client)
