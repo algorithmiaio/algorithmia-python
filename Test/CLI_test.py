@@ -225,7 +225,7 @@ class CLITest(unittest.TestCase):
 
 		client = Algorithmia.client(CLI().getAPIkey(profile), CLI().getAPIaddress(profile), CLI().getCert(profile))
 		result2 = CLI().ls("data://.my", client)
-
+		print(result2)
 		self.assertTrue(result2 != "")
 		
 
