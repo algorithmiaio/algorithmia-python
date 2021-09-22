@@ -10,6 +10,7 @@ import Algorithmia
 from Algorithmia.CLI import CLI
 import argparse
 import shutil
+import toml
 
 class CLITest(unittest.TestCase):
 	def setUp(self):
@@ -142,7 +143,7 @@ class CLITest(unittest.TestCase):
 	def test_auth(self):
 		#key for test account
 		key = os.getenv('ALGORITHMIA_API_KEY')
-		address = 'apiAddress'
+		address = 'https://api.algorithmia.com'
 		profile = 'default'
 		CLI().auth(key,address,profile=profile)
 		resultK = CLI().getAPIkey(profile)
@@ -160,7 +161,7 @@ class CLITest(unittest.TestCase):
 
 		#key for test account
 		key = os.getenv('ALGORITHMIA_API_KEY')
-		address = 'apiAddress'
+		address = 'https://api.algorithmia.com'
 		cacert = localfile
 		profile = 'test'
 
@@ -215,6 +216,17 @@ class CLITest(unittest.TestCase):
 			shutil.rmtree(filename)
 		except OSError as e:
 			print(e)
+
+	def test_api_address_auth(self):
+		api_key = os.getenv('ALGORITHMIA_TEST_API_KEY')
+		api_address = "https://api.test.algorithmia.com"
+		CLI().auth(api_key, api_address)
+		profile = "default"
+
+		client = Algorithmia.client(CLI().getAPIkey(profile), CLI().getAPIaddress(profile), CLI().getCert(profile))
+		result2 = CLI().ls("data://.my", client)
+		print(result2)
+		self.assertTrue(result2 != "")
 		
 
 
