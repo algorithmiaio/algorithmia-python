@@ -9,7 +9,6 @@ import numpy as np
 import Algorithmia
 import json
 from Algorithmia.datafile import DataFile, LocalDataFile, AdvancedDataFile
-from pathlib import Path
 
 class DataFileTest(unittest.TestCase):
     def setUp(self):

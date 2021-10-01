@@ -7,7 +7,6 @@ import tempfile
 from datetime import datetime
 import os.path
 import pkgutil
-import shutil
 import zipfile
 
 from Algorithmia.util import getParentAndBase
