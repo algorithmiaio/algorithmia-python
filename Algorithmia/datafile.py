@@ -7,6 +7,8 @@ import tempfile
 from datetime import datetime
 import os.path
 import pkgutil
+import shutil
+import zipfile
 
 from Algorithmia.util import getParentAndBase
 from Algorithmia.data import DataObject, DataObjectType
@@ -49,6 +51,18 @@ class DataFile(DataObject):
             return f.name
         else:
             return open(f.name)
+
+    def getAsZip(self):
+        local_file_path = self.getFile(as_path=True)
+        directory_path = tempfile.mkdtemp()
+        with zipfile.ZipFile(local_file_path, 'r') as ziph:
+            ziph.extractall(directory_path)
+            if len(ziph.namelist()) > 1:
+                output_path = directory_path
+            else:
+                filename = ziph.namelist()[0]
+                output_path = os.path.join(directory_path, filename)
+        return output_path
 
     def getName(self):
         _, name = getParentAndBase(self.path)
@@ -144,6 +158,20 @@ class DataFile(DataObject):
             return self
         else:
             raise DataApiError("Attempted to .putNumpy() a file without numpy available, please install numpy.")
+
+    def putAsZip(self, path):
+        temp = tempfile.NamedTemporaryFile(delete=False).name
+        if os.path.isdir(path):
+            with zipfile.ZipFile(temp, 'w') as ziph:
+                for root, dirs, files in os.walk(path):
+                    for file in files:
+                        f_path = os.path.join(root, file)
+                        arc_path = os.path.relpath(os.path.join(root, file), path)
+                        ziph.write(f_path, arc_path)
+        else:
+            with zipfile.ZipFile(temp, 'w') as ziph:
+                ziph.write(path)
+        return self.putFile(temp)
 
     def delete(self):
         # Delete from data api
@@ -256,7 +284,7 @@ class AdvancedDataFile(DataFile, RawIOBase):
             filepath = self.local_file.name
             self.local_file.close()
             if self.cleanup:
-                    os.remove(filepath)
+                os.remove(filepath)
 
     def readable(self):
         return True

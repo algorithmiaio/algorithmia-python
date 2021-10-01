@@ -9,6 +9,7 @@ import numpy as np
 import Algorithmia
 import json
 from Algorithmia.datafile import DataFile, LocalDataFile, AdvancedDataFile
+from pathlib import Path
 
 class DataFileTest(unittest.TestCase):
     def setUp(self):
@@ -150,6 +151,22 @@ class AdvancedDataFileTest(unittest.TestCase):
         result = json.loads(df.read())
         self.assertDictEqual(result, payload)
         self.assertEqual(str(result), str(payload))
+
+    def test_putZipDir_getZipDir(self):
+        local_directory = os.path.join(os.getcwd(), "resources/zip_directory")
+        remote_directory = "data://.my/empty/datafile.zip"
+        df = AdvancedDataFile(self.client, remote_directory, cleanup=True)
+        response = df.putAsZip(local_directory)
+        self.assertEqual(response, df)
+
+        unzipped_local_path = df.getAsZip()
+        self.assertTrue(os.path.isdir(unzipped_local_path))
+        found_files = []
+        for _, _, files in os.walk(unzipped_local_path):
+            for file in files:
+                found_files.append(file)
+        self.assertEqual(len(found_files), 3)
+
 
 if __name__ == '__main__':
     unittest.main()
