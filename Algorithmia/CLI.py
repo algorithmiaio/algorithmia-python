@@ -245,6 +245,12 @@ class CLI:
 
         return result
 
+    def compileAlgo(self, client, manifest_path="model_manifest.json"):
+        if os.path.exists(manifest_path):
+
+        else:
+
+
     # algo cp <src> <dest>
     def cp(self, src, dest, client):
 
