@@ -153,7 +153,7 @@ class AdvancedDataFileTest(unittest.TestCase):
         self.assertEqual(str(result), str(payload))
 
     def test_putZipDir_getZipDir(self):
-        local_directory = os.path.join(os.getcwd(), "resources/zip_directory")
+        local_directory = os.path.join(os.getcwd(), "Test/resources/zip_directory")
         remote_directory = "data://.my/empty/datafile.zip"
         df = AdvancedDataFile(self.client, remote_directory, cleanup=True)
         response = df.putAsZip(local_directory)
