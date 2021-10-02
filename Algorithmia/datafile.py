@@ -52,6 +52,11 @@ class DataFile(DataObject):
             return open(f.name)
 
     def getAsZip(self):
+        """Download/decompress file/directory and return path to file/directory.
+        
+        Expects the `DataFile` object to point to a zip-compatible data API location.
+        Either returns the directory or a path to the file, depending on whether a directory or file was zipped.
+        """    
         local_file_path = self.getFile(as_path=True)
         directory_path = tempfile.mkdtemp()
         with zipfile.ZipFile(local_file_path, 'r') as ziph:
