@@ -159,6 +159,10 @@ class DataFile(DataObject):
             raise DataApiError("Attempted to .putNumpy() a file without numpy available, please install numpy.")
 
     def putAsZip(self, path):
+        """Zip file/directory and upload to data API location defined by `DataFile` object.
+        
+        Accepts either a single file or a directory containing other files and directories.
+        """
         temp = tempfile.NamedTemporaryFile(delete=False).name
         if os.path.isdir(path):
             with zipfile.ZipFile(temp, 'w') as ziph:
