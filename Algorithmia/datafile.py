@@ -54,7 +54,7 @@ class DataFile(DataObject):
     def getAsZip(self):
         """Download/decompress file/directory and return path to file/directory.
         
-        Expects the `DataFile` object to point to a zip-compatible data API location.
+        Expects the `DataFile` object to contain a data API path pointing to a file/directory compressed with a zip-based compression algorithm.
         Either returns the directory or a path to the file, depending on whether a directory or file was zipped.
         """    
         local_file_path = self.getFile(as_path=True)
