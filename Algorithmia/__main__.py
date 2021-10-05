@@ -132,6 +132,10 @@ def main():
 
     args = parser.parse_args()
 
+    #sub parser for compile
+    subparsers.add_parser('compile', help="compile's a model_manifest.json file into a model_manifest.json.lock")
+
+
     #run auth before trying to create a client
     if args.cmd == 'auth':
 
@@ -214,6 +218,9 @@ def main():
 
     elif args.cmd == 'builds':
         print(CLI().getBuildLogs(args.user, args.algo, client))
+
+    elif args.cmd == "compile":
+        print(CLI().compileAlgo(client))
 
     else:
         parser.parse_args(['-h'])
