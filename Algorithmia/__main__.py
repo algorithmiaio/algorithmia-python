@@ -108,7 +108,7 @@ def main():
     parser_cat.add_argument('--profile', action = 'store', type = str, default = 'default')
 
     #sub parser for getting environment template
-    parser_template = subparsers.add_parser('template',help='template <envid> <dest> downloads an environment template to the destination')
+    parser_template = subparsers.add_parser('template', help='template <envid> <dest> downloads an environment template to the destination')
     parser_template.add_argument('envid',help='environment specification id')
     parser_template.add_argument('dest',help='destination for template download')
 
@@ -130,10 +130,10 @@ def main():
     subparsers.add_parser('help')
     parser.add_argument('--profile', action = 'store', type = str, default = 'default')
 
-    args = parser.parse_args()
-
     #sub parser for compile
     subparsers.add_parser('compile', help="compile's a model_manifest.json file into a model_manifest.json.lock")
+    
+    args = parser.parse_args()
 
 
     #run auth before trying to create a client
