@@ -5,7 +5,7 @@ from Algorithmia.algo_response import AlgoResponse
 import json, re, requests, six
 import toml
 import shutil
-
+import hashlib
 
 class CLI:
     def __init__(self):
@@ -247,9 +247,11 @@ class CLI:
 
     def compileAlgo(self, client, manifest_path="model_manifest.json"):
         if os.path.exists(manifest_path):
-
+            with open(manifest_path, 'r') as f:
+                manifest_file = json.load(f)
+            for
         else:
-
+            print("Expected to find a model_manifest.json file, none was discovered in working directory")
 
     # algo cp <src> <dest>
     def cp(self, src, dest, client):
