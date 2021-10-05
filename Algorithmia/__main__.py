@@ -132,7 +132,7 @@ def main():
 
     #sub parser for compile
     subparsers.add_parser('compile', help="compile's a model_manifest.json file into a model_manifest.json.lock")
-    
+
     args = parser.parse_args()
 
 

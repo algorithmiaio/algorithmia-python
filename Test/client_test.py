@@ -23,12 +23,12 @@ class ClientTest(unittest.TestCase):
     environment_name = "Python 3.9"
 
     def setUp(self):
-        self.admin_api_key = unicode(os.environ.get('ALGORITHMIA_A_KEY'))
-        self.regular_api_key = unicode(os.environ.get('ALGORITHMIA_API_KEY'))
+        self.admin_api_key = unicode(os.environ.get('ALGORITHMIA_A_KEY_1'))
+        self.regular_api_key = unicode(os.environ.get('ALGORITHMIA_API_KEY_1'))
 
         self.admin_username = self.admin_username + str(int(random() * 10000))
         self.admin_org_name = self.admin_org_name + str(int(random() * 10000))
-        self.admin_client = Algorithmia.client(api_address="https://test.algorithmia.com",
+        self.admin_client = Algorithmia.client(api_address="https://api.algorithmia.com",
                                                api_key=self.admin_api_key)
         self.regular_client = Algorithmia.client(api_address='https://api.algorithmia.com',
                                     api_key=self.regular_api_key)
@@ -70,9 +70,7 @@ class ClientTest(unittest.TestCase):
             self.assertTrue(response is not None and u'environments' in response)
 
     def test_get_build_logs(self):
-        user = unicode(os.environ.get('ALGO_USER_NAME'))
-        algo = unicode('echo')
-        algo_path = u'%s/%s' % (user, algo)
+        algo_path = self.regular_client.username() + "/hello"
         result = self.regular_client.algo(algo_path).build_logs()
 
         if u'error' in result:
@@ -83,9 +81,7 @@ class ClientTest(unittest.TestCase):
     def test_get_build_logs_no_ssl(self):
         client = Algorithmia.client(api_address='https://api.algorithmia.com',
                                     api_key=self.regular_api_key, ca_cert=False)
-        user = unicode(os.environ.get('ALGO_USER_NAME'))
-        algo = u'Echo'
-        result = client.algo(user + '/' + algo).build_logs()
+        result = client.algo(client.username() + '/' + "hello").build_logs()
         if u'error' in result:
             print(result)
         self.assertTrue("error" not in result)
