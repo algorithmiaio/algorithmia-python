@@ -1,4 +1,5 @@
 import re
+import hashlib
 from Algorithmia.errors import DataApiError
 
 FNAME_MATCH = re.compile(r'/([^/]+)$')  # From the last slash to the end of the string 
@@ -30,3 +31,15 @@ def pathJoin(parent, base):
     if parent.endswith('/'):
         return parent + base
     return parent + '/' + base
+
+def md5_for_file(fname):
+    hash_md5 = hashlib.md5()
+    with open(fname, "rb") as f:
+        for chunk in iter(lambda: f.read(4096), b""):
+            hash_md5.update(chunk)
+    return str(hash_md5.hexdigest())
+
+def md5_for_str(content):
+    hash_md5 = hashlib.md5()
+    hash_md5.update(content.encode())
+    return str(hash_md5.hexdigest())
