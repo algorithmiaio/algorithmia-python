@@ -246,7 +246,7 @@ class CLI:
 
         return result
 
-    def compileAlgo(self, client, manifest_path="model_manifest.json"):
+    def lockAlgo(self, client, manifest_path="model_manifest.json"):
         if os.path.exists(manifest_path):
             with open(manifest_path, 'r') as f:
                 manifest_file = json.load(f)

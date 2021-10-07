@@ -130,8 +130,8 @@ def main():
     subparsers.add_parser('help')
     parser.add_argument('--profile', action = 'store', type = str, default = 'default')
 
-    #sub parser for compile
-    subparsers.add_parser('compile', help="compile's a model_manifest.json file into a model_manifest.json.lock")
+    #sub parser for lock
+    subparsers.add_parser('lock', help="locks a model_manifest.json file into a model_manifest.json.lock")
 
     args = parser.parse_args()
 
@@ -219,8 +219,8 @@ def main():
     elif args.cmd == 'builds':
         print(CLI().getBuildLogs(args.user, args.algo, client))
 
-    elif args.cmd == "compile":
-        print(CLI().compileAlgo(client))
+    elif args.cmd == "lock":
+        print(CLI().lockAlgo(client))
 
     else:
         parser.parse_args(['-h'])
