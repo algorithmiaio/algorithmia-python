@@ -1,9 +1,10 @@
 import re
 import hashlib
-from Algorithmia.errors import DataApiError
 
 FNAME_MATCH = re.compile(r'/([^/]+)$')  # From the last slash to the end of the string 
-PREFIX = re.compile(r'([^:]+://)(/)?(.+)')   # Check for a prefix like data://
+PREFIX = re.compile(r'([^:]+://)(/)?(.+)')  # Check for a prefix like data://
+
+
 def getParentAndBase(path):
     match = PREFIX.match(path)
     if match is None:
@@ -27,10 +28,12 @@ def getParentAndBase(path):
             parent_path = '{prefix}{uri}'.format(prefix=prefix, uri='/'.join(parts[:-1]))
         return parent_path, parts[-1]
 
+
 def pathJoin(parent, base):
     if parent.endswith('/'):
         return parent + base
     return parent + '/' + base
+
 
 def md5_for_file(fname):
     hash_md5 = hashlib.md5()
@@ -38,6 +41,7 @@ def md5_for_file(fname):
         for chunk in iter(lambda: f.read(4096), b""):
             hash_md5.update(chunk)
     return str(hash_md5.hexdigest())
+
 
 def md5_for_str(content):
     hash_md5 = hashlib.md5()
