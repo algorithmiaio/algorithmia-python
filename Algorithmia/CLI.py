@@ -102,7 +102,7 @@ class CLI:
         elif (options.binary_file != None):
             # binary file
             with open(options.binary_file, "rb") as f:
-                algo_inputs = bytes(f.read())
+                algo_input = bytes(f.read())
             key = self.getAPIkey(options.profile)
             content = 'application/octet-stream'
 
@@ -246,7 +246,8 @@ class CLI:
 
         return result
 
-    def lockAlgo(self, client, manifest_path="model_manifest.json"):
+    # algo freeze
+    def freezeAlgo(self, client, manifest_path="model_manifest.json"):
         if os.path.exists(manifest_path):
             with open(manifest_path, 'r') as f:
                 manifest_file = json.load(f)
@@ -265,7 +266,7 @@ class CLI:
                 required_files[i]['md5_checksum'] = md5_checksum
             lock_md5_checksum = md5_for_str(str(manifest_file))
             manifest_file['lock_checksum'] = lock_md5_checksum
-            with open('model_manifest.json.lock', 'w') as f:
+            with open('model_manifest.json.freeze', 'w') as f:
                 json.dump(manifest_file, f)
         else:
             print("Expected to find a model_manifest.json file, none was discovered in working directory")
