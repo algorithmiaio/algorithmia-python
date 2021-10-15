@@ -108,7 +108,7 @@ def main():
     parser_cat.add_argument('--profile', action = 'store', type = str, default = 'default')
 
     #sub parser for getting environment template
-    parser_template = subparsers.add_parser('template',help='template <envid> <dest> downloads an environment template to the destination')
+    parser_template = subparsers.add_parser('template', help='template <envid> <dest> downloads an environment template to the destination')
     parser_template.add_argument('envid',help='environment specification id')
     parser_template.add_argument('dest',help='destination for template download')
 
@@ -130,7 +130,11 @@ def main():
     subparsers.add_parser('help')
     parser.add_argument('--profile', action = 'store', type = str, default = 'default')
 
+    #sub parser for freeze
+    subparsers.add_parser('freeze', help="freezes a model_manifest.json file into a model_manifest.json.freeze")
+    
     args = parser.parse_args()
+
 
     #run auth before trying to create a client
     if args.cmd == 'auth':
@@ -214,6 +218,9 @@ def main():
 
     elif args.cmd == 'builds':
         print(CLI().getBuildLogs(args.user, args.algo, client))
+
+    elif args.cmd == "freeze":
+        print(CLI().freezeAlgo(client))
 
     else:
         parser.parse_args(['-h'])
