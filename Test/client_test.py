@@ -213,7 +213,7 @@ class ClientTest(unittest.TestCase):
             settings=pub_settings,
             version_info=pub_version_info
         )
-        self.assertEqual(response.version_info.semantic_version, "0.1.0", "Publishing failed, semantic version is not correct.")
+        self.assertEqual(response["version_info"]["semantic_version"], "0.1.0", "Publishing failed, semantic version is not correct.")
 
         # --- publishing complete, getting additional information
 
