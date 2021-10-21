@@ -14,6 +14,7 @@ from uuid import uuid4
 if sys.version_info.major == 3:
     unicode = str
 
+
 class ClientTest(unittest.TestCase):
     seed(datetime.now().microsecond)
     # due to legacy reasons, regular client tests are tested against api.algorithmia.com, whereas admin api tests are run
@@ -31,7 +32,7 @@ class ClientTest(unittest.TestCase):
         self.admin_client = Algorithmia.client(api_address="https://test.algorithmia.com",
                                                api_key=self.admin_api_key)
         self.regular_client = Algorithmia.client(api_address='https://api.algorithmia.com',
-                                    api_key=self.regular_api_key)
+                                                 api_key=self.regular_api_key)
 
         environments = self.regular_client.get_environment("python3")
         for environment in environments['environments']:
@@ -165,7 +166,6 @@ class ClientTest(unittest.TestCase):
         else:
             self.assertEqual(404, response.status_code)
 
-
     def test_algorithm_programmatic_create_process(self):
         algorithm_name = "algo_" + str(uuid4()).split("-")[-1]
         payload = "John"
@@ -184,7 +184,7 @@ class ClientTest(unittest.TestCase):
             "pipeline_enabled": False
         }
         created_algo = self.regular_client.algo(full_path)
-        response = created_algo.create(details=details,settings=settings)
+        response = created_algo.create(details=details, settings=settings)
         self.assertEqual(response.name, algorithm_name, "algorithm creation failed")
 
         # --- Creation complete, compiling
@@ -202,10 +202,10 @@ class ClientTest(unittest.TestCase):
 
         pub_settings = {"algorithm_callability": "private"}
         pub_version_info = {
-                           "release_notes": "created programmatically",
-                           "sample_input": payload,
-                           "version_type": "minor"
-                       }
+            "release_notes": "created programmatically",
+            "sample_input": payload,
+            "version_type": "minor"
+        }
         pub_details = {"label": "testing123"}
 
         response = algo_with_build.publish(
@@ -213,7 +213,8 @@ class ClientTest(unittest.TestCase):
             settings=pub_settings,
             version_info=pub_version_info
         )
-        self.assertEqual(response["version_info"]["semantic_version"], "0.1.0", "Publishing failed, semantic version is not correct.")
+        self.assertEqual(response["version_info"]["semantic_version"], "0.1.0",
+                         "Publishing failed, semantic version is not correct.")
 
         # --- publishing complete, getting additional information
 
