@@ -199,6 +199,9 @@ else:
         environment_name = "Python 3.9"
 
         def setUp(self):
+            self.admin_api_key = unicode(os.environ.get('ALGORITHMIA_A_KEY'))
+            self.regular_api_key = unicode(os.environ.get('ALGORITHMIA_API_KEY'))
+            
             self.admin_username = self.admin_username + str(int(random() * 10000))
             self.admin_org_name = self.admin_org_name + str(int(random() * 10000))
             self.admin_client = Algorithmia.client(api_address="https://test.algorithmia.com",
