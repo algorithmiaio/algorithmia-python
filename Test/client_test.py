@@ -13,25 +13,11 @@ from uuid import uuid4
 
 if sys.version_info[0] >= 3:
     unicode = str
-    import uvicorn
-    import time
-    from multiprocessing import Process
-    from Test.api import app
-
-    def start_webserver():
-        uvicorn.run(app, host="127.0.0.1", port=8080, log_level="debug")
 
     class ClientDummyTest(unittest.TestCase):
         @classmethod
         def setUpClass(cls):
             cls.client = Algorithmia.client(api_address="http://localhost:8080", api_key="simabcd123")
-            cls.uvi_p = Process(target=start_webserver)
-            cls.uvi_p.start()
-            time.sleep(1.5)
-
-        @classmethod
-        def tearDownClass(cls):
-            cls.uvi_p.terminate()
 
         admin_username = "a_Mrtest"
         admin_org_name = "a_myOrg"
@@ -40,7 +26,6 @@ if sys.version_info[0] >= 3:
         def setUp(self):
             self.admin_username = self.admin_username + str(int(random() * 10000))
             self.admin_org_name = self.admin_org_name + str(int(random() * 10000))
-            self.client = Algorithmia.client(api_address="http://localhost:8080", api_key="simabcd123")
 
             self.environment_id = "abcd-123"
 

@@ -1,10 +1,21 @@
 import importlib
 from fastapi import FastAPI, Request
-from fastapi.responses import Response, StreamingResponse
+from fastapi.responses import Response
 import json
 import base64
+from multiprocessing import Process
+import uvicorn
 
 app = FastAPI()
+
+
+def start_webserver():
+    def _start_webserver():
+        uvicorn.run(app, host="127.0.0.1", port=8080, log_level="debug")
+
+    p = Process(target=_start_webserver)
+    p.start()
+    return p
 
 
 @app.post("/v1/algo/{username}/{algoname}")
@@ -30,6 +41,7 @@ async def process_algo_req(request: Request, username, algoname):
         output = {"result": request, "metadata": metadata}
         return output
 
+
 @app.post("/v1/algo/{username}/{algoname}/{githash}")
 async def process_hello_world(request: Request, username, algoname, githash):
     metadata = {"request_id": "req-55c0480d-6af3-4a21-990a-5c51d29f5725", "duration": 0.000306774,
@@ -37,6 +49,7 @@ async def process_hello_world(request: Request, username, algoname, githash):
     request = await request.body()
     request = request.decode('utf-8')
     return {"result": f"hello {request}", "metadata": metadata}
+
 
 ### Algorithm Routes
 @app.get("/v1/algorithms/{username}/{algoname}/builds/{buildid}")
@@ -326,11 +339,3 @@ async def get_environments_by_lang(language):
             }
         ]
     }
-
-
-def create_endpoint(algoname):
-    module = importlib.import_module(algoname)
-
-    @app.get("/invocations")
-    def invocations(data):
-        return module.apply(data)
