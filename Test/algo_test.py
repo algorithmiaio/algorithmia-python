@@ -1,7 +1,7 @@
 import sys
 import os
 from Algorithmia.errors import AlgorithmException
-
+import Algorithmia
 # look in ../ BEFORE trying to import Algorithmia.  If you append to the
 # you will load the version installed on the computer.
 sys.path = ['../'] + sys.path
@@ -9,8 +9,6 @@ sys.path = ['../'] + sys.path
 import unittest
 
 if sys.version_info[0] >= 3:
-    import unittest
-    import Algorithmia
     import uvicorn
     import time
     from multiprocessing import Process

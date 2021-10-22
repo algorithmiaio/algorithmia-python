@@ -69,11 +69,6 @@ class Algorithm(object):
 
     # Publish an algorithm
     def publish(self, details={}, settings={}, version_info={}):
-        # detailsObj = Details(**details)
-        # settingsObj = SettingsPublish(**settings)
-        # versionRequestObj = VersionInfoPublish(**version_info)
-        # publish_parameters = {"details": detailsObj, "settings": settingsObj, "version_info": versionRequestObj}
-        # version_request = VersionRequest(**publish_parameters) # VersionRequest | Publish Version Request
         publish_parameters = {"details": details, "settings": settings, "version_info": version_info}
         url = "/v1/algorithms/"+self.username+"/"+self.algoname + "/versions"
         print(publish_parameters)
