@@ -58,7 +58,7 @@ class CLIMainTest(unittest.TestCase):
         # create a directory to use in testing the cp command
         self.client = Algorithmia.client()
         CLI().mkdir("data://.my/moredata", self.client)
-        if (not os.path.exists("./TestFiles/")):
+        if not os.path.exists("./TestFiles/"):
             os.mkdir("./TestFiles/")
 
     def test_ls(self):

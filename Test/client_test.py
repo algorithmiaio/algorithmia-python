@@ -192,8 +192,8 @@ if sys.version_info.major >= 3:
 else:
     class ClientTest(unittest.TestCase):
         seed(datetime.now().microsecond)
-        # due to legacy reasons, regular client tests are tested against api.algorithmia.com, whereas admin api tests are run
-        # against test.algorithmia.com.
+        # due to legacy reasons, regular client tests are tested against api.algorithmia.com, whereas admin api tests
+        # are run against test.algorithmia.com.
         admin_username = "a_Mrtest"
         admin_org_name = "a_myOrg"
         environment_name = "Python 3.9"
