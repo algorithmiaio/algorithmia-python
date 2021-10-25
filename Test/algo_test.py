@@ -8,7 +8,7 @@ sys.path = ['../'] + sys.path
 
 import unittest
 
-if sys.version_info[0] >= 3:
+if sys.version_info.major >= 3:
 
 
     class AlgoDummyTest(unittest.TestCase):

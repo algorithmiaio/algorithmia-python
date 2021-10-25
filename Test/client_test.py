@@ -11,7 +11,7 @@ import unittest
 import Algorithmia
 from uuid import uuid4
 
-if sys.version_info[0] >= 3:
+if sys.version_info.major >= 3:
     unicode = str
 
     class ClientDummyTest(unittest.TestCase):
