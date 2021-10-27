@@ -7,7 +7,8 @@ sys.path = ['../'] + sys.path
 import unittest, os, uuid
 import numpy as np
 import Algorithmia
-from Algorithmia.datafile import DataFile, LocalDataFile
+import json
+from Algorithmia.datafile import DataFile, LocalDataFile, AdvancedDataFile
 
 class DataFileTest(unittest.TestCase):
     def setUp(self):
@@ -112,6 +113,59 @@ class LocalFileTest(unittest.TestCase):
         # Check getFile
         txt = self.client.file(self.EXISTING_FILE).getFile().read()
         self.assertEqual(txt, self.EXISTING_TEXT)
+
+class AdvancedDataFileTest(unittest.TestCase):
+    def setUp(self):
+        self.client = Algorithmia.client()
+        if not self.client.dir("data://.my/empty").exists():
+            self.client.dir("data://.my/empty").create()
+
+    def test_get_nonexistant(self):
+        try:
+            with self.client.file('data://.my/nonexistant/nonreal') as f:
+                _ = f.read()
+            retrieved_file = True
+        except Exception as e:
+            retrieved_file = False
+        self.assertFalse(retrieved_file)
+
+    def test_get_str(self):
+        df = self.client.file('data://.my/nonexistant/nonreal', cleanup=True)
+        try:
+            print(df.getString())
+            retrieved_file = True
+        except Exception as e:
+            retrieved_file = False
+        self.assertFalse(retrieved_file)
+
+    def test_putJson_getJson(self):
+        file = '.my/empty/test.json'
+        df = AdvancedDataFile(self.client, 'data://' + file, cleanup=True)
+        if sys.version_info[0] < 3:
+            payload = {u"hello":u"world"}
+        else:
+            payload = {"hello": "world"}
+        response = df.putJson(payload)
+        self.assertEqual(response.path,file)
+        result = json.loads(df.read())
+        self.assertDictEqual(result, payload)
+        self.assertEqual(str(result), str(payload))
+
+    def test_putZipDir_getZipDir(self):
+        local_directory = os.path.join(os.getcwd(), "Test/resources/zip_directory")
+        remote_directory = "data://.my/empty/datafile.zip"
+        df = AdvancedDataFile(self.client, remote_directory, cleanup=True)
+        response = df.putAsZip(local_directory)
+        self.assertEqual(response, df)
+
+        unzipped_local_path = df.getAsZip()
+        self.assertTrue(os.path.isdir(unzipped_local_path))
+        found_files = []
+        for _, _, files in os.walk(unzipped_local_path):
+            for file in files:
+                found_files.append(file)
+        self.assertEqual(len(found_files), 3)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -7,10 +7,12 @@ import tempfile
 from datetime import datetime
 import os.path
 import pkgutil
+import zipfile
 
 from Algorithmia.util import getParentAndBase
 from Algorithmia.data import DataObject, DataObjectType
 from Algorithmia.errors import DataApiError, raiseDataApiError
+from io import RawIOBase
 
 
 class DataFile(DataObject):
@@ -24,7 +26,7 @@ class DataFile(DataObject):
         self.size = None
 
     def set_attributes(self, attributes):
-        self.last_modified = datetime.strptime(attributes['last_modified'],'%Y-%m-%dT%H:%M:%S.%fZ')
+        self.last_modified = datetime.strptime(attributes['last_modified'], '%Y-%m-%dT%H:%M:%S.%fZ')
         self.size = attributes['size']
 
     # Deprecated:
@@ -32,19 +34,39 @@ class DataFile(DataObject):
         return self.client.getHelper(self.url)
 
     # Get file from the data api
-    def getFile(self):
+    def getFile(self, as_path=False):
         exists, error = self.existsWithError()
         if not exists:
             raise DataApiError('unable to get file {} - {}'.format(self.path, error))
         # Make HTTP get request
         response = self.client.getHelper(self.url)
-        with tempfile.NamedTemporaryFile(delete = False) as f:
+        with tempfile.NamedTemporaryFile(delete=False) as f:
             for block in response.iter_content(1024):
                 if not block:
-                    break;
+                    break
                 f.write(block)
             f.flush()
+        if as_path:
+            return f.name
+        else:
             return open(f.name)
+
+    def getAsZip(self):
+        """Download/decompress file/directory and return path to file/directory.
+        
+        Expects the `DataFile` object to contain a data API path pointing to a file/directory compressed with a zip-based compression algorithm.
+        Either returns the directory or a path to the file, depending on whether a directory or file was zipped.
+        """    
+        local_file_path = self.getFile(as_path=True)
+        directory_path = tempfile.mkdtemp()
+        with zipfile.ZipFile(local_file_path, 'r') as ziph:
+            ziph.extractall(directory_path)
+            if len(ziph.namelist()) > 1:
+                output_path = directory_path
+            else:
+                filename = ziph.namelist()[0]
+                output_path = os.path.join(directory_path, filename)
+        return output_path
 
     def getName(self):
         _, name = getParentAndBase(self.path)
@@ -129,6 +151,7 @@ class DataFile(DataObject):
                 raise raiseDataApiError(result)
             else:
                 return self
+
     def putNumpy(self, array):
         # Post numpy array as json payload
         np_loader = pkgutil.find_loader('numpy')
@@ -140,6 +163,24 @@ class DataFile(DataObject):
         else:
             raise DataApiError("Attempted to .putNumpy() a file without numpy available, please install numpy.")
 
+    def putAsZip(self, path):
+        """Zip file/directory and upload to data API location defined by `DataFile` object.
+        
+        Accepts either a single file or a directory containing other files and directories.
+        """
+        temp = tempfile.NamedTemporaryFile(delete=False).name
+        if os.path.isdir(path):
+            with zipfile.ZipFile(temp, 'w') as ziph:
+                for root, dirs, files in os.walk(path):
+                    for file in files:
+                        f_path = os.path.join(root, file)
+                        arc_path = os.path.relpath(os.path.join(root, file), path)
+                        ziph.write(f_path, arc_path)
+        else:
+            with zipfile.ZipFile(temp, 'w') as ziph:
+                ziph.write(path)
+        return self.putFile(temp)
+
     def delete(self):
         # Delete from data api
         result = self.client.deleteHelper(self.url)
@@ -147,6 +188,7 @@ class DataFile(DataObject):
             raise raiseDataApiError(result)
         else:
             return True
+
 
 class LocalDataFile():
     def __init__(self, client, filePath):
@@ -158,7 +200,7 @@ class LocalDataFile():
         self.size = None
 
     def set_attributes(self, attributes):
-        self.last_modified = datetime.strptime(attributes['last_modified'],'%Y-%m-%dT%H:%M:%S.%fZ')
+        self.last_modified = datetime.strptime(attributes['last_modified'], '%Y-%m-%dT%H:%M:%S.%fZ')
         self.size = attributes['size']
 
     # Get file from the data api
@@ -229,9 +271,78 @@ class LocalDataFile():
         except:
             raise DataApiError('Failed to delete local file ' + self.path)
 
+
 def localPutHelper(path, contents):
     try:
         with open(path, 'wb') as f:
             f.write(contents)
             return dict(status='success')
-    except Exception as e: return dict(error=str(e))
+    except Exception as e:
+        return dict(error=str(e))
+
+
+class AdvancedDataFile(DataFile, RawIOBase):
+    def __init__(self, client, dataUrl, cleanup=True):
+        super(AdvancedDataFile, self).__init__(client, dataUrl)
+        self.cleanup = cleanup
+        self.local_file = None
+
+    def __del__(self):
+        if self.local_file:
+            filepath = self.local_file.name
+            self.local_file.close()
+            if self.cleanup:
+                os.remove(filepath)
+
+    def readable(self):
+        return True
+
+    def seekable(self):
+        return True
+
+    def writable(self):
+        return False
+
+    def read(self, __size=None):
+        if not self.local_file:
+            self.local_file = self.getFile()
+            output = self.local_file.read()
+        elif __size:
+            output = self.local_file.read(__size)
+        else:
+            output = self.local_file.read()
+        return output
+
+    def readline(self, __size=None):
+        if not self.local_file:
+            self.local_file = self.getFile()
+        with self.local_file as f:
+            if __size:
+                output = f.readline(__size)
+            else:
+                output = f.readline()
+        return output
+
+    def readlines(self, __hint=None):
+        if not self.local_file:
+            self.local_file = self.getFile()
+        if __hint:
+            output = self.local_file.readlines(__hint)
+        else:
+            output = self.local_file.readlines()
+        return output
+
+    def tell(self):
+        if not self.local_file:
+            self.local_file = self.getFile()
+        output = self.local_file.tell()
+        return output
+
+    def seek(self, __offset, __whence=None):
+        if not self.local_file:
+            self.local_file = self.getFile()
+        if __whence:
+            output = self.local_file.seek(__offset, __whence)
+        else:
+            output = self.local_file.seek(__offset)
+        return output

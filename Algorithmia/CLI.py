@@ -2,23 +2,24 @@ import Algorithmia
 import os
 from Algorithmia.errors import DataApiError
 from Algorithmia.algo_response import AlgoResponse
+from Algorithmia.util import md5_for_file, md5_for_str
 import json, re, requests, six
 import toml
 import shutil
+from time import time
 
-
-class CLI():
+class CLI:
     def __init__(self):
         self.client = Algorithmia.client()
         # algo auth
     def auth(self, apikey, apiaddress, cacert="", bearer="", profile="default"):
 
-        #store api key in local config file and read from it each time a client needs to be created
+        # store api key in local config file and read from it each time a client needs to be created
         key = self.getconfigfile()
         config = toml.load(key)
 
-        if('profiles' in config.keys()):
-            if(profile in config['profiles'].keys()):
+        if ('profiles' in config.keys()):
+            if (profile in config['profiles'].keys()):
                 config['profiles'][profile]['api_key'] = apikey
                 config['profiles'][profile]['api_server'] = apiaddress
                 config['profiles'][profile]['ca_cert'] = cacert
@@ -45,59 +46,59 @@ class CLI():
 
         algo.set_options(timeout=options.timeout, stdout=options.debug)
 
-        #handle input type flags
-        if(options.data != None):
-            #data
+        # handle input type flags
+        if (options.data != None):
+            # data
             algo_input = options.data
 
             result = algo.pipe(algo_input)
 
-        elif(options.text != None):
-            #text
+        elif (options.text != None):
+            # text
             algo_input = options.text
             key = self.getAPIkey(options.profile)
             content = 'text/plain'
             algo_input = algo_input.encode('utf-8')
 
-        elif(options.json != None):
-            #json
+        elif (options.json != None):
+            # json
             algo_input = options.json
             key = self.getAPIkey(options.profile)
             content = 'application/json'
 
-        elif(options.binary != None):
-            #binary
+        elif (options.binary != None):
+            # binary
             algo_input = bytes(options.binary)
 
             key = self.getAPIkey(options.profile)
             content = 'application/octet-stream'
 
-        elif(options.data_file != None):
-            #data file
-            algo_input = open(options.data_file,"r").read()
+        elif (options.data_file != None):
+            # data file
+            algo_input = open(options.data_file, "r").read()
             result = algo.pipe(algo_input)
 
-        elif(options.text_file != None):
-            #text file
-            algo_input = open(options.text_file,"r").read()
+        elif (options.text_file != None):
+            # text file
+            algo_input = open(options.text_file, "r").read()
             key = self.getAPIkey(options.profile)
             content = 'text/plain'
             algo_input = algo_input.encode('utf-8')
 
-        elif(options.json_file != None):
-            #json file
-            #read json file and run algo with that input bypassing the auto detection of input type in pipe
-            with open(options.json_file,"r") as f:
+        elif (options.json_file != None):
+            # json file
+            # read json file and run algo with that input bypassing the auto detection of input type in pipe
+            with open(options.json_file, "r") as f:
                 algo_input = f.read()
             key = self.getAPIkey(options.profile)
             content = 'application/json'
             algo_input = json.dumps(algo_input).encode('utf-8')
 
 
-        elif(options.binary_file != None):
-            #binary file
-            with open(options.binary_file,"rb") as f:
-                algo_inputs = bytes(f.read())
+        elif (options.binary_file != None):
+            # binary file
+            with open(options.binary_file, "rb") as f:
+                algo_input = bytes(f.read())
             key = self.getAPIkey(options.profile)
             content = 'application/octet-stream'
 
@@ -105,25 +106,27 @@ class CLI():
         else:
             output = "no valid input detected"
 
-        if(content != None):
+        if (content != None):
             result = AlgoResponse.create_algo_response(requests.post(url, data=algo_input,
-                    headers={'Authorization':key,'Content-Type':content}, params= algo.query_parameters).json())
+                                                                     headers={'Authorization': key,
+                                                                              'Content-Type': content},
+                                                                     params=algo.query_parameters).json())
 
-        if(result != None):
+        if (result != None):
             output = result.result
 
-        #handle output flags
+        # handle output flags
 
-        #output to file if there is an output file specified
-        if(options.output != None):
+        # output to file if there is an output file specified
+        if (options.output != None):
             outputFile = options.output
             try:
                 if isinstance(result.result, bytearray) or isinstance(result.result, bytes):
-                    out = open(outputFile,"wb")
+                    out = open(outputFile, "wb")
                     out.write(result.result)
                     out.close()
                 else:
-                    out = open(outputFile,"w")
+                    out = open(outputFile, "w")
                     out.write(result.result)
                     out.close()
                 output = ""
@@ -133,18 +136,17 @@ class CLI():
 
         return output
 
-
     # algo mkdir <path>
     def mkdir(self, path, client):
-        #make a dir in data collection
+        # make a dir in data collection
         newDir = client.dir(path)
 
         if newDir.exists() is False:
             newDir.create()
 
     # algo rmdir <path>
-    def rmdir(self, path, client, force = False):
-        #remove a dir in data collection
+    def rmdir(self, path, client, force=False):
+        # remove a dir in data collection
 
         Dir = client.dir(path)
 
@@ -154,10 +156,9 @@ class CLI():
         except Algorithmia.errors.DataApiError as e:
             print(e)
 
-
     def rm(self, path, client):
 
-        #for f in path
+        # for f in path
         file = client.file(path)
         try:
             if file.exists():
@@ -180,7 +181,7 @@ class CLI():
 
             response = client.getHelper(f.url, **{})
             if response.status_code != 200:
-                  raise DataApiError("failed to get file info: " + str(response.content))
+                raise DataApiError("failed to get file info: " + str(response.content))
 
             responseContent = response.content
             if isinstance(responseContent, six.binary_type):
@@ -226,14 +227,14 @@ class CLI():
         for f in path:
             if '://' in f and not f.startswith("http"):
                 if f[-1] == '*':
-                    path += ['data://'+file.path for file in client.dir(f[:len(f)-2]).files()]
+                    path += ['data://' + file.path for file in client.dir(f[:len(f) - 2]).files()]
                 else:
                     file = client.file(f)
 
                     if file.exists():
                         result += file.getString()
                     else:
-                        result = "file does not exist "+f
+                        result = "file does not exist " + f
                         break
             else:
                 print("operands must be a path to a remote data source data://")
@@ -241,100 +242,121 @@ class CLI():
 
         return result
 
+    # algo freeze
+    def freezeAlgo(self, client, manifest_path="model_manifest.json"):
+        if os.path.exists(manifest_path):
+            with open(manifest_path, 'r') as f:
+                manifest_file = json.load(f)
+            manifest_file['timestamp'] = str(time())
+            required_files = manifest_file['required_files']
+            optional_files = manifest_file['optional_files']
+            for i in range(len(required_files)):
+                uri = required_files[i]['source_uri']
+                local_file = client.file(uri).getFile(as_path=True)
+                md5_checksum = md5_for_file(local_file)
+                required_files[i]['md5_checksum'] = md5_checksum
+            for i in range(len(optional_files)):
+                uri = required_files[i]['source_uri']
+                local_file = client.file(uri).getFile(as_path=True)
+                md5_checksum = md5_for_file(local_file)
+                required_files[i]['md5_checksum'] = md5_checksum
+            lock_md5_checksum = md5_for_str(str(manifest_file))
+            manifest_file['lock_checksum'] = lock_md5_checksum
+            with open('model_manifest.json.freeze', 'w') as f:
+                json.dump(manifest_file, f)
+        else:
+            print("Expected to find a model_manifest.json file, none was discovered in working directory")
+
     # algo cp <src> <dest>
     def cp(self, src, dest, client):
 
-        if(src is None or dest is None):
+        if (src is None or dest is None):
             print("expected algo cp <src> <dest>")
         else:
 
             destLocation = client.file(dest)
             for f in src:
 
-
-                #if dest is a directory apend the src name
-                #if there are multiple src files only the final one will be copied if dest is not a directory
+                # if dest is a directory apend the src name
+                # if there are multiple src files only the final one will be copied if dest is not a directory
                 destPath = dest
 
                 path = dest.split('/')
 
-                if(os.path.isdir(dest) or client.dir(dest).exists() and len(path) <= 5):
-                    if(dest[-1] == '/' and path[-1] == ''):
-                        destPath+=client.file(f).getName()
-                    elif(len(path) == 4 or "data://" not in dest):
-                        destPath+='/'+client.file(f).getName()
+                if (os.path.isdir(dest) or client.dir(dest).exists() and len(path) <= 5):
+                    if (dest[-1] == '/' and path[-1] == ''):
+                        destPath += client.file(f).getName()
+                    elif (len(path) == 4 or "data://" not in dest):
+                        destPath += '/' + client.file(f).getName()
 
-                if(f[-1] == '*'):
-                    src += ['data://'+file.path for file in client.dir(f[:len(f)-2]).files()]
+                if (f[-1] == '*'):
+                    src += ['data://' + file.path for file in client.dir(f[:len(f) - 2]).files()]
 
-                #if src is local and dest is remote
-                elif("data://" not in f and "data://" in dest):
+                # if src is local and dest is remote
+                elif ("data://" not in f and "data://" in dest):
                     client.file(destPath).putFile(f)
 
-                #if src and dest are remote
-                elif("data://" in f and "data://" in dest):
+                # if src and dest are remote
+                elif ("data://" in f and "data://" in dest):
                     file = client.file(f).getFile()
                     filename = file.name
                     file.close()
 
                     client.file(destPath).putFile(filename)
 
-                #if src is remote and dest is local
-                elif("data://" in f and "data://" not in dest):
+                # if src is remote and dest is local
+                elif ("data://" in f and "data://" not in dest):
                     file = client.file(f).getFile()
                     filename = file.name
                     file.close()
-                    shutil.move(filename,destPath)
+                    shutil.move(filename, destPath)
                 else:
                     print("at least one of the operands must be a path to a remote data source data://")
 
-    def get_environment_by_language(self,language,client):
+    def get_environment_by_language(self, language, client):
         response = client.get_environment(language)
         if "error" in response:
             return json.dumps(response)
-        return json.dumps(response['environments'],indent=1)
-
+        return json.dumps(response['environments'], indent=1)
 
     def list_languages(self, client):
         response = client.get_supported_languages()
         table = []
         if "error" not in response:
-            table.append("{:<25} {:<35}".format('Name','Description'))
+            table.append("{:<25} {:<35}".format('Name', 'Description'))
             for lang in response:
-                table.append("{:<25} {:<35}".format(lang['name'],lang['display_name']))
+                table.append("{:<25} {:<35}".format(lang['name'], lang['display_name']))
         else:
             table.append(json.dumps(response))
         return table
 
-
     def getBuildLogs(self, user, algo, client):
-        api_response = client.algo(user+'/'+algo).build_logs()
-        
+        api_response = client.algo(user + '/' + algo).build_logs()
+
         if "error" in api_response:
             return json.dumps(api_response)
         return json.dumps(api_response['results'], indent=1)
 
-
     def getconfigfile(self):
-        if(os.name == "posix"):
-            #if!windows
-            #~/.algorithmia/config
-            #create the api key file if it does not exist
-            keyPath = os.environ['HOME']+"/.algorithmia/"
+        if (os.name == "posix"):
+            # if!windows
+            # ~/.algorithmia/config
+            # create the api key file if it does not exist
+            keyPath = os.environ['HOME'] + "/.algorithmia/"
 
-        elif(os.name == "nt"):
-            #ifwindows
-            #%LOCALAPPDATA%\Algorithmia\config
-            #create the api key file if it does not exist
+        elif (os.name == "nt"):
+            # ifwindows
+            # %LOCALAPPDATA%\Algorithmia\config
+            # create the api key file if it does not exist
             keyPath = os.path.expandvars("%LOCALAPPDATA%\\Algorithmia\\")
 
         keyFile = "config"
 
-        if(not os.path.exists(keyPath)):
+        if (not os.path.exists(keyPath)):
             os.mkdir(keyPath)
 
-        if(not os.path.exists(keyPath+keyFile)):
-            with open(keyPath+keyFile,"w") as file:
+        if (not os.path.exists(keyPath + keyFile)):
+            with open(keyPath + keyFile, "w") as file:
                 file.write("[profiles]\n")
                 file.write("[profiles.default]\n")
                 file.write("api_key = ''\n")
@@ -342,22 +364,22 @@ class CLI():
                 file.write("ca_cert = ''\n")
                 file.write("bearer_token = ''\n")
 
-
-        key = keyPath+keyFile
+        key = keyPath + keyFile
 
         return key
 
-    def get_template(self,envid,dest,client):
-        response = client.get_template(envid,dest)
+    def get_template(self, envid, dest, client):
+        response = client.get_template(envid, dest)
         return response
 
-    def getAPIkey(self,profile):
+    def getAPIkey(self, profile):
         key = self.getconfigfile()
         config_dict = toml.load(key)
-        apikey = None
-        if('profiles' in config_dict.keys() and profile in config_dict['profiles'].keys()):
-            apikey = config_dict['profiles'][profile]['api_key']
-        return apikey
+        if 'profiles' in config_dict and profile in config_dict['profiles'] and \
+                config_dict['profiles'][profile]['api_key'] != "":
+            return config_dict['profiles'][profile]['api_key']
+        else:
+            return None
     
     def getBearerToken(self,profile):
         key = self.getconfigfile()
@@ -367,24 +389,26 @@ class CLI():
             bearer = config_dict['profiles'][profile]['bearer_token']
         return bearer
 
-    def getAPIaddress(self,profile):
+
+    def getAPIaddress(self, profile):
         key = self.getconfigfile()
         config_dict = toml.load(key)
 
-        apiaddress = config_dict['profiles'][profile]['api_server']
+        if config_dict['profiles'][profile]['api_server'] != "":
+            return config_dict['profiles'][profile]['api_server']
+        else:
+            return None
 
-        return apiaddress
-
-    def getCert(self,profile):
+    def getCert(self, profile):
         key = self.getconfigfile()
         config_dict = toml.load(key)
-        cert = None
-        if('profiles' in config_dict.keys() and profile in config_dict['profiles'].keys()):
-            cert = config_dict['profiles'][profile]['ca_cert']
-        return cert
+        if 'profiles' in config_dict and profile in config_dict['profiles'] and \
+                config_dict['profiles'][profile]['ca_cert'] != "":
+            return config_dict['profiles'][profile]['ca_cert']
+        else:
+            return None
 
     def getClient(self,profile):
-        
         apiAddress = None
         apiKey = None
         caCert = None

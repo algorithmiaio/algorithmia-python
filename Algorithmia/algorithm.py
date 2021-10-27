@@ -69,18 +69,14 @@ class Algorithm(object):
 
     # Publish an algorithm
     def publish(self, details={}, settings={}, version_info={}):
-        detailsObj = Details(**details)
-        settingsObj = SettingsPublish(**settings)
-        versionRequestObj = VersionInfoPublish(**version_info)
-        publish_parameters = {"details": detailsObj, "settings": settingsObj, "version_info": versionRequestObj}
-        version_request = VersionRequest(**publish_parameters) # VersionRequest | Publish Version Request
-        try:
-            # Publish Algorithm
-            api_response = self.client.manageApi.publish_algorithm(self.username, self.algoname, version_request)
-            return api_response
-        except ApiException as e:
-            error_message = json.loads(e.body)
-            raise raiseAlgoApiError(error_message)
+        publish_parameters = {"details": details, "settings": settings, "version_info": version_info}
+        url = "/v1/algorithms/"+self.username+"/"+self.algoname + "/versions"
+        print(publish_parameters)
+        api_response = self.client.postJsonHelper(url, publish_parameters, parse_response_as_json=True, **self.query_parameters)
+        return api_response
+        # except ApiException as e:
+        #     error_message = json.loads(e.body)
+        #     raise raiseAlgoApiError(error_message)
 
     def builds(self, limit=56, marker=None):
         try:
@@ -166,7 +162,7 @@ class Algorithm(object):
     def compile(self):
         try:
             # Compile algorithm
-            api_response = self.client.manageApi.algorithms_username_algoname_compile_post(self.username, self.algoname)
+            api_response = self.client.manageApi.compile_algorithm(self.username, self.algoname)
             return api_response
         except ApiException as e:
             error_message = json.loads(e.body)
