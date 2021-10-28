@@ -384,10 +384,11 @@ class CLI:
     def getBearerToken(self,profile):
         key = self.getconfigfile()
         config_dict = toml.load(key)
-        bearer = None
-        if('profiles' in config_dict.keys() and profile in config_dict['profiles'].keys()):
-            bearer = config_dict['profiles'][profile]['bearer_token']
-        return bearer
+        if 'profiles' in config_dict and profile in config_dict['profiles'] and \
+                config_dict['profiles'][profile]['bearer_token'] != "":
+            return config_dict['profiles'][profile]['bearer_token']
+        else:
+            return None
 
 
     def getAPIaddress(self, profile):
