@@ -12,7 +12,7 @@ class CLI:
     def __init__(self):
         self.client = Algorithmia.client()
         # algo auth
-    def auth(self, apikey, apiaddress, cacert="", bearer="", profile="default"):
+    def auth(self, apikey, apiaddress, cacert="", profile="default", bearer=""):
 
         # store api key in local config file and read from it each time a client needs to be created
         key = self.getconfigfile()
@@ -410,31 +410,12 @@ class CLI:
             return None
 
     def getClient(self,profile):
-        apiAddress = None
-        apiKey = None
-        caCert = None
+        apiAddress = self.getAPIaddress(profile)
+        apiKey = self.getAPIkey(profile)
+        caCert = self.getCert(profile)
         bearer = None
 
-        if len(CLI().getAPIaddress(profile)) > 1:
-            apiKey = self.getAPIkey(profile)
-            apiAddress = self.getAPIaddress(profile)
-            #client = Algorithmia.client(CLI().getAPIkey(profile), CLI().getAPIaddress(profile))
-        elif len(CLI().getAPIaddress(profile)) > 1 and len(CLI().getCert(profile)) > 1:
-            apiKey = self.getAPIkey(profile)
-            apiAddress = self.getAPIaddress(profile)
-            caCert = self.getCert(profile)
-            #client = Algorithmia.client(CLI().getAPIkey(profile), CLI().getAPIaddress(profile),CLI().getCert(profile))
-        elif len(CLI().getAPIaddress(profile)) < 1 and len(CLI().getCert(profile)) > 1:
-            apiKey = self.getAPIkey(profile)
-            apiAddress = self.getAPIaddress(profile)
-            caCert = self.getCert(profile)
-            #client = Algorithmia.client(CLI().getAPIkey(profile), CLI().getAPIaddress(profile),CLI().getCert(profile))
-        else:
-            apiKey = self.getAPIkey(profile)
-            #client = Algorithmia.client(CLI().getAPIkey(profile))
-            
-        if len(self.getAPIkey(profile)) < 1:
-            apiKey = None
+        if apiKey is None:
             bearer = self.getBearerToken(profile)
 
         return Algorithmia.client(api_key=apiKey,api_address=apiAddress,ca_cert=caCert,bearer_token = bearer)
