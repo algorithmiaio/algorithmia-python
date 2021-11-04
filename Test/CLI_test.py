@@ -156,7 +156,7 @@ class CLIMainTest(unittest.TestCase):
         key = os.getenv('ALGORITHMIA_API_KEY')
         address = 'https://api.algorithmia.com'
         profile = 'default'
-        CLI().auth(key, address, profile=profile)
+        CLI().auth(address, key, profile=profile)
         resultK = CLI().getAPIkey(profile)
         resultA = CLI().getAPIaddress(profile)
         self.assertEqual(resultK, key)
@@ -176,7 +176,7 @@ class CLIMainTest(unittest.TestCase):
         cacert = localfile
         profile = 'test'
 
-        CLI().auth(key, address, cacert, profile)
+        CLI().auth(address, key, cacert=cacert, profile=profile)
         resultK = CLI().getAPIkey(profile)
         resultA = CLI().getAPIaddress(profile)
         resultC = CLI().getCert(profile)
@@ -185,17 +185,13 @@ class CLIMainTest(unittest.TestCase):
         self.assertEqual(resultC, cacert)
     
     def test_auth_token(self):
-        # key for test account
-        key = os.getenv('ALGORITHMIA_API_KEY')
         address = 'https://api.algorithmia.com'
         bearer = 'testtokenabcd'
         profile = 'test'
 
-        CLI().auth(key, address, bearer=bearer, profile=profile)
-        resultK = CLI().getAPIkey(profile)
+        CLI().auth(apiaddress=address, bearer=bearer, profile=profile)
         resultA = CLI().getAPIaddress(profile)
         resultT = CLI().getBearerToken(profile)
-        self.assertEqual(resultK, key)
         self.assertEqual(resultA, address)
         self.assertEqual(resultT, bearer)
 
@@ -245,7 +241,7 @@ class CLIMainTest(unittest.TestCase):
     def test_api_address_auth(self):
         api_key = os.getenv('ALGORITHMIA_TEST_API_KEY')
         api_address = "https://api.test.algorithmia.com"
-        CLI().auth(api_key, api_address)
+        CLI().auth(api_address, api_key)
         profile = "default"
 
         client = Algorithmia.client(CLI().getAPIkey(profile), CLI().getAPIaddress(profile), CLI().getCert(profile))

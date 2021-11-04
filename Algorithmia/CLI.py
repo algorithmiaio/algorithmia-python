@@ -12,7 +12,7 @@ class CLI:
     def __init__(self):
         self.client = Algorithmia.client()
         # algo auth
-    def auth(self, apikey, apiaddress, cacert="", profile="default", bearer=""):
+    def auth(self, apiaddress, apikey="", cacert="", profile="default", bearer=""):
 
         # store api key in local config file and read from it each time a client needs to be created
         key = self.getconfigfile()
