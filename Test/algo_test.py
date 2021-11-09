@@ -1,6 +1,7 @@
 import sys
 import os
 from Algorithmia.errors import AlgorithmException
+from Algorithmia.algorithm import OutputType
 import Algorithmia
 # look in ../ BEFORE trying to import Algorithmia.  If you append to the
 # you will load the version installed on the computer.
@@ -27,9 +28,9 @@ if sys.version_info.major >= 3:
             self.assertEquals("foo", result.result)
 
         def test_async_call(self):
-            result = self.client.algo('util/echo').set_options(output="void").pipe("foo")
-            self.assertTrue("async_protocol" in result)
-            self.assertTrue("request_id" in result)
+            result = self.client.algo('util/echo').set_options(output=OutputType.void).pipe("foo")
+            self.assertTrue(hasattr(result, "async_protocol"))
+            self.assertTrue(hasattr(result, "request_id"))
 
         def test_dict_call(self):
             result = self.client.algo('util/echo').pipe({"foo": "bar"})
@@ -88,9 +89,9 @@ else:
             self.assertEquals(bytearray('foo', 'utf-8'), result.result)
 
         def test_async_call(self):
-            result = self.client.algo('util/echo').set_options(output="void").pipe("foo")
-            self.assertTrue("async_protocol" in result)
-            self.assertTrue("request_id" in result)
+            result = self.client.algo('util/echo').set_options(output=OutputType.void).pipe("foo")
+            self.assertTrue(hasattr(result, "async_protocol"))
+            self.assertTrue(hasattr(result, "request_id"))
 
         def test_text_unicode(self):
             telephone = u"\u260E"

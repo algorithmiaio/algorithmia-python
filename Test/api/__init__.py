@@ -1,5 +1,6 @@
 import importlib
 from fastapi import FastAPI, Request
+from typing import Optional
 from fastapi.responses import Response
 import json
 import base64
@@ -19,10 +20,12 @@ def start_webserver():
 
 
 @app.post("/v1/algo/{username}/{algoname}")
-async def process_algo_req(request: Request, username, algoname):
+async def process_algo_req(request: Request, username, algoname, output: Optional[str] = None):
     metadata = {"request_id": "req-55c0480d-6af3-4a21-990a-5c51d29f5725", "duration": 0.000306774}
     content_type = request.headers['Content-Type']
     request = await request.body()
+    if output and output == "void":
+        return {"async": "abcd123", "request_id": "req-55c0480d-6af3-4a21-990a-5c51d29f5725"}
     if algoname == "500":
         return Response("Internal Server Error", status_code=500)
     elif algoname == "raise_exception":
@@ -40,12 +43,6 @@ async def process_algo_req(request: Request, username, algoname):
             request = base64.b64encode(request)
         output = {"result": request, "metadata": metadata}
         return output
-
-
-@app.post("/v1/algo/{username}/{algoname}?output=void")
-async def process_async_req(request: Request, username, algoname):
-    return {"async_protocol": "abcd123", "request_id": "req-55c0480d-6af3-4a21-990a-5c51d29f5725"}
-
 
 @app.post("/v1/algo/{username}/{algoname}/{githash}")
 async def process_hello_world(request: Request, username, algoname, githash):
