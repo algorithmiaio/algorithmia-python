@@ -27,7 +27,7 @@ if sys.version_info.major >= 3:
             self.assertEquals("foo", result.result)
 
         def test_async_call(self):
-            result = self.client.algo('util/echo').set_options(output=None).pipe("foo")
+            result = self.client.algo('util/echo').set_options(output="void").pipe("foo")
             self.assertTrue("async_protocol" in result)
             self.assertTrue("request_id" in result)
 
@@ -88,7 +88,7 @@ else:
             self.assertEquals(bytearray('foo', 'utf-8'), result.result)
 
         def test_async_call(self):
-            result = self.client.algo('util/echo').set_options(output=None).pipe("foo")
+            result = self.client.algo('util/echo').set_options(output="void").pipe("foo")
             self.assertTrue("async_protocol" in result)
             self.assertTrue("request_id" in result)
 
