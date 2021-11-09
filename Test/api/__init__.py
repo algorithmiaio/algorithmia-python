@@ -26,7 +26,9 @@ async def process_algo_req(request: Request, username, algoname, output: Optiona
     request = await request.body()
     if output and output == "void":
         return {"async": "abcd123", "request_id": "req-55c0480d-6af3-4a21-990a-5c51d29f5725"}
-    if algoname == "500":
+    elif output and output == "raw":
+        return Response(request.decode(), status_code=200)
+    elif algoname == "500":
         return Response("Internal Server Error", status_code=500)
     elif algoname == "raise_exception":
         return {"error": {"message": "This is an exception"}}

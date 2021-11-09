@@ -32,6 +32,10 @@ if sys.version_info.major >= 3:
             self.assertTrue(hasattr(result, "async_protocol"))
             self.assertTrue(hasattr(result, "request_id"))
 
+        def test_raw_call(self):
+            result = self.client.algo('util/echo').set_options(output=OutputType.raw).pipe("foo")
+            self.assertEquals("foo", result)
+
         def test_dict_call(self):
             result = self.client.algo('util/echo').pipe({"foo": "bar"})
             self.assertEquals("json", result.metadata.content_type)
@@ -92,6 +96,10 @@ else:
             result = self.client.algo('util/echo').set_options(output=OutputType.void).pipe("foo")
             self.assertTrue(hasattr(result, "async_protocol"))
             self.assertTrue(hasattr(result, "request_id"))
+
+        def test_raw_call(self):
+            result = self.client.algo('util/echo').set_options(output=OutputType.raw).pipe("foo")
+            self.assertEquals("foo", result)
 
         def test_text_unicode(self):
             telephone = u"\u260E"
