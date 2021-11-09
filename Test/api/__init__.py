@@ -42,6 +42,11 @@ async def process_algo_req(request: Request, username, algoname):
         return output
 
 
+@app.post("/v1/algo/{username}/{algoname}?output=void")
+async def process_async_req(request: Request, username, algoname):
+    return {"async_protocol": "abcd123", "request_id": "req-55c0480d-6af3-4a21-990a-5c51d29f5725"}
+
+
 @app.post("/v1/algo/{username}/{algoname}/{githash}")
 async def process_hello_world(request: Request, username, algoname, githash):
     metadata = {"request_id": "req-55c0480d-6af3-4a21-990a-5c51d29f5725", "duration": 0.000306774,
