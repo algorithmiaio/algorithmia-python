@@ -1,5 +1,6 @@
 import base64
 from Algorithmia.errors import raiseAlgoApiError
+from Algorithmia.async_response import AsyncResponse
 import sys
 
 
@@ -19,8 +20,12 @@ class AlgoResponse(object):
 
     @staticmethod
     def create_algo_response(response):
+
+        # Check if request is async
+        if 'async_protocol' in response and 'request_id' in response:
+            return AsyncResponse(response)
         # Parse response JSON, if it's indeed JSON
-        if 'error' in response or 'metadata' not in response:
+        elif 'error' in response or 'metadata' not in response:
             # Failure
             raise raiseAlgoApiError(response)
         else:

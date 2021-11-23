@@ -1,5 +1,6 @@
 import importlib
 from fastapi import FastAPI, Request
+from typing import Optional
 from fastapi.responses import Response
 import json
 import base64
@@ -19,11 +20,15 @@ def start_webserver():
 
 
 @app.post("/v1/algo/{username}/{algoname}")
-async def process_algo_req(request: Request, username, algoname):
+async def process_algo_req(request: Request, username, algoname, output: Optional[str] = None):
     metadata = {"request_id": "req-55c0480d-6af3-4a21-990a-5c51d29f5725", "duration": 0.000306774}
     content_type = request.headers['Content-Type']
     request = await request.body()
-    if algoname == "500":
+    if output and output == "void":
+        return {"async": "abcd123", "request_id": "req-55c0480d-6af3-4a21-990a-5c51d29f5725"}
+    elif output and output == "raw":
+        return Response(request.decode(), status_code=200)
+    elif algoname == "500":
         return Response("Internal Server Error", status_code=500)
     elif algoname == "raise_exception":
         return {"error": {"message": "This is an exception"}}
@@ -40,7 +45,6 @@ async def process_algo_req(request: Request, username, algoname):
             request = base64.b64encode(request)
         output = {"result": request, "metadata": metadata}
         return output
-
 
 @app.post("/v1/algo/{username}/{algoname}/{githash}")
 async def process_hello_world(request: Request, username, algoname, githash):
