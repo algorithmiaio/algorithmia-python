@@ -146,19 +146,18 @@ def main():
         APIkey = input("enter API key: ")
         CACert = input('(optional) enter path to custom CA certificate: ')
 
-        if len(APIkey) == 28 and APIkey.startswith("sim"):
-            if APIaddress == "" or not APIaddress.startswith("https://api."):
-                APIaddress = "https://api.algorithmia.com"
-            CLI().auth(apikey=APIkey, apiaddress=APIaddress, cacert=CACert, profile=args.profile)
-        else: 
-            if APIaddress == "" or not APIaddress.startswith("https://api."):
-                APIaddress = "https://api.algorithmia.com"
-            jwt = re.compile(r"^([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_\-\+\/=]*)")
-            Bearer = input("enter JWT token: ")
-            if jwt.match(Bearer):
-                CLI().auth(apikey=APIkey, bearer=Bearer, apiaddress=APIaddress, cacert=CACert, profile=args.profile)
-            else:
-                print("invalid authentication")
+        if APIaddress == "" or not APIaddress.startswith("https://api."):
+            print("invalid API address")
+        else:
+            if len(APIkey) == 28 and APIkey.startswith("sim"):
+                CLI().auth(apikey=APIkey, apiaddress=APIaddress, cacert=CACert, profile=args.profile)
+            else: 
+                jwt = re.compile(r"^([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_\-\+\/=]*)")
+                Bearer = input("enter JWT token: ")
+                if jwt.match(Bearer):
+                    CLI().auth(apikey=APIkey, bearer=Bearer, apiaddress=APIaddress, cacert=CACert, profile=args.profile)
+                else:
+                    print("invalid authentication")
 
             
         

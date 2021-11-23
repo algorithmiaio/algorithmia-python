@@ -17,6 +17,7 @@ if sys.version_info.major >= 3:
         @classmethod
         def setUpClass(cls):
             cls.client = Algorithmia.client(api_address="http://localhost:8080", api_key="simabcd123")
+            cls.bearerClient = Algorithmia.client(api_address="http://localhost:8080", bearer_token="simabcd123.token.token")
 
         def test_run(self):
             name = "util/Echo"
@@ -50,6 +51,40 @@ if sys.version_info.major >= 3:
             args = parser.parse_args(['run', name, '-d', inputs])
 
             result = CLI().runalgo(args, self.client)
+            self.assertEqual(result, inputs)
+
+        def test_run_token(self):
+            name = "util/Echo"
+            inputs = "test"
+
+            parser = argparse.ArgumentParser('CLI for interacting with Algorithmia')
+
+            subparsers = parser.add_subparsers(help='sub cmd', dest='subparser_name')
+            parser_run = subparsers.add_parser('run', help='algo run <algo> [input options] <args..> [output options]')
+
+            parser_run.add_argument('algo')
+            parser_run.add_argument('-d', '--data', action='store', help='detect input type', default=None)
+            parser_run.add_argument('-t', '--text', action='store', help='treat input as text', default=None)
+            parser_run.add_argument('-j', '--json', action='store', help='treat input as json data', default=None)
+            parser_run.add_argument('-b', '--binary', action='store', help='treat input as binary data', default=None)
+            parser_run.add_argument('-D', '--data-file', action='store', help='specify a path to an input file',
+                                    default=None)
+            parser_run.add_argument('-T', '--text-file', action='store', help='specify a path to a text file',
+                                    default=None)
+            parser_run.add_argument('-J', '--json-file', action='store', help='specify a path to a json file',
+                                    default=None)
+            parser_run.add_argument('-B', '--binary-file', action='store', help='specify a path to a binary file',
+                                    default=None)
+            parser_run.add_argument('--timeout', action='store', type=int, default=300,
+                                    help='specify a timeout (seconds)')
+            parser_run.add_argument('--debug', action='store_true',
+                                    help='print the stdout from the algo <this only works for the owner>')
+            parser_run.add_argument('--profile', action='store', type=str, default='default')
+            parser_run.add_argument('-o', '--output', action='store', default=None, type=str)
+
+            args = parser.parse_args(['run', name, '-d', inputs])
+
+            result = CLI().runalgo(args, self.bearerClient)
             self.assertEqual(result, inputs)
 
 
