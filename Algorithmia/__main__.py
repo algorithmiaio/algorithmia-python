@@ -6,6 +6,7 @@ import Algorithmia
 import six
 from Algorithmia.CLI import CLI
 import argparse
+import re
 
 #bind input to raw input
 try:
@@ -145,27 +146,26 @@ def main():
         APIkey = input("enter API key: ")
         CACert = input('(optional) enter path to custom CA certificate: ')
 
-        if len(APIkey) == 28 and APIkey.startswith("sim"):
-            if APIaddress == "" or not APIaddress.startswith("https://api."):
-                APIaddress = "https://api.algorithmia.com"
-
-            CLI().auth(apikey=APIkey, apiaddress=APIaddress, cacert=CACert, profile=args.profile)
+        if APIaddress == "" or not APIaddress.startswith("https://api."):
+            print("invalid API address")
         else:
-            print("invalid api key")
+            if len(APIkey) == 28 and APIkey.startswith("sim"):
+                CLI().auth(apikey=APIkey, apiaddress=APIaddress, cacert=CACert, profile=args.profile)
+            else: 
+                jwt = re.compile(r"^([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_\-\+\/=]*)")
+                Bearer = input("enter JWT token: ")
+                if jwt.match(Bearer):
+                    CLI().auth(apikey=APIkey, bearer=Bearer, apiaddress=APIaddress, cacert=CACert, profile=args.profile)
+                else:
+                    print("invalid authentication")
 
+            
+        
     if args.cmd == 'help':
         parser.parse_args(['-h'])
 
     #create a client with the appropreate api address and key
-    client = Algorithmia.client()
-    if len(CLI().getAPIaddress(args.profile)) > 1:
-        client = Algorithmia.client(CLI().getAPIkey(args.profile), CLI().getAPIaddress(args.profile))
-    elif len(CLI().getAPIaddress(args.profile)) > 1 and len(CLI().getCert(args.profile)) > 1:
-        client = Algorithmia.client(CLI().getAPIkey(args.profile), CLI().getAPIaddress(args.profile),CLI().getCert(args.profile))
-    elif len(CLI().getAPIaddress(args.profile)) < 1 and len(CLI().getCert(args.profile)) > 1:
-        client = Algorithmia.client(CLI().getAPIkey(args.profile), CLI().getAPIaddress(args.profile),CLI().getCert(args.profile))
-    else:
-        client = Algorithmia.client(CLI().getAPIkey(args.profile))
+    client = CLI().getClient(args.profile)
 
     if args.cmd == 'run':
 

@@ -12,8 +12,7 @@ class CLI:
     def __init__(self):
         self.client = Algorithmia.client()
         # algo auth
-
-    def auth(self, apikey, apiaddress, cacert="", profile="default"):
+    def auth(self, apiaddress, apikey="", cacert="", profile="default", bearer=""):
 
         # store api key in local config file and read from it each time a client needs to be created
         key = self.getconfigfile()
@@ -24,20 +23,17 @@ class CLI:
                 config['profiles'][profile]['api_key'] = apikey
                 config['profiles'][profile]['api_server'] = apiaddress
                 config['profiles'][profile]['ca_cert'] = cacert
+                config['profiles'][profile]['bearer_token'] = bearer
 
             else:
-                config['profiles'][profile] = {'api_key': apikey, 'api_server': apiaddress, 'ca_cert': cacert}
+                config['profiles'][profile] = {'api_key':apikey,'api_server':apiaddress,'ca_cert':cacert,'bearer_token':bearer}
         else:
-            config['profiles'] = {profile: {'api_key': apikey, 'api_server': apiaddress, 'ca_cert': cacert}}
+            config['profiles'] = {profile:{'api_key':apikey,'api_server':apiaddress,'ca_cert':cacert,'bearer_token':bearer }}
 
         with open(key, "w") as key:
-            toml.dump(config, key)
-        client = Algorithmia.client(
-            api_key=self.getAPIkey(profile),
-            api_address=self.getAPIaddress(profile),
-            ca_cert=self.getCert(profile)
-        )
-        self.ls(path=None, client=client)
+            toml.dump(config,key)
+
+        self.ls(path = None,client = CLI().getClient(profile))
 
     # algo run <algo> <args..>    run the the specified algo
     def runalgo(self, options, client):
@@ -366,6 +362,7 @@ class CLI:
                 file.write("api_key = ''\n")
                 file.write("api_server = ''\n")
                 file.write("ca_cert = ''\n")
+                file.write("bearer_token = ''\n")
 
         key = keyPath + keyFile
 
@@ -383,6 +380,16 @@ class CLI:
             return config_dict['profiles'][profile]['api_key']
         else:
             return None
+    
+    def getBearerToken(self,profile):
+        key = self.getconfigfile()
+        config_dict = toml.load(key)
+        if 'profiles' in config_dict and profile in config_dict['profiles'] and \
+                config_dict['profiles'][profile]['bearer_token'] != "":
+            return config_dict['profiles'][profile]['bearer_token']
+        else:
+            return None
+
 
     def getAPIaddress(self, profile):
         key = self.getconfigfile()
@@ -401,3 +408,14 @@ class CLI:
             return config_dict['profiles'][profile]['ca_cert']
         else:
             return None
+
+    def getClient(self,profile):
+        apiAddress = self.getAPIaddress(profile)
+        apiKey = self.getAPIkey(profile)
+        caCert = self.getCert(profile)
+        bearer = None
+
+        if apiKey is None:
+            bearer = self.getBearerToken(profile)
+
+        return Algorithmia.client(api_key=apiKey,api_address=apiAddress,ca_cert=caCert,bearer_token = bearer)
