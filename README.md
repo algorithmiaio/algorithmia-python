@@ -72,9 +72,9 @@ If the algorithm output is text, then the `result` field of the response will be
 ```python
 algo = client.algo('demo/Hello/0.1.1')
 response = algo.pipe("HAL 9000")
-print response.result    # Hello, world!
-print response.metadata  # Metadata(content_type='text',duration=0.0002127)
-print response.metadata.duration # 0.0002127
+print(response.result)    # Hello, world!
+print(response.metadata)  # Metadata(content_type='text',duration=0.0002127)
+print(response.metadata.duration) # 0.0002127
 ```
 
 ### JSON input/output
@@ -119,7 +119,7 @@ This includes support for changing the timeout or indicating that the API should
 ```python
 from Algorithmia.algorithm import OutputType
 response = client.algo('util/echo').set_options(timeout=60, stdout=False)
-print response.metadata.stdout
+print(response.metadata.stdout)
 ```
 
 Note: `stdout=True` is only supported if you have access to the algorithm source.
@@ -186,15 +186,15 @@ foo = client.dir("data://.my/foo")
 
 # List files in "foo"
 for file in foo.files():
-    print file.path + " at URL: " + file.url + " last modified " + file.last_modified
+    print(file.path + " at URL: " + file.url + " last modified " + file.last_modified)
 
 # List directories in "foo"
 for file in foo.dirs():
-    print dir.path + " at URL: " + file.url
+    print(dir.path + " at URL: " + file.url)
 
 # List everything in "foo"
 for entry in foo.list():
-    print entry.path + " at URL: " + entry.url
+    print(entry.path + " at URL: " + entry.url)
 ```
 
 ### Manage directory permissions
@@ -230,7 +230,7 @@ $ algo auth
 Configuring authentication for profile: 'default'
 Enter API Endpoint [https://api.algorithmia.com]:
 Enter API Key:
-(optional) enter path to custom CA certificate: 
+(optional) enter path to custom CA certificate:
 Profile is ready to use. Test with 'algo ls'
 ```
 
@@ -332,7 +332,7 @@ algo auth --profile second_user
 Configuring authentication for profile: 'second_user'
 Enter API Endpoint [https://api.algorithmia.com]:
 Enter API Key:
-(optional) enter path to custom CA certificate: 
+(optional) enter path to custom CA certificate:
 ```
 
 Now you may use `algo ls --profile second_user` to list files in your `second_user` account. For more information, see the auth command help with `algo auth --help`.
@@ -342,7 +342,7 @@ Now you may use `algo ls --profile second_user` to list files in your `second_us
 When running commands, the Algorithmia CLI will use the default profile unless otherwise specified with the `--profile <profile>` option. See the following example:
 
 ```text
-$ algo run kenny/factor -d 17 --profile second_user 
+$ algo run kenny/factor -d 17 --profile second_user
 [17]
 ```
 
