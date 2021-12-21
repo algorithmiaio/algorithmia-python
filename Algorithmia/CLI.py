@@ -244,28 +244,7 @@ class CLI:
 
     # algo freeze
     def freezeAlgo(self, client, manifest_path="model_manifest.json"):
-        if os.path.exists(manifest_path):
-            with open(manifest_path, 'r') as f:
-                manifest_file = json.load(f)
-            manifest_file['timestamp'] = str(time())
-            required_files = manifest_file['required_files']
-            optional_files = manifest_file['optional_files']
-            for i in range(len(required_files)):
-                uri = required_files[i]['source_uri']
-                local_file = client.file(uri).getFile(as_path=True)
-                md5_checksum = md5_for_file(local_file)
-                required_files[i]['md5_checksum'] = md5_checksum
-            for i in range(len(optional_files)):
-                uri = required_files[i]['source_uri']
-                local_file = client.file(uri).getFile(as_path=True)
-                md5_checksum = md5_for_file(local_file)
-                required_files[i]['md5_checksum'] = md5_checksum
-            lock_md5_checksum = md5_for_str(str(manifest_file))
-            manifest_file['lock_checksum'] = lock_md5_checksum
-            with open('model_manifest.json.freeze', 'w') as f:
-                json.dump(manifest_file, f)
-        else:
-            print("Expected to find a model_manifest.json file, none was discovered in working directory")
+        client.freeze(manifest_path)
 
     # algo cp <src> <dest>
     def cp(self, src, dest, client):
