@@ -398,8 +398,7 @@ else:
             self.assertEqual(response.version_info.semantic_version, "0.1.0", "information is incorrect")
 
         def test_algo_freeze(self):
-            self.regular_client.freeze("Test/resources/manifests/example_manifest.json", "Test/resources/manifests"
-                                                                                         "/example_manifest.json.freeze")
+            self.regular_client.freeze("Test/resources/manifests/example_manifest.json", "Test/resources/manifests")
 
 
 
