@@ -2,7 +2,6 @@ import Algorithmia
 import os
 from Algorithmia.errors import DataApiError
 from Algorithmia.algo_response import AlgoResponse
-from Algorithmia.util import md5_for_file, md5_for_str
 import json, re, requests, six
 import toml
 import shutil
