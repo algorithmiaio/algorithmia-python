@@ -1,0 +1,29 @@
+{
+  "required_files" : [
+      { "name": "squeezenet",
+      "source_uri": "data://AlgorithmiaSE/image_cassification_demo/squeezenet1_1-f364aa15.pth",
+      "fail_on_tamper": true,
+      "metadata": {
+        "dataset_md5_checksum": "46a44d32d2c5c07f7f66324bef4c7266"
+      }
+    },
+    {
+      "name": "labels",
+      "source_uri": "data://AlgorithmiaSE/image_cassification_demo/imagenet_class_index.json",
+      "fail_on_tamper": true,
+      "metadata": {
+        "dataset_md5_checksum": "46a44d32d2c5c07f7f66324bef4c7266"
+      }
+    }
+  ],
+  "optional_files": [
+      {
+        "name": "mobilenet",
+        "source_uri": "data://AlgorithmiaSE/image_cassification_demo/mobilenet_v2-b0353104.pth",
+        "fail_on_tamper": false,
+        "metadata": {
+            "dataset_md5_checksum": "46a44d32d2c5c07f7f66324bef4c7266"
+          }
+      }
+  ]
+}

@@ -344,7 +344,7 @@ class Client(object):
             print(e)
 
     # Used by CI/CD automation for freezing model manifest files, and by the CLI for manual freezing
-    def freeze(self, manifest_path):
+    def freeze(self, manifest_path, manifest_output_dir="."):
         if os.path.exists(manifest_path):
             with open(manifest_path, 'r') as f:
                 manifest_file = json.load(f)
@@ -363,7 +363,7 @@ class Client(object):
                 required_files[i]['md5_checksum'] = md5_checksum
             lock_md5_checksum = md5_for_str(str(manifest_file))
             manifest_file['lock_checksum'] = lock_md5_checksum
-            with open('model_manifest.json.freeze', 'w') as f:
+            with open(manifest_output_dir+'/'+'model_manifest.json.freeze', 'w') as f:
                 json.dump(manifest_file, f)
         else:
             print("Expected to find a model_manifest.json file, none was discovered in working directory")
