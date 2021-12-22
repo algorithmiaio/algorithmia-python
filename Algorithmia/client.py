@@ -31,11 +31,10 @@ class Client(object):
         self.requestSession = requests.Session()
         if apiKey is None and 'ALGORITHMIA_API_KEY' in os.environ:
             apiKey = os.environ['ALGORITHMIA_API_KEY']
-        if apiKey is None:
-            if bearerToken is None and 'ALGORITHMIA_BEARER_TOKEN' in os.environ:
-                bearerToken = os.environ['ALGORITHMIA_BEARER_TOKEN']
-            self.bearerToken = bearerToken
-
+        elif bearerToken is None and 'ALGORITHMIA_BEARER_TOKEN' in os.environ:
+            bearerToken = os.environ['ALGORITHMIA_BEARER_TOKEN']
+        
+        self.bearerToken = bearerToken
         self.apiKey = apiKey
         if apiAddress is not None:
             self.apiAddress = apiAddress
@@ -254,24 +253,30 @@ class Client(object):
         headers = {}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
-        else: 
+        elif self.bearerToken is not None: 
             headers['Authorization'] = 'Bearer '+ self.bearerToken
+        else:
+            raise Exception("No authentication provided")
         return self.requestSession.get(self.apiAddress + url, headers=headers, params=query_parameters)
 
     def getStreamHelper(self, url, **query_parameters):
         headers = {}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
-        else: 
+        elif self.bearerToken is not None: 
             headers['Authorization'] = 'Bearer '+ self.bearerToken
+        else:
+            raise Exception("No authentication provided")
         return self.requestSession.get(self.apiAddress + url, headers=headers, params=query_parameters, stream=True)
 
     def patchHelper(self, url, params):
         headers = {'content-type': 'application/json'}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
-        else: 
+        elif self.bearerToken is not None: 
             headers['Authorization'] = 'Bearer '+ self.bearerToken
+        else:
+            raise Exception("No authentication provided")
         return self.requestSession.patch(self.apiAddress + url, headers=headers, data=json.dumps(params))
 
     # Used internally to get http head result
@@ -279,8 +284,10 @@ class Client(object):
         headers = {}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
-        else: 
+        elif self.bearerToken is not None: 
             headers['Authorization'] = 'Bearer '+ self.bearerToken
+        else:
+            raise Exception("No authentication provided")
         return self.requestSession.head(self.apiAddress + url, headers=headers)
 
     # Used internally to http put a file
@@ -288,8 +295,10 @@ class Client(object):
         headers = {}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
-        else: 
+        elif self.bearerToken is not None: 
             headers['Authorization'] = 'Bearer '+ self.bearerToken
+        else:
+            raise Exception("No authentication provided")
         if isJson(data):
             headers['Content-Type'] = 'application/json'
 
@@ -303,8 +312,10 @@ class Client(object):
         headers = {}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
-        else: 
+        elif self.bearerToken is not None: 
             headers['Authorization'] = 'Bearer '+ self.bearerToken
+        else:
+            raise Exception("No authentication provided")
         response = self.requestSession.delete(self.apiAddress + url, headers=headers)
         if response.reason == "No Content":
             return response
