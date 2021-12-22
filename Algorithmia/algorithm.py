@@ -8,10 +8,12 @@ from Algorithmia.algo_response import AlgoResponse
 from Algorithmia.errors import ApiError, ApiInternalError, raiseAlgoApiError
 from enum import Enum
 from algorithmia_api_client.rest import ApiException
-from algorithmia_api_client import CreateRequest, UpdateRequest, VersionRequest, Details, Settings, SettingsMandatory, SettingsPublish, \
+from algorithmia_api_client import CreateRequest, UpdateRequest, VersionRequest, Details, Settings, SettingsMandatory, \
+    SettingsPublish, \
     CreateRequestVersionInfo, VersionInfo, VersionInfoPublish
 
-OutputType = Enum('OutputType','default raw void')
+OutputType = Enum('OutputType', 'default raw void')
+
 
 class Algorithm(object):
     def __init__(self, client, algoRef):
@@ -32,7 +34,7 @@ class Algorithm(object):
             raise ValueError('Invalid algorithm URI: ' + algoRef)
 
     def set_options(self, timeout=300, stdout=False, output=OutputType.default, **query_parameters):
-        self.query_parameters = {'timeout':timeout, 'stdout':stdout}
+        self.query_parameters = {'timeout': timeout, 'stdout': stdout}
         self.output_type = output
         self.query_parameters.update(query_parameters)
         return self
@@ -42,7 +44,8 @@ class Algorithm(object):
         detailsObj = Details(**details)
         settingsObj = SettingsMandatory(**settings)
         createRequestVersionInfoObj = CreateRequestVersionInfo(**version_info)
-        create_parameters = {"name": self.algoname, "details": detailsObj, "settings": settingsObj, "version_info": createRequestVersionInfoObj}
+        create_parameters = {"name": self.algoname, "details": detailsObj, "settings": settingsObj,
+                             "version_info": createRequestVersionInfoObj}
         create_request = CreateRequest(**create_parameters)
         try:
             # Create Algorithm
@@ -57,7 +60,8 @@ class Algorithm(object):
         detailsObj = Details(**details)
         settingsObj = Settings(**settings)
         createRequestVersionInfoObj = CreateRequestVersionInfo(**version_info)
-        update_parameters = {"details": detailsObj, "settings": settingsObj, "version_info": createRequestVersionInfoObj}
+        update_parameters = {"details": detailsObj, "settings": settingsObj,
+                             "version_info": createRequestVersionInfoObj}
         update_request = UpdateRequest(**update_parameters)
         try:
             # Update Algorithm
@@ -70,9 +74,10 @@ class Algorithm(object):
     # Publish an algorithm
     def publish(self, details={}, settings={}, version_info={}):
         publish_parameters = {"details": details, "settings": settings, "version_info": version_info}
-        url = "/v1/algorithms/"+self.username+"/"+self.algoname + "/versions"
+        url = "/v1/algorithms/" + self.username + "/" + self.algoname + "/versions"
         print(publish_parameters)
-        api_response = self.client.postJsonHelper(url, publish_parameters, parse_response_as_json=True, **self.query_parameters)
+        api_response = self.client.postJsonHelper(url, publish_parameters, parse_response_as_json=True,
+                                                  **self.query_parameters)
         return api_response
         # except ApiException as e:
         #     error_message = json.loads(e.body)
@@ -81,7 +86,8 @@ class Algorithm(object):
     def builds(self, limit=56, marker=None):
         try:
             if marker is not None:
-                api_response = self.client.manageApi.get_algorithm_builds(self.username, self.algoname, limit=limit, marker=marker)
+                api_response = self.client.manageApi.get_algorithm_builds(self.username, self.algoname, limit=limit,
+                                                                          marker=marker)
             else:
                 api_response = self.client.manageApi.get_algorithm_builds(self.username, self.algoname, limit=limit)
             return api_response
@@ -109,10 +115,9 @@ class Algorithm(object):
             raise raiseAlgoApiError(error_message)
 
     def build_logs(self):
-        url = '/v1/algorithms/'+self.username+'/'+self.algoname+'/builds'
+        url = '/v1/algorithms/' + self.username + '/' + self.algoname + '/builds'
         response = json.loads(self.client.getHelper(url).content.decode('utf-8'))
         return response
-
 
     def get_scm_status(self):
         try:
@@ -157,7 +162,6 @@ class Algorithm(object):
             error_message = json.loads(e.body)
             raise raiseAlgoApiError(error_message)
 
-
     # Compile an algorithm
     def compile(self):
         try:
@@ -176,25 +180,26 @@ class Algorithm(object):
         elif self.output_type == OutputType.void:
             return self._postVoidOutput(input1)
         else:
-            return AlgoResponse.create_algo_response(self.client.postJsonHelper(self.url, input1, **self.query_parameters))
+            return AlgoResponse.create_algo_response(
+                self.client.postJsonHelper(self.url, input1, **self.query_parameters))
 
     def _postRawOutput(self, input1):
-            # Don't parse response as json
-            self.query_parameters['output'] = 'raw'
-            response = self.client.postJsonHelper(self.url, input1, parse_response_as_json=False, **self.query_parameters)
-            # Check HTTP code and throw error as needed
-            if response.status_code == 400:
-                # Bad request
-                raise ApiError(response.text)
-            elif response.status_code == 500:
-                raise ApiInternalError(response.text)
-            else:
-                return response.text
+        # Don't parse response as json
+        self.query_parameters['output'] = 'raw'
+        response = self.client.postJsonHelper(self.url, input1, parse_response_as_json=False, **self.query_parameters)
+        # Check HTTP code and throw error as needed
+        if response.status_code == 400:
+            # Bad request
+            raise ApiError(response.text)
+        elif response.status_code == 500:
+            raise ApiInternalError(response.text)
+        else:
+            return response.text
 
     def _postVoidOutput(self, input1):
-            self.query_parameters['output'] = 'void'
-            responseJson = self.client.postJsonHelper(self.url, input1, **self.query_parameters)
-            if 'error' in responseJson:
-                raise ApiError(responseJson['error']['message'])
-            else:
-                return AsyncResponse(responseJson)
+        self.query_parameters['output'] = 'void'
+        responseJson = self.client.postJsonHelper(self.url, input1, **self.query_parameters)
+        if 'error' in responseJson:
+            raise ApiError(responseJson['error']['message'])
+        else:
+            return AsyncResponse(responseJson)
