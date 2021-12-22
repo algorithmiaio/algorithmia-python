@@ -192,13 +192,19 @@ if sys.version_info.major >= 3:
             self.assertEqual(response.version_info.semantic_version, "0.1.0", "information is incorrect")
 
         def test_no_auth_client(self):
-            client = Algorithmia.client(api_address="http://localhost:8080", api_key=False)
+
+            key = os.environ.get('ALGORITHMIA_API_KEY', "")
+            if key != "":
+                del os.environ['ALGORITHMIA_API_KEY']
+
+            client = Algorithmia.client(api_address="http://localhost:8080")
             error = None
             try:
                 client.algo("demo/hello").pipe("world")
             except Exception as e:
                 error = e
             finally:
+                os.environ['ALGORITHMIA_API_KEY'] = key
                 self.assertEqual(str(error), str(AlgorithmException(message="authorization required", stack_trace=None, error_type=None)))
 
 else:
@@ -413,13 +419,16 @@ else:
             self.regular_client.freeze("Test/resources/manifests/example_manifest.json", "Test/resources/manifests")
 
         def test_no_auth_client(self):
-            client = Algorithmia.client(api_key=False)
+            key = os.environ.get('ALGORITHMIA_API_KEY', None)
+            del os.environ['ALGORITHMIA_API_KEY']
+            client = Algorithmia.client()
             error = None
             try:
                 client.algo("demo/hello").pipe("world")
             except Exception as e:
                 error = e
             finally:
+                os.environ['ALGORITHMIA_API_KEY'] = key
                 self.assertEqual(str(error), str(AlgorithmException(message="authorization required", stack_trace=None, error_type=None)))
 
 if __name__ == '__main__':
