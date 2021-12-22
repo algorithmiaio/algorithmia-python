@@ -418,18 +418,5 @@ else:
         def test_algo_freeze(self):
             self.regular_client.freeze("Test/resources/manifests/example_manifest.json", "Test/resources/manifests")
 
-        def test_no_auth_client(self):
-            key = os.environ.get('ALGORITHMIA_API_KEY', None)
-            del os.environ['ALGORITHMIA_API_KEY']
-            client = Algorithmia.client()
-            error = None
-            try:
-                client.algo("demo/hello").pipe("world")
-            except Exception as e:
-                error = e
-            finally:
-                os.environ['ALGORITHMIA_API_KEY'] = key
-                self.assertEqual(str(error), str(AlgorithmException(message="authorization required", stack_trace=None, error_type=None)))
-
 if __name__ == '__main__':
     unittest.main()
