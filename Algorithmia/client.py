@@ -24,18 +24,16 @@ class Client(object):
     requestSession = None
     bearerToken = None
 
-
-    def __init__(self, apiKey = None, apiAddress = None, caCert = None, bearerToken=None):
+    def __init__(self, apiKey=None, apiAddress=None, caCert=None, bearerToken=None):
         # Override apiKey with environment variable
         config = None
         self.requestSession = requests.Session()
         if apiKey is None and 'ALGORITHMIA_API_KEY' in os.environ:
             apiKey = os.environ['ALGORITHMIA_API_KEY']
-        if apiKey is None:
-            if bearerToken is None and 'ALGORITHMIA_BEARER_TOKEN' in os.environ:
-                bearerToken = os.environ['ALGORITHMIA_BEARER_TOKEN']
-            self.bearerToken = bearerToken
+        elif bearerToken is None and 'ALGORITHMIA_BEARER_TOKEN' in os.environ:
+            bearerToken = os.environ['ALGORITHMIA_BEARER_TOKEN']
 
+        self.bearerToken = bearerToken
         self.apiKey = apiKey
         if apiAddress is not None:
             self.apiAddress = apiAddress
@@ -225,8 +223,8 @@ class Client(object):
         headers = {}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
-        else: 
-            headers['Authorization'] = "Bearer "+ self.bearerToken
+        elif self.bearerToken is not None:
+            headers['Authorization'] = 'Bearer ' + self.bearerToken
 
         input_json = None
         if input_object is None:
@@ -254,24 +252,24 @@ class Client(object):
         headers = {}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
-        else: 
-            headers['Authorization'] = 'Bearer '+ self.bearerToken
+        elif self.bearerToken is not None:
+            headers['Authorization'] = 'Bearer ' + self.bearerToken
         return self.requestSession.get(self.apiAddress + url, headers=headers, params=query_parameters)
 
     def getStreamHelper(self, url, **query_parameters):
         headers = {}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
-        else: 
-            headers['Authorization'] = 'Bearer '+ self.bearerToken
+        elif self.bearerToken is not None:
+            headers['Authorization'] = 'Bearer ' + self.bearerToken
         return self.requestSession.get(self.apiAddress + url, headers=headers, params=query_parameters, stream=True)
 
     def patchHelper(self, url, params):
         headers = {'content-type': 'application/json'}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
-        else: 
-            headers['Authorization'] = 'Bearer '+ self.bearerToken
+        elif self.bearerToken is not None:
+            headers['Authorization'] = 'Bearer ' + self.bearerToken
         return self.requestSession.patch(self.apiAddress + url, headers=headers, data=json.dumps(params))
 
     # Used internally to get http head result
@@ -279,8 +277,8 @@ class Client(object):
         headers = {}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
-        else: 
-            headers['Authorization'] = 'Bearer '+ self.bearerToken
+        elif self.bearerToken is not None:
+            headers['Authorization'] = 'Bearer ' + self.bearerToken
         return self.requestSession.head(self.apiAddress + url, headers=headers)
 
     # Used internally to http put a file
@@ -288,8 +286,8 @@ class Client(object):
         headers = {}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
-        else: 
-            headers['Authorization'] = 'Bearer '+ self.bearerToken
+        elif self.bearerToken is not None:
+            headers['Authorization'] = 'Bearer ' + self.bearerToken
         if isJson(data):
             headers['Content-Type'] = 'application/json'
 
@@ -303,8 +301,8 @@ class Client(object):
         headers = {}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
-        else: 
-            headers['Authorization'] = 'Bearer '+ self.bearerToken
+        elif self.bearerToken is not None:
+            headers['Authorization'] = 'Bearer ' + self.bearerToken
         response = self.requestSession.delete(self.apiAddress + url, headers=headers)
         if response.reason == "No Content":
             return response
@@ -364,10 +362,11 @@ class Client(object):
                 required_files[i]['md5_checksum'] = md5_checksum
             lock_md5_checksum = md5_for_str(str(manifest_file))
             manifest_file['lock_checksum'] = lock_md5_checksum
-            with open(manifest_output_dir+'/'+'model_manifest.json.freeze', 'w') as f:
+            with open(manifest_output_dir + '/' + 'model_manifest.json.freeze', 'w') as f:
                 json.dump(manifest_file, f)
         else:
             print("Expected to find a model_manifest.json file, none was discovered in working directory")
+
 
 def isJson(myjson):
     try:

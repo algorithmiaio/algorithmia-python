@@ -9,10 +9,12 @@ sys.path = ['../'] + sys.path
 
 import unittest
 import Algorithmia
+from Algorithmia.errors import AlgorithmException
 from uuid import uuid4
 
 if sys.version_info.major >= 3:
     unicode = str
+
 
     class ClientDummyTest(unittest.TestCase):
         @classmethod
@@ -70,7 +72,6 @@ if sys.version_info.major >= 3:
                 print(result)
 
             self.assertTrue(u'error' not in result)
-
 
         def test_edit_org(self):
             org_name = "a_myOrg84"
@@ -138,7 +139,7 @@ if sys.version_info.major >= 3:
             algorithm_name = "algo_e2d_test"
             payload = "John"
             expected_response = "hello John"
-            full_path =  "a_Mrtest/" + algorithm_name
+            full_path = "a_Mrtest/" + algorithm_name
             details = {
                 "summary": "Example Summary",
                 "label": "QA",
@@ -189,6 +190,23 @@ if sys.version_info.major >= 3:
             response = created_algo.info(git_hash)
 
             self.assertEqual(response.version_info.semantic_version, "0.1.0", "information is incorrect")
+
+        def test_no_auth_client(self):
+
+            key = os.environ.get('ALGORITHMIA_API_KEY', "")
+            if key != "":
+                del os.environ['ALGORITHMIA_API_KEY']
+
+            client = Algorithmia.client(api_address="http://localhost:8080")
+            error = None
+            try:
+                client.algo("demo/hello").pipe("world")
+            except Exception as e:
+                error = e
+            finally:
+                os.environ['ALGORITHMIA_API_KEY'] = key
+                self.assertEqual(str(error), str(AlgorithmException(message="authorization required", stack_trace=None, error_type=None)))
+
 else:
     class ClientTest(unittest.TestCase):
         seed(datetime.now().microsecond)
@@ -201,7 +219,7 @@ else:
         def setUp(self):
             self.admin_api_key = unicode(os.environ.get('ALGORITHMIA_A_KEY'))
             self.regular_api_key = unicode(os.environ.get('ALGORITHMIA_API_KEY'))
-            
+
             self.admin_username = self.admin_username + str(int(random() * 10000))
             self.admin_org_name = self.admin_org_name + str(int(random() * 10000))
             self.admin_client = Algorithmia.client(api_address="https://test.algorithmia.com",
@@ -399,8 +417,6 @@ else:
 
         def test_algo_freeze(self):
             self.regular_client.freeze("Test/resources/manifests/example_manifest.json", "Test/resources/manifests")
-
-
 
 if __name__ == '__main__':
     unittest.main()
