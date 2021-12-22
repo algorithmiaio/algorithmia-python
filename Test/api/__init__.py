@@ -23,6 +23,9 @@ def start_webserver():
 async def process_algo_req(request: Request, username, algoname, output: Optional[str] = None):
     metadata = {"request_id": "req-55c0480d-6af3-4a21-990a-5c51d29f5725", "duration": 0.000306774}
     content_type = request.headers['Content-Type']
+    auth = request.headers.get('Authorization', None)
+    if auth is None:
+        return {"error": {"message": "authorization required"}}
     request = await request.body()
     if output and output == "void":
         return {"async": "abcd123", "request_id": "req-55c0480d-6af3-4a21-990a-5c51d29f5725"}

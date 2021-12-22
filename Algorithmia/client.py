@@ -254,8 +254,6 @@ class Client(object):
             headers['Authorization'] = self.apiKey
         elif self.bearerToken is not None:
             headers['Authorization'] = 'Bearer ' + self.bearerToken
-        else:
-            raise Exception("No authentication provided")
         return self.requestSession.get(self.apiAddress + url, headers=headers, params=query_parameters)
 
     def getStreamHelper(self, url, **query_parameters):
