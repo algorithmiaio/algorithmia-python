@@ -28,7 +28,9 @@ class Client(object):
         # Override apiKey with environment variable
         config = None
         self.requestSession = requests.Session()
-        if apiKey is None and 'ALGORITHMIA_API_KEY' in os.environ:
+        if apiKey is False:
+            apiKey = None
+        elif apiKey is None and 'ALGORITHMIA_API_KEY' in os.environ:
             apiKey = os.environ['ALGORITHMIA_API_KEY']
         elif bearerToken is None and 'ALGORITHMIA_BEARER_TOKEN' in os.environ:
             bearerToken = os.environ['ALGORITHMIA_BEARER_TOKEN']
