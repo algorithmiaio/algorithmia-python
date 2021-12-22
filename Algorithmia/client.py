@@ -225,8 +225,6 @@ class Client(object):
             headers['Authorization'] = self.apiKey
         elif self.bearerToken is not None:
             headers['Authorization'] = 'Bearer ' + self.bearerToken
-        else:
-            raise Exception("No authentication provided")
 
         input_json = None
         if input_object is None:
@@ -266,8 +264,6 @@ class Client(object):
             headers['Authorization'] = self.apiKey
         elif self.bearerToken is not None:
             headers['Authorization'] = 'Bearer ' + self.bearerToken
-        else:
-            raise Exception("No authentication provided")
         return self.requestSession.get(self.apiAddress + url, headers=headers, params=query_parameters, stream=True)
 
     def patchHelper(self, url, params):
@@ -276,8 +272,6 @@ class Client(object):
             headers['Authorization'] = self.apiKey
         elif self.bearerToken is not None:
             headers['Authorization'] = 'Bearer ' + self.bearerToken
-        else:
-            raise Exception("No authentication provided")
         return self.requestSession.patch(self.apiAddress + url, headers=headers, data=json.dumps(params))
 
     # Used internally to get http head result
@@ -287,8 +281,6 @@ class Client(object):
             headers['Authorization'] = self.apiKey
         elif self.bearerToken is not None:
             headers['Authorization'] = 'Bearer ' + self.bearerToken
-        else:
-            raise Exception("No authentication provided")
         return self.requestSession.head(self.apiAddress + url, headers=headers)
 
     # Used internally to http put a file
@@ -298,8 +290,6 @@ class Client(object):
             headers['Authorization'] = self.apiKey
         elif self.bearerToken is not None:
             headers['Authorization'] = 'Bearer ' + self.bearerToken
-        else:
-            raise Exception("No authentication provided")
         if isJson(data):
             headers['Content-Type'] = 'application/json'
 
@@ -315,8 +305,6 @@ class Client(object):
             headers['Authorization'] = self.apiKey
         elif self.bearerToken is not None:
             headers['Authorization'] = 'Bearer ' + self.bearerToken
-        else:
-            raise Exception("No authentication provided")
         response = self.requestSession.delete(self.apiAddress + url, headers=headers)
         if response.reason == "No Content":
             return response
