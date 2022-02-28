@@ -21,9 +21,10 @@ if sys.version_info[0] >= 3:
     class AlgoTest(unittest.TestCase):
         error_500 = Response()
         error_500.status_code = 500
+        error_message = "Non-Algorithm related Failure: " + str(error_500)
 
         def setUp(self):
-            self.client = Algorithmia.client(api_address="http://localhost:8080")
+            self.client = Algorithmia.client(api_address="http://localhost:8080", api_key=" ")
             self.uvi_p = Process(target=start_webserver)
             self.uvi_p.start()
             time.sleep(1)
@@ -37,4 +38,4 @@ if sys.version_info[0] >= 3:
             except Exception as e:
                 result = e
                 pass
-            self.assertEqual(str(self.error_500), str(result))
+            self.assertEqual(str(self.error_message), str(result))

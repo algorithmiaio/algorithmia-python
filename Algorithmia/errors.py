@@ -47,4 +47,4 @@ def raiseAlgoApiError(result):
             stacktrace = None
         return AlgorithmException(message=message, stack_trace=stacktrace, error_type=err_type)
     else:
-        return Exception(result)
+        return Exception("Non-Algorithm related Failure: " + str(result))
