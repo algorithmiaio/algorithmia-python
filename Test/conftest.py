@@ -9,5 +9,5 @@ if sys.version_info.major >= 3:
         p1, p2 = start_webserver()
         sleep(2)
         yield p1, p2
-        p1.terminate()
-        p2.terminate()
+        p1.kill()
+        p2.kill()
