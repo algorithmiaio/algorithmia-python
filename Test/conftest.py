@@ -1,5 +1,6 @@
 import sys
 from time import sleep
+import os, signal
 if sys.version_info.major >= 3:
     from Test.api import start_webserver
     import pytest
@@ -9,5 +10,5 @@ if sys.version_info.major >= 3:
         p1, p2 = start_webserver()
         sleep(2)
         yield p1, p2
-        p1.kill()
-        p2.kill()
+        os.kill(p1.pid, signal.SIGKILL)
+        os.kill(p2.pid, signal.SIGKILL)

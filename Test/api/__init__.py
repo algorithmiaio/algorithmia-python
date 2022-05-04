@@ -26,7 +26,7 @@ def start_webserver():
     return p1, p2
 
 
-
+# single test that rqeuires self signed certificates
 @app_ssc.get("/v1/algorithms/{username}/{algoname}/builds/{buildid}/logs")
 async def get_build_log(username, algoname, buildid):
     return {"logs": "This is a log"}
