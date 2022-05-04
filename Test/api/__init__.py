@@ -17,7 +17,7 @@ def start_webserver():
 
     def _start_webserver_ssc():
         uvicorn.run(app_ssc, host="127.0.0.1", port=8090, log_level="debug",
-                    ssl_certfile="Test/TestFiles/cert.cert", ssl_keyfile="Test/TestFiles/cert.key")
+                    ssl_certfile="Test/resources/cert.cert", ssl_keyfile="Test/resources/cert.key")
 
     p1 = Process(target=_start_webserver_ssc)
     p2 = Process(target=_start_webserver)
