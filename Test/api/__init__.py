@@ -7,19 +7,32 @@ import base64
 from multiprocessing import Process
 import uvicorn
 
-app = FastAPI()
+app_normal = FastAPI()
+app_ssc = FastAPI()
 
 
 def start_webserver():
     def _start_webserver():
-        uvicorn.run(app, host="127.0.0.1", port=8080, log_level="debug")
+        uvicorn.run(app_normal, host="127.0.0.1", port=8080, log_level="debug")
 
-    p = Process(target=_start_webserver)
-    p.start()
-    return p
+    def _start_webserver_ssc():
+        uvicorn.run(app_ssc, host="127.0.0.1", port=8090, log_level="debug",
+                    ssl_certfile="Test/TestFiles/cert.cert", ssl_keyfile="Test/TestFiles/cert.key")
+
+    p1 = Process(target=_start_webserver_ssc)
+    p2 = Process(target=_start_webserver)
+    p1.start()
+    p2.start()
+    return p1, p2
 
 
-@app.post("/v1/algo/{username}/{algoname}")
+
+@app_ssc.get("/v1/algorithms/{username}/{algoname}/builds/{buildid}/logs")
+async def get_build_log(username, algoname, buildid):
+    return {"logs": "This is a log"}
+
+
+@app_normal.post("/v1/algo/{username}/{algoname}")
 async def process_algo_req(request: Request, username, algoname, output: Optional[str] = None):
     metadata = {"request_id": "req-55c0480d-6af3-4a21-990a-5c51d29f5725", "duration": 0.000306774}
     content_type = request.headers['Content-Type']
@@ -49,7 +62,8 @@ async def process_algo_req(request: Request, username, algoname, output: Optiona
         output = {"result": request, "metadata": metadata}
         return output
 
-@app.post("/v1/algo/{username}/{algoname}/{githash}")
+
+@app_normal.post("/v1/algo/{username}/{algoname}/{githash}")
 async def process_hello_world(request: Request, username, algoname, githash):
     metadata = {"request_id": "req-55c0480d-6af3-4a21-990a-5c51d29f5725", "duration": 0.000306774,
                 'content_type': "text"}
@@ -59,29 +73,28 @@ async def process_hello_world(request: Request, username, algoname, githash):
 
 
 ### Algorithm Routes
-@app.get("/v1/algorithms/{username}/{algoname}/builds/{buildid}")
+@app_normal.get("/v1/algorithms/{username}/{algoname}/builds/{buildid}")
 async def get_build_id(username, algoname, buildid):
     return {"status": "succeeded", "build_id": buildid, "commit_sha": "bcdadj",
             "started_at": "2021-09-27T22:54:20.786Z", "finished_at": "2021-09-27T22:54:40.898Z",
             "version_info": {"semantic_version": "0.1.1"}}
 
 
-@app.get("/v1/algorithms/{username}/{algoname}/builds/{buildid}/logs")
+@app_normal.get("/v1/algorithms/{username}/{algoname}/builds/{buildid}/logs")
 async def get_build_log(username, algoname, buildid):
     return {"logs": "This is a log"}
 
-
-@app.get("/v1/algorithms/{username}/{algoname}/scm/status")
+@app_normal.get("/v1/algorithms/{username}/{algoname}/scm/status")
 async def get_scm_status(username, algoname):
     return {"scm_connection_status": "active"}
 
 
-@app.get("/v1/algorithms/{algo_id}/errors")
+@app_normal.get("/v1/algorithms/{algo_id}/errors")
 async def get_algo_errors(algo_id):
     return {"error": {"message": "not found"}}
 
 
-@app.post("/v1/algorithms/{username}")
+@app_normal.post("/v1/algorithms/{username}")
 async def create_algorithm(request: Request, username):
     payload = await request.json()
     return {"id": "2938ca9f-54c8-48cd-b0d0-0fb7f2255cdc", "name": payload["name"],
@@ -94,7 +107,7 @@ async def create_algorithm(request: Request, username):
             "resource_type": "algorithm"}
 
 
-@app.post("/v1/algorithms/{username}/{algoname}/compile")
+@app_normal.post("/v1/algorithms/{username}/{algoname}/compile")
 async def compile_algorithm(username, algoname):
     return {
         "id": "2938ca9f-54c8-48cd-b0d0-0fb7f2255cdc",
@@ -135,7 +148,7 @@ async def compile_algorithm(username, algoname):
     }
 
 
-@app.post("/v1/algorithms/{username}/{algoname}/versions")
+@app_normal.post("/v1/algorithms/{username}/{algoname}/versions")
 async def publish_algorithm(request: Request, username, algoname):
     return {"id": "2938ca9f-54c8-48cd-b0d0-0fb7f2255cdc", "name": algoname,
             "details": {"summary": "Example Summary", "label": "QA", "tagline": "Example Tagline"},
@@ -152,7 +165,7 @@ async def publish_algorithm(request: Request, username, algoname):
             "resource_type": "algorithm"}
 
 
-@app.get("/v1/algorithms/{username}/{algoname}/versions/{algohash}")
+@app_normal.get("/v1/algorithms/{username}/{algoname}/versions/{algohash}")
 async def get_algorithm_info(username, algoname, algohash):
     return {
         "id": "2938ca9f-54c8-48cd-b0d0-0fb7f2255cdc",
@@ -199,7 +212,7 @@ async def get_algorithm_info(username, algoname, algohash):
 
 
 ### Admin Routes
-@app.post("/v1/users")
+@app_normal.post("/v1/users")
 async def create_user(request: Request):
     payload = await request.body()
     data = json.loads(payload)
@@ -214,12 +227,12 @@ async def create_user(request: Request):
     }
 
 
-@app.get("/v1/users/{user_id}/errors")
+@app_normal.get("/v1/users/{user_id}/errors")
 async def get_user_errors(user_id):
     return []
 
 
-@app.get("/v1/organization/types")
+@app_normal.get("/v1/organization/types")
 async def get_org_types():
     return [
         {"id": "d0c85ea6-ddfa-11ea-a0c8-12a811be4db3", "name": "basic"},
@@ -228,7 +241,7 @@ async def get_org_types():
     ]
 
 
-@app.post("/v1/organizations")
+@app_normal.post("/v1/organizations")
 async def create_org(request: Request):
     payload = await request.body()
     data = json.loads(payload)
@@ -252,22 +265,22 @@ async def create_org(request: Request):
             }
 
 
-@app.put("/v1/organizations/{orgname}/members/{username}")
+@app_normal.put("/v1/organizations/{orgname}/members/{username}")
 async def add_user_to_org(orgname, username):
     return Response(status_code=200)
 
 
-@app.get("/v1/organizations/{orgname}/errors")
+@app_normal.get("/v1/organizations/{orgname}/errors")
 async def org_errors(orgname):
     return []
 
 
-@app.put("/v1/organizations/{org_name}")
+@app_normal.put("/v1/organizations/{org_name}")
 async def edit_org(org_name):
     return Response(status_code=204)
 
 
-@app.get("/v1/organizations/{org_name}")
+@app_normal.get("/v1/organizations/{org_name}")
 async def get_org_by_name(org_name):
     return {
         "id": "55073c92-5f8e-4d7e-a14d-568f94924fd9",
@@ -288,7 +301,7 @@ async def get_org_by_name(org_name):
     }
 
 
-@app.get("/v1/algorithm-environments/edge/languages")
+@app_normal.get("/v1/algorithm-environments/edge/languages")
 async def get_supported_langs():
     return [{"name": "anaconda3", "display_name": "Conda (Environments) - beta",
              "configuration": "{\n    \"display_name\": \"Conda (Environments) - beta\",\n    \"req_files\": [\n        \"environment.yml\"\n    ],\n    \"artifacts\": [\n        {\"source\":\"/home/algo/.cache\", \"destination\":\"/home/algo/.cache/\"},\n        {\"source\":\"/home/algo/anaconda_environment\", \"destination\": \"/home/algo/anaconda_environment/\"},\n        {\"source\":\"/opt/algorithm\", \"destination\":\"/opt/algorithm/\"}\n    ]\n}\n"},
@@ -306,7 +319,7 @@ async def get_supported_langs():
              "configuration": "{\n    \"display_name\": \"Scala 2.x & sbt 1.3.x (Environments)\",\n    \"artifacts\": [\n      {\"source\":\"/opt/algorithm/target/universal/stage\", \"destination\":\"/opt/algorithm/stage/\"}\n    ]\n}\n\n"}]
 
 
-@app.get("/v1/algorithm-environments/edge/languages/{language}/environments")
+@app_normal.get("/v1/algorithm-environments/edge/languages/{language}/environments")
 async def get_environments_by_lang(language):
     return {
         "environments": [

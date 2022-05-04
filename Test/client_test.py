@@ -19,7 +19,8 @@ if sys.version_info.major >= 3:
     class ClientDummyTest(unittest.TestCase):
         @classmethod
         def setUpClass(cls):
-            cls.client = Algorithmia.client(api_address="http://localhost:8080", api_key="simabcd123")
+            cls.regClient = Algorithmia.client(api_address="http://localhost:8080", api_key="simabcd123")
+            cls.sscClient = Algorithmia.client(api_address="https://localhost:8090", api_key="simabcd123", ca_cert=False)
 
         admin_username = "a_Mrtest"
         admin_org_name = "a_myOrg"
@@ -32,7 +33,7 @@ if sys.version_info.major >= 3:
             self.environment_id = "abcd-123"
 
         def test_create_user(self):
-            response = self.client.create_user(
+            response = self.regClient.create_user(
                 {"username": self.admin_username, "email": self.admin_username + "@algo.com", "passwordHash": "",
                  "shouldCreateHello": False})
 
@@ -42,22 +43,22 @@ if sys.version_info.major >= 3:
                 self.assertIsNotNone(response)
 
         def test_get_org_types(self):
-            response = self.client.get_org_types()
+            response = self.regClient.get_org_types()
             self.assertTrue(len(response) > 0)
 
         def test_create_org(self):
-            response = self.client.create_org(
+            response = self.regClient.create_org(
                 {"org_name": self.admin_org_name, "org_label": "some label", "org_contact_name": "Some owner",
                  "org_email": self.admin_org_name + "@algo.com", "type_id": "basic"})
 
             self.assertEqual(self.admin_org_name, response[u'org_name'])
 
         def test_get_org(self):
-            response = self.client.get_org("a_myOrg84")
+            response = self.regClient.get_org("a_myOrg84")
             self.assertEqual("a_myOrg84", response['org_name'])
 
         def test_get_environment(self):
-            response = self.client.get_environment("python2")
+            response = self.regClient.get_environment("python2")
 
             if u'error' not in response:
                 self.assertTrue(response is not None and u'environments' in response)
@@ -66,7 +67,7 @@ if sys.version_info.major >= 3:
             user = unicode(os.environ.get('ALGO_USER_NAME'))
             algo = unicode('echo')
             algo_path = u'%s/%s' % (user, algo)
-            result = self.client.algo(algo_path).build_logs()
+            result = self.regClient.algo(algo_path).build_logs()
 
             if u'error' in result:
                 print(result)
@@ -88,14 +89,14 @@ if sys.version_info.major >= 3:
                 "resource_type": "organization"
             }
 
-            response = self.client.edit_org(org_name, obj)
+            response = self.regClient.edit_org(org_name, obj)
             if type(response) is dict:
                 print(response)
             else:
                 self.assertEqual(204, response.status_code)
 
         def test_get_supported_languages(self):
-            response = self.client.get_supported_languages()
+            response = self.regClient.get_supported_languages()
             self.assertTrue(response is not None)
 
             if type(response) is not list:
@@ -105,7 +106,7 @@ if sys.version_info.major >= 3:
                 self.assertTrue(response is not None and language_found)
 
         def test_invite_to_org(self):
-            response = self.client.invite_to_org("a_myOrg38", "a_Mrtest4")
+            response = self.regClient.invite_to_org("a_myOrg38", "a_Mrtest4")
             if type(response) is dict:
                 self.assertTrue(u'error' in response)
             else:
@@ -114,20 +115,29 @@ if sys.version_info.major >= 3:
         # This test will require updating after the /v1/organizations/{org_name}/errors endpoint has been
         # deployed to the remote environment.
         def test_get_organization_errors(self):
-            response = self.client.get_organization_errors(self.admin_org_name)
+            response = self.regClient.get_organization_errors(self.admin_org_name)
             self.assertTrue(response is not None)
 
             if type(response) is list:
                 self.assertEqual(0, len(response), 'Received unexpected result, should have been 0.')
 
         def test_get_user_errors(self):
-            response = self.client.get_user_errors(self.admin_username)
+            response = self.regClient.get_user_errors(self.admin_username)
 
             self.assertTrue(response is not None)
             self.assertEqual(0, len(response))
 
+        def test_get_build_logs_ssc_disable_ssl(self):
+            user = unicode(os.environ.get('ALGO_USER_NAME'))
+            algo = u'Echo'
+            client = self.sscClient
+            result = client.algo(user + '/' + algo).build_logs()
+            if u'error' in result:
+                print(result)
+            self.assertTrue("error" not in result)
+
         def test_get_algorithm_errors(self):
-            response = self.client.get_algorithm_errors('hello')
+            response = self.regClient.get_algorithm_errors('hello')
             self.assertTrue(response is not None)
 
             if type(response) is dict:
@@ -152,7 +162,7 @@ if sys.version_info.major >= 3:
                 "network_access": "isolated",
                 "pipeline_enabled": False
             }
-            created_algo = self.client.algo(full_path)
+            created_algo = self.regClient.algo(full_path)
             response = created_algo.create(details=details, settings=settings)
             self.assertEqual(response.name, algorithm_name, "algorithm creation failed")
 
@@ -160,7 +170,7 @@ if sys.version_info.major >= 3:
 
             response = created_algo.compile()
             git_hash = response.version_info.git_hash
-            algo_with_build = self.client.algo(full_path + "/" + git_hash)
+            algo_with_build = self.regClient.algo(full_path + "/" + git_hash)
             self.assertEqual(response.name, created_algo.algoname)
 
             # --- compiling complete, now testing algorithm request
@@ -273,16 +283,6 @@ else:
                 print(result)
 
             self.assertTrue(u'error' not in result)
-
-        def test_get_build_logs_no_ssl(self):
-            client = Algorithmia.client(api_address='https://api.algorithmia.com',
-                                        api_key=self.regular_api_key, ca_cert=False)
-            user = unicode(os.environ.get('ALGO_USER_NAME'))
-            algo = u'Echo'
-            result = client.algo(user + '/' + algo).build_logs()
-            if u'error' in result:
-                print(result)
-            self.assertTrue("error" not in result)
 
         def test_edit_org(self):
             org_name = "a_myOrg84"

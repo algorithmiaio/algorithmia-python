@@ -6,7 +6,8 @@ if sys.version_info.major >= 3:
 
     @pytest.fixture(scope='package', autouse=True)
     def fastapi_start():
-        p = start_webserver()
+        p1, p2 = start_webserver()
         sleep(2)
-        yield p
-        p.terminate()
+        yield p1, p2
+        p1.terminate()
+        p2.terminate()
