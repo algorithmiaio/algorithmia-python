@@ -93,8 +93,8 @@ class CLIMainTest(unittest.TestCase):
         # create a directory to use in testing the cp command
         self.client = Algorithmia.client()
         CLI().mkdir("data://.my/moredata", self.client)
-        if not os.path.exists("./TestFiles/"):
-            os.mkdir("./TestFiles/")
+        if not os.path.exists("../TestFiles/"):
+            os.mkdir("../TestFiles/")
 
     def test_ls(self):
         parentDir = "data://.my/"
@@ -132,7 +132,7 @@ class CLIMainTest(unittest.TestCase):
 
     def test_cat(self):
         file = "data://.my/moredata/test.txt"
-        localfile = "./TestFiles/test.txt"
+        localfile = "./../TestFiles/test.txt"
         fileContents = "some text in test file"
 
         CLI().rm(file, self.client)
@@ -156,7 +156,7 @@ class CLIMainTest(unittest.TestCase):
 
     # local to remote
     def test_cp_L2R(self):
-        localfile = "./TestFiles/test.txt"
+        localfile = "./../TestFiles/test.txt"
         testfile = open(localfile, "w")
         testfile.write("some text")
         testfile.close()
@@ -199,7 +199,7 @@ class CLIMainTest(unittest.TestCase):
 
     def test_auth_cert(self):
 
-        localfile = "./TestFiles/fakecert.pem"
+        localfile = "./../TestFiles/fakecert.pem"
 
         testfile = open(localfile, "w")
         testfile.write("")
@@ -244,7 +244,7 @@ class CLIMainTest(unittest.TestCase):
         self.assertTrue(result is not None and "anaconda3" in result[1])
 
     def test_rm(self):
-        localfile = "./TestFiles/testRM.txt"
+        localfile = "./../TestFiles/testRM.txt"
 
         testfile = open(localfile, "w")
         testfile.write("some text")
@@ -263,7 +263,7 @@ class CLIMainTest(unittest.TestCase):
         self.assertTrue("testRM.txt" in result1 and "testRM.txt" not in result2)
 
     def test_get_template(self):
-        filename = "./temptest"
+        filename = "./../temptest"
         envid = "36fd467e-fbfe-4ea6-aa66-df3f403b7132"
         response = CLI().get_template(envid, filename, self.client)
         print(response)

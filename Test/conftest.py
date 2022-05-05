@@ -2,13 +2,14 @@ import sys
 from time import sleep
 import os, signal
 if sys.version_info.major >= 3:
-    from Test.api import start_webserver
+    from Test.api import start_webserver_reg, start_webserver_self_signed
     import pytest
 
     @pytest.fixture(scope='package', autouse=True)
     def fastapi_start():
-        p1, p2 = start_webserver()
+        p_reg = start_webserver_reg()
+        p_self_signed = start_webserver_self_signed()
         sleep(2)
-        yield p1, p2
-        os.kill(p1.pid, signal.SIGKILL)
-        os.kill(p2.pid, signal.SIGKILL)
+        yield p_reg, p_self_signed
+        os.kill(p_reg.pid, signal.SIGKILL)
+        os.kill(p_self_signed.pid, signal.SIGKILL)
