@@ -41,6 +41,7 @@ class Client(object):
             self.apiAddress = Algorithmia.getApiAddress()
         if caCert == False:
             self.requestSession.verify = False
+            self.requestSession.trust_env = False
             config = Configuration(use_ssl=False)
         elif caCert is None and 'REQUESTS_CA_BUNDLE' in os.environ:
             caCert = os.environ.get('REQUESTS_CA_BUNDLE')

@@ -1,6 +1,7 @@
 #Eclipse
 .project
-
+venv
+venv_win
 TestFiles
 test.txt
 

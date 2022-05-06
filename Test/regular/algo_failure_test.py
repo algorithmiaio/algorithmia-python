@@ -11,8 +11,6 @@ if sys.version_info[0] >= 3:
     # you will load the version installed on the computer.
     sys.path = ['../'] + sys.path
     from requests import Response
-    from Test.api import app
-
 
     class AlgoTest(unittest.TestCase):
         error_500 = Response()
