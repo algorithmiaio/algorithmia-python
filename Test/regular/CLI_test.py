@@ -189,13 +189,13 @@ class CLIMainTest(unittest.TestCase):
     def test_auth(self):
         # key for test account
         key = os.getenv('ALGORITHMIA_API_KEY')
-        address = 'https://api.algorithmia.com'
+        api_address = "https://api.algorithmia.com"
         profile = 'default'
-        CLI().auth(address, key, profile=profile)
+        CLI().auth(api_address, key, profile=profile)
         resultK = CLI().getAPIkey(profile)
         resultA = CLI().getAPIaddress(profile)
         self.assertEqual(resultK, key)
-        self.assertEqual(resultA, address)
+        self.assertEqual(resultA, api_address)
 
     def test_auth_cert(self):
 
@@ -274,8 +274,8 @@ class CLIMainTest(unittest.TestCase):
             print(e)
 
     def test_api_address_auth(self):
-        api_key = os.getenv('ALGORITHMIA_TEST_API_KEY')
-        api_address = "https://api.test.algorithmia.com"
+        api_key = os.getenv('ALGORITHMIA_API_KEY')
+        api_address = "https://api.algorithmia.com"
         CLI().auth(api_address, api_key)
         profile = "default"
 
