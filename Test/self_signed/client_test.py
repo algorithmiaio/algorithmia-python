@@ -213,7 +213,7 @@ else:
         seed(datetime.now().microsecond)
         # due to legacy reasons, regular client tests are tested against api.algorithmia.com, whereas admin api tests
         # are run against test.algorithmia.com.
-        admin_username = "a_Mrtest"
+        admin_username = "quality"
         admin_org_name = "a_myOrg"
         environment_name = "Python 3.9"
 
@@ -223,7 +223,7 @@ else:
 
             self.admin_username = self.admin_username + str(int(random() * 10000))
             self.admin_org_name = self.admin_org_name + str(int(random() * 10000))
-            self.admin_client = Algorithmia.client(api_address="https://test.algorithmia.com",
+            self.admin_client = Algorithmia.client(api_address="https://api.algorithmia.com",
                                                    api_key=self.admin_api_key)
             self.regular_client = Algorithmia.client(api_address='https://api.algorithmia.com',
                                                      api_key=self.regular_api_key)

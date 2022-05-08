@@ -181,7 +181,7 @@ class CLIMainTest(unittest.TestCase):
     # remote to local
     def test_cp_R2L(self):
         src = ["data://.my/moredata/test.txt"]
-        dest = "./test.txt"
+        dest = "./../test.txt"
 
         CLI().cp(src, dest, self.client)
         self.assertTrue(os.path.isfile(dest))
