@@ -61,17 +61,6 @@ if sys.version_info.major >= 3:
             if u'error' not in response:
                 self.assertTrue(response is not None and u'environments' in response)
 
-        def test_get_build_logs(self):
-            user = unicode(os.environ.get('ALGO_USER_NAME'))
-            algo = unicode('echo')
-            algo_path = u'%s/%s' % (user, algo)
-            result = self.client.algo(algo_path).build_logs()
-
-            if u'error' in result:
-                print(result)
-
-            self.assertTrue(u'error' not in result)
-
         def test_edit_org(self):
             org_name = "a_myOrg84"
 
@@ -151,16 +140,21 @@ if sys.version_info.major >= 3:
                 "network_access": "isolated",
                 "pipeline_enabled": False
             }
+            version_info = {
+                "sample_input": "hello"
+            }
             created_algo = self.client.algo(full_path)
-            response = created_algo.create(details=details, settings=settings)
+            print("about to create algo")
+            response = created_algo.create(details=details, settings=settings, version_info=version_info)
+            print("created algo")
             self.assertEqual(response.name, algorithm_name, "algorithm creation failed")
 
             # --- Creation complete, compiling
 
             response = created_algo.compile()
-            git_hash = response.version_info.git_hash
+            git_hash = response['version_info']['git_hash']
             algo_with_build = self.client.algo(full_path + "/" + git_hash)
-            self.assertEqual(response.name, created_algo.algoname)
+            self.assertEqual(response['name'], created_algo.algoname)
 
             # --- compiling complete, now testing algorithm request
             response = algo_with_build.pipe(payload).result
@@ -188,7 +182,7 @@ if sys.version_info.major >= 3:
 
             response = created_algo.info(git_hash)
 
-            self.assertEqual(response.version_info.semantic_version, "0.1.0", "information is incorrect")
+            self.assertEqual(response.version_info['semantic_version'], "0.1.0", "information is incorrect")
 
         def test_no_auth_client(self):
 
@@ -261,17 +255,6 @@ else:
 
             if u'error' not in response:
                 self.assertTrue(response is not None and u'environments' in response)
-
-        def test_get_build_logs(self):
-            user = unicode(os.environ.get('ALGO_USER_NAME'))
-            algo = unicode('echo')
-            algo_path = u'%s/%s' % (user, algo)
-            result = self.regular_client.algo(algo_path).build_logs()
-
-            if u'error' in result:
-                print(result)
-
-            self.assertTrue(u'error' not in result)
 
         def test_edit_org(self):
             org_name = "a_myOrg84"
@@ -347,62 +330,6 @@ else:
                 self.assertTrue(u'error' in response)
             else:
                 self.assertEqual(404, response.status_code)
-
-        def test_algorithm_programmatic_create_process(self):
-            algorithm_name = "algo_" + str(uuid4()).split("-")[-1]
-            payload = "John"
-            expected_response = "hello John"
-            full_path = self.regular_client.username() + "/" + algorithm_name
-            details = {
-                "summary": "Example Summary",
-                "label": "QA",
-                "tagline": "Example Tagline"
-            }
-            settings = {
-                "source_visibility": "open",
-                "algorithm_environment": self.environment_id,
-                "license": "apl",
-                "network_access": "isolated",
-                "pipeline_enabled": False
-            }
-            created_algo = self.regular_client.algo(full_path)
-            response = created_algo.create(details=details, settings=settings)
-            self.assertEqual(response.name, algorithm_name, "algorithm creation failed")
-
-            # --- Creation complete, compiling
-
-            response = created_algo.compile()
-            git_hash = response.version_info.git_hash
-            algo_with_build = self.regular_client.algo(full_path + "/" + git_hash)
-            self.assertEqual(response.name, created_algo.algoname)
-
-            # --- compiling complete, now testing algorithm request
-            response = algo_with_build.pipe(payload).result
-            self.assertEqual(response, expected_response, "compiling failed")
-
-            # --- testing complete, now publishing new release.
-
-            pub_settings = {"algorithm_callability": "private"}
-            pub_version_info = {
-                "release_notes": "created programmatically",
-                "sample_input": payload,
-                "version_type": "minor"
-            }
-            pub_details = {"label": "testing123"}
-
-            response = algo_with_build.publish(
-                details=pub_details,
-                settings=pub_settings,
-                version_info=pub_version_info
-            )
-            self.assertEqual(response["version_info"]["semantic_version"], "0.1.0",
-                             "Publishing failed, semantic version is not correct.")
-
-            # --- publishing complete, getting additional information
-
-            response = created_algo.info(git_hash)
-
-            self.assertEqual(response.version_info.semantic_version, "0.1.0", "information is incorrect")
 
         def test_algo_freeze(self):
             self.regular_client.freeze("Test/resources/manifests/example_manifest.json", "Test/resources/manifests")

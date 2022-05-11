@@ -1,11 +1,10 @@
 import Algorithmia
 import os
-from Algorithmia.errors import DataApiError
+from Algorithmia.errors import DataApiError, AlgorithmException
 from Algorithmia.algo_response import AlgoResponse
 import json, re, requests, six
 import toml
 import shutil
-from time import time
 
 class CLI:
     def __init__(self):
@@ -309,11 +308,12 @@ class CLI:
         return table
 
     def getBuildLogs(self, user, algo, client):
-        api_response = client.algo(user + '/' + algo).build_logs()
+        try:
+            api_response = client.algo(user + '/' + algo).builds().json()
+            return json.dumps(api_response['results'], indent=1)
+        except AlgorithmException as e:
+            return json.dumps(e)
 
-        if "error" in api_response:
-            return json.dumps(api_response)
-        return json.dumps(api_response['results'], indent=1)
 
     def getconfigfile(self):
         if (os.name == "posix"):

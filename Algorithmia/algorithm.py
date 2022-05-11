@@ -1,11 +1,10 @@
 'Algorithmia Algorithm API Client (python)'
 
-import base64
 import json
 import re
 from Algorithmia.async_response import AsyncResponse
 from Algorithmia.algo_response import AlgoResponse
-from Algorithmia.errors import ApiError, ApiInternalError, raiseAlgoApiError
+from Algorithmia.errors import ApiError, ApiInternalError, raiseAlgoApiError, AlgorithmException
 from enum import Enum
 from algorithmia_api_client.rest import ApiException
 from algorithmia_api_client import CreateRequest, UpdateRequest, VersionRequest, Details, Settings, SettingsMandatory, \
@@ -73,72 +72,60 @@ class Algorithm(object):
 
     # Publish an algorithm
     def publish(self, details={}, settings={}, version_info={}):
-        publish_parameters = {"details": details, "settings": settings, "version_info": version_info}
-        url = "/v1/algorithms/" + self.username + "/" + self.algoname + "/versions"
-        print(publish_parameters)
-        api_response = self.client.postJsonHelper(url, publish_parameters, parse_response_as_json=True,
-                                                  **self.query_parameters)
-        return api_response
-        # except ApiException as e:
-        #     error_message = json.loads(e.body)
-        #     raise raiseAlgoApiError(error_message)
-
-    def builds(self, limit=56, marker=None):
         try:
-            if marker is not None:
-                api_response = self.client.manageApi.get_algorithm_builds(self.username, self.algoname, limit=limit,
-                                                                          marker=marker)
-            else:
-                api_response = self.client.manageApi.get_algorithm_builds(self.username, self.algoname, limit=limit)
+            publish_parameters = {"details": details, "settings": settings, "version_info": version_info}
+            url = "/v1/algorithms/" + self.username + "/" + self.algoname + "/versions"
+            print(publish_parameters)
+            api_response = self.client.postJsonHelper(url, publish_parameters, parse_response_as_json=True,
+                                                      **self.query_parameters)
             return api_response
         except ApiException as e:
             error_message = json.loads(e.body)
             raise raiseAlgoApiError(error_message)
+
+    def builds(self, limit=56, marker=None):
+        kwargs = {"limit": limit, "marker": marker}
+        url = "/v1/algorithms/" + self.username + "/" + self.algoname + '/builds'
+        response = self.client.getHelper(url, **kwargs)
+        return response
 
     def get_build(self, build_id):
         # Get the build object for a given build_id
         # The build status can have one of the following value: succeeded, failed, in-progress
-        try:
-            api_response = self.client.manageApi.get_algorithm_build_by_id(self.username, self.algoname, build_id)
-            return api_response
-        except ApiException as e:
-            error_message = json.loads(e.body)
-            raise raiseAlgoApiError(error_message)
+        url = '/v1/algorithms/' + self.username + '/' + self.algoname + '/builds/' + build_id
+        response = self.client.getHelperAsJson(url)
+        return response
 
     def get_build_logs(self, build_id):
         # Get the algorithm build logs for a given build_id
-        try:
-            api_response = self.client.manageApi.get_algorithm_build_logs(self.username, self.algoname, build_id)
-            return api_response
-        except ApiException as e:
-            error_message = json.loads(e.body)
-            raise raiseAlgoApiError(error_message)
-
-    def build_logs(self):
-        url = '/v1/algorithms/' + self.username + '/' + self.algoname + '/builds'
-        response = json.loads(self.client.getHelper(url).content.decode('utf-8'))
+        url = '/v1/algorithms/' + self.username + '/' + self.algoname + '/builds/' + build_id + '/logs'
+        response = self.client.getHelperAsJson(url)
         return response
 
     def get_scm_status(self):
-        try:
-            api_response = self.client.manageApi.get_algorithm_scm_connection_status(self.username, self.algoname)
-            return api_response
-        except ApiException as e:
-            error_message = json.loads(e.body)
-            raise raiseAlgoApiError(error_message)
+        url = '/v1/algorithms/' + self.username + '/' + self.algoname + '/scm/status'
+        response = self.client.getHelperAsJson(url)
+        return response
 
     # Get info on an algorithm
     def info(self, algo_hash=None):
+        # Get Algorithm
+        if algo_hash:
+            url = '/v1/algorithms/' + self.username + '/' + self.algoname + '/versions/' + algo_hash
+        else:
+            url = '/v1/algorithms/' + self.username + '/' + self.algoname + '/versions'
+        response = self.client.getHelperAsJson(url)
+        return response
+
+    # Check if an Algorithm exists
+    def exists(self):
         try:
-            # Get Algorithm
-            if algo_hash:
-                api_response = self.client.manageApi.get_algorithm_hash_version(self.username, self.algoname, algo_hash)
-            else:
-                api_response = self.client.manageApi.get_algorithm(self.username, self.algoname)
-            return api_response
-        except ApiException as e:
-            error_message = json.loads(e.body)
-            raise raiseAlgoApiError(error_message)
+            url = '/v1/algorithms/' + self.username + '/' + self.algoname
+            _ = self.client.getHelperAsJson(url)
+            return True
+        except AlgorithmException as e:
+            print(e)
+            return False
 
     # Get all versions of the algorithm, with the given filters
     def versions(self, limit=None, marker=None, published=None, callable=None):
@@ -154,23 +141,17 @@ class Algorithm(object):
         if callable:
             c = callable
             kwargs["callable"] = str(c).lower() if str(c) in bools else c
-        try:
-            # Get Algorithm versions
-            api_response = self.client.manageApi.get_algorithm_versions(self.username, self.algoname, **kwargs)
-            return api_response
-        except ApiException as e:
-            error_message = json.loads(e.body)
-            raise raiseAlgoApiError(error_message)
+        # Get Algorithm versions
+        url = '/v1/algorithms/' + self.username + '/' + self.algoname + '/versions'
+        response = self.client.getHelperAsJson(url)
+        return response
 
     # Compile an algorithm
     def compile(self):
-        try:
-            # Compile algorithm
-            api_response = self.client.manageApi.compile_algorithm(self.username, self.algoname)
-            return api_response
-        except ApiException as e:
-            error_message = json.loads(e.body)
-            raise raiseAlgoApiError(error_message)
+        # Compile algorithm
+        url = '/v1/algorithms/' + self.username + '/' + self.algoname + '/compile'
+        response = self.client.postJsonHelper(url, {}, parse_response_as_json=True)
+        return response
 
     # Pipe an input into this algorithm
     def pipe(self, input1):

@@ -2,17 +2,19 @@
 
 import Algorithmia
 from Algorithmia.insights import Insights
+from Algorithmia.errors import raiseAlgoApiError
 from Algorithmia.algorithm import Algorithm
 from Algorithmia.datafile import DataFile, LocalDataFile, AdvancedDataFile
 from Algorithmia.datadirectory import DataDirectory, LocalDataDirectory, AdvancedDataDirectory
 from algorithmia_api_client import Configuration, DefaultApi, ApiClient
-from Algorithmia.util import md5_for_file, md5_for_str
+from Algorithmia.util import md5_for_file, md5_for_str, ResponseWrapper
 from tempfile import mkstemp
 import atexit
 import json, re, requests, six, certifi
 import tarfile
 import os
 from time import time
+
 
 
 class Client(object):
@@ -256,6 +258,22 @@ class Client(object):
         elif self.bearerToken is not None:
             headers['Authorization'] = 'Bearer ' + self.bearerToken
         return self.requestSession.get(self.apiAddress + url, headers=headers, params=query_parameters)
+
+    def getHelperAsJson(self, url, **query_parameters):
+        headers = {}
+        if self.apiKey is not None:
+            headers['Authorization'] = self.apiKey
+        elif self.bearerToken is not None:
+            headers['Authorization'] = 'Bearer ' + self.bearerToken
+        response = self.requestSession.get(self.apiAddress + url, headers=headers, params=query_parameters)
+        if response.status_code == 200:
+            response = response.json()
+            if 'error' in response:
+                raise raiseAlgoApiError(response)
+            else:
+                return response
+        else:
+            raise raiseAlgoApiError(response)
 
     def getStreamHelper(self, url, **query_parameters):
         headers = {}

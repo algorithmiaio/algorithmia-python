@@ -18,6 +18,7 @@ def start_webserver_self_signed():
     p.start()
     return p
 
+
 @self_signed_app.post("/v1/algo/{username}/{algoname}")
 async def process_algo_req(request: Request, username, algoname, output: Optional[str] = None):
     metadata = {"request_id": "req-55c0480d-6af3-4a21-990a-5c51d29f5725", "duration": 0.000306774}
@@ -59,6 +60,28 @@ async def process_hello_world(request: Request, username, algoname, githash):
 
 
 ### Algorithm Routes
+@self_signed_app.get('/v1/algorithms/{username}/{algoname}')
+async def process_get_algo(request: Request, username, algoname):
+    if algoname == "echo":
+        return {"id": "21df7a38-eab8-4ac8-954c-41a285535e69", "name": "echo",
+                "details": {"summary": "", "label": "echo", "tagline": ""},
+                "settings": {"algorithm_callability": "public", "source_visibility": "closed",
+                             "package_set": "python36", "license": "apl", "royalty_microcredits": 0,
+                             "network_access": "full", "pipeline_enabled": True, "insights_enabled": False,
+                             "algorithm_environment": "067110e7-8969-4441-b3d6-5333f18a3db3"},
+                "version_info": {"semantic_version": "0.1.0", "git_hash": "0cfd7a6600f1fa05f9fe93016e661a9332c4ded2",
+                                 "version_uuid": "e06d2808-bb5e-46ae-b7bc-f3d9968e3c6b"},
+                "build": {"build_id": "a9ae2c93-6f4e-42c0-ac54-baa4a66e53d3", "status": "succeeded",
+                          "commit_sha": "0cfd7a6600f1fa05f9fe93016e661a9332c4ded2",
+                          "started_at": "2022-05-08T22:43:09.050Z", "finished_at": "2022-05-08T22:43:28.646Z",
+                          "version_info": {"semantic_version": "0.1.0"}, "resource_type": "algorithm_build"},
+                "source": {"scm": {"id": "internal", "provider": "internal", "default": True, "enabled": True}},
+                "compilation": {"successful": True, "output": ""},
+                "self_link": "https://api.algorithmia.com/v1/algorithms/quality/echo/versions/0cfd7a6600f1fa05f9fe93016e661a9332c4ded2",
+                "resource_type": "algorithm"}
+    else:
+        return {"error":"No such algorithm"}
+
 @self_signed_app.get("/v1/algorithms/{username}/{algoname}/builds/{buildid}")
 async def get_build_id(username, algoname, buildid):
     return {"status": "succeeded", "build_id": buildid, "commit_sha": "bcdadj",
