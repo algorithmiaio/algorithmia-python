@@ -308,7 +308,7 @@ class CLI:
         return table
 
     def getBuildLogs(self, user, algo, client):
-        api_response = client.algo(user + '/' + algo).builds()
+        api_response = client.algo(user + '/' + algo).get_builds()
         return json.dumps(api_response['results'], indent=1)
 
 

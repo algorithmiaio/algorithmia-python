@@ -63,7 +63,7 @@ class Algorithm(object):
         api_response = self.client.postJsonHelper(url, publish_parameters, parse_response_as_json=True)
         return api_response
 
-    def builds(self, limit=56, marker=None):
+    def get_builds(self, limit=56, marker=None):
         kwargs = {"limit": limit, "marker": marker}
         url = "/v1/algorithms/" + self.username + "/" + self.algoname + '/builds'
         response = self.client.getJsonHelper(url, **kwargs)
