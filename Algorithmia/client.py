@@ -245,10 +245,17 @@ class Client(object):
 
         response = self.requestSession.post(self.apiAddress + url, data=input_json, headers=headers,
                                             params=query_parameters)
-
-        if parse_response_as_json and response.status_code == 200:
-            return response.json()
-        return response
+        if 200 <= response.status_code <= 299:
+            if parse_response_as_json:
+                response = response.json()
+                if 'error' in response:
+                    raise raiseAlgoApiError(response)
+                else:
+                    return response
+            else:
+                return response
+        else:
+            raise raiseAlgoApiError(response)
 
     # Used internally to http get a file
     def getHelper(self, url, **query_parameters):
@@ -259,14 +266,14 @@ class Client(object):
             headers['Authorization'] = 'Bearer ' + self.bearerToken
         return self.requestSession.get(self.apiAddress + url, headers=headers, params=query_parameters)
 
-    def getHelperAsJson(self, url, **query_parameters):
+    def getJsonHelper(self, url, **query_parameters):
         headers = {}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
         elif self.bearerToken is not None:
             headers['Authorization'] = 'Bearer ' + self.bearerToken
         response = self.requestSession.get(self.apiAddress + url, headers=headers, params=query_parameters)
-        if response.status_code == 200:
+        if 200 <= response.status_code <= 299:
             response = response.json()
             if 'error' in response:
                 raise raiseAlgoApiError(response)
@@ -274,6 +281,7 @@ class Client(object):
                 return response
         else:
             raise raiseAlgoApiError(response)
+
 
     def getStreamHelper(self, url, **query_parameters):
         headers = {}

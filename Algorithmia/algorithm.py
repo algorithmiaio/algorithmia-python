@@ -39,49 +39,29 @@ class Algorithm(object):
         return self
 
     # Create a new algorithm
-    def create(self, details={}, settings={}, version_info={}):
-        detailsObj = Details(**details)
-        settingsObj = SettingsMandatory(**settings)
-        createRequestVersionInfoObj = CreateRequestVersionInfo(**version_info)
-        create_parameters = {"name": self.algoname, "details": detailsObj, "settings": settingsObj,
-                             "version_info": createRequestVersionInfoObj}
-        create_request = CreateRequest(**create_parameters)
-        try:
-            # Create Algorithm
-            api_response = self.client.manageApi.create_algorithm(self.username, create_request)
-            return api_response
-        except ApiException as e:
-            error_message = json.loads(e.body)
-            raise raiseAlgoApiError(error_message)
+    def create(self, details={}, settings={}, version_info={}, source={}, scmsCredentials={}):
+        url = "/v1/algorithms/" + self.username
+        create_parameters = {"name": self.algoname, "details": details, "settings": settings,
+                             "version_info": version_info, "source": source, "scmsCredentials": scmsCredentials}
+
+        api_response = self.client.postJsonHelper(url, create_parameters, parse_response_as_json=True)
+        return api_response
 
     # Update the settings in an algorithm
-    def update(self, details={}, settings={}, version_info={}):
-        detailsObj = Details(**details)
-        settingsObj = Settings(**settings)
-        createRequestVersionInfoObj = CreateRequestVersionInfo(**version_info)
-        update_parameters = {"details": detailsObj, "settings": settingsObj,
-                             "version_info": createRequestVersionInfoObj}
-        update_request = UpdateRequest(**update_parameters)
-        try:
-            # Update Algorithm
-            api_response = self.client.manageApi.update_algorithm(self.username, self.algoname, update_request)
-            return api_response
-        except ApiException as e:
-            error_message = json.loads(e.body)
-            raise raiseAlgoApiError(error_message)
+    def update(self, details={}, settings={}, version_info={}, source={}, scmsCredentials={}):
+        url = "/v1/algorithms/" + self.username + "/" + self.algoname
+        update_parameters = {"details": details, "settings": settings,
+                         "version_info": version_info, "source": source, "scmsCredentials": scmsCredentials}
+        api_response = self.client.putHelper(url, update_parameters)
+        return api_response
 
     # Publish an algorithm
-    def publish(self, details={}, settings={}, version_info={}):
-        try:
-            publish_parameters = {"details": details, "settings": settings, "version_info": version_info}
-            url = "/v1/algorithms/" + self.username + "/" + self.algoname + "/versions"
-            print(publish_parameters)
-            api_response = self.client.postJsonHelper(url, publish_parameters, parse_response_as_json=True,
-                                                      **self.query_parameters)
-            return api_response
-        except ApiException as e:
-            error_message = json.loads(e.body)
-            raise raiseAlgoApiError(error_message)
+    def publish(self, details={}, settings={}, version_info={}, source={}, scmsCredentials={}):
+        url = "/v1/algorithms/" + self.username + "/" + self.algoname + "/versions"
+        publish_parameters = {"details": details, "settings": settings,
+                              "version_info": version_info, "source": source, "scmsCredentials": scmsCredentials}
+        api_response = self.client.postJsonHelper(url, publish_parameters, parse_response_as_json=True)
+        return api_response
 
     def builds(self, limit=56, marker=None):
         kwargs = {"limit": limit, "marker": marker}
@@ -93,18 +73,18 @@ class Algorithm(object):
         # Get the build object for a given build_id
         # The build status can have one of the following value: succeeded, failed, in-progress
         url = '/v1/algorithms/' + self.username + '/' + self.algoname + '/builds/' + build_id
-        response = self.client.getHelperAsJson(url)
+        response = self.client.getJsonHelper(url)
         return response
 
     def get_build_logs(self, build_id):
         # Get the algorithm build logs for a given build_id
         url = '/v1/algorithms/' + self.username + '/' + self.algoname + '/builds/' + build_id + '/logs'
-        response = self.client.getHelperAsJson(url)
+        response = self.client.getJsonHelper(url)
         return response
 
     def get_scm_status(self):
         url = '/v1/algorithms/' + self.username + '/' + self.algoname + '/scm/status'
-        response = self.client.getHelperAsJson(url)
+        response = self.client.getJsonHelper(url)
         return response
 
     # Get info on an algorithm
@@ -114,14 +94,14 @@ class Algorithm(object):
             url = '/v1/algorithms/' + self.username + '/' + self.algoname + '/versions/' + algo_hash
         else:
             url = '/v1/algorithms/' + self.username + '/' + self.algoname + '/versions'
-        response = self.client.getHelperAsJson(url)
+        response = self.client.getJsonHelper(url)
         return response
 
     # Check if an Algorithm exists
     def exists(self):
         try:
             url = '/v1/algorithms/' + self.username + '/' + self.algoname
-            _ = self.client.getHelperAsJson(url)
+            _ = self.client.getJsonHelper(url)
             return True
         except AlgorithmException as e:
             print(e)
@@ -143,7 +123,7 @@ class Algorithm(object):
             kwargs["callable"] = str(c).lower() if str(c) in bools else c
         # Get Algorithm versions
         url = '/v1/algorithms/' + self.username + '/' + self.algoname + '/versions'
-        response = self.client.getHelperAsJson(url)
+        response = self.client.getJsonHelper(url)
         return response
 
     # Compile an algorithm

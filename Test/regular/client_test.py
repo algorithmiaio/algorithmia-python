@@ -147,7 +147,7 @@ if sys.version_info.major >= 3:
             print("about to create algo")
             response = created_algo.create(details=details, settings=settings, version_info=version_info)
             print("created algo")
-            self.assertEqual(response.name, algorithm_name, "algorithm creation failed")
+            self.assertEqual(response['name'], algorithm_name, "algorithm creation failed")
 
             # --- Creation complete, compiling
 
