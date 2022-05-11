@@ -66,7 +66,7 @@ class Algorithm(object):
     def builds(self, limit=56, marker=None):
         kwargs = {"limit": limit, "marker": marker}
         url = "/v1/algorithms/" + self.username + "/" + self.algoname + '/builds'
-        response = self.client.getHelper(url, **kwargs)
+        response = self.client.getJsonHelper(url, **kwargs)
         return response
 
     def get_build(self, build_id):

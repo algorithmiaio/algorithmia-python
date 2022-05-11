@@ -308,11 +308,8 @@ class CLI:
         return table
 
     def getBuildLogs(self, user, algo, client):
-        try:
-            api_response = client.algo(user + '/' + algo).builds().json()
-            return json.dumps(api_response['results'], indent=1)
-        except AlgorithmException as e:
-            return json.dumps(e)
+        api_response = client.algo(user + '/' + algo).builds()
+        return json.dumps(api_response['results'], indent=1)
 
 
     def getconfigfile(self):
