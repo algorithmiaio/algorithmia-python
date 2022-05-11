@@ -7,7 +7,7 @@ from Algorithmia.algorithm import Algorithm
 from Algorithmia.datafile import DataFile, LocalDataFile, AdvancedDataFile
 from Algorithmia.datadirectory import DataDirectory, LocalDataDirectory, AdvancedDataDirectory
 from algorithmia_api_client import Configuration, DefaultApi, ApiClient
-from Algorithmia.util import md5_for_file, md5_for_str, ResponseWrapper
+from Algorithmia.util import md5_for_file, md5_for_str
 from tempfile import mkstemp
 import atexit
 import json, re, requests, six, certifi
