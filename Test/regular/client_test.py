@@ -215,7 +215,7 @@ else:
 
             self.admin_username = self.admin_username + str(int(random() * 10000))
             self.admin_org_name = self.admin_org_name + str(int(random() * 10000))
-            self.admin_client = Algorithmia.client(api_address="https://test.algorithmia.com",
+            self.admin_client = Algorithmia.client(api_address="https://api.algorithmia.com",
                                                    api_key=self.admin_api_key)
             self.regular_client = Algorithmia.client(api_address='https://api.algorithmia.com',
                                                      api_key=self.regular_api_key)

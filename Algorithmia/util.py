@@ -47,8 +47,3 @@ def md5_for_str(content):
     hash_md5 = hashlib.md5()
     hash_md5.update(content.encode())
     return str(hash_md5.hexdigest())
-
-
-class ResponseWrapper:
-    def __init__(self, **entries):
-        self.__dict__.update(entries)
