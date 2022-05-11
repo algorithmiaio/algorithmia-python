@@ -182,7 +182,7 @@ if sys.version_info.major >= 3:
 
             response = created_algo.info(git_hash)
 
-            self.assertEqual(response.version_info['semantic_version'], "0.1.0", "information is incorrect")
+            self.assertEqual(response['version_info']['semantic_version'], "0.1.0", "information is incorrect")
 
         def test_no_auth_client(self):
 

@@ -49,6 +49,14 @@ if sys.version_info.major >= 3:
             result = self.client.algo('quality/not_echo').exists()
             self.assertEquals(False, result)
 
+        #TODO: add more coverage examples to check kwargs
+        def test_get_versions(self):
+            result = self.client.algo('quality/echo').versions()
+            self.assertTrue('results' in result)
+            self.assertTrue('version_info' in result['results'][0])
+            self.assertTrue('semantic_version' in result['results'][0]['version_info'])
+            self.assertEquals('0.1.0', result['results'][0]['version_info']['semantic_version'])
+
         def test_text_unicode(self):
             telephone = u"\u260E"
             # Unicode input to pipe()
@@ -114,6 +122,14 @@ else:
         def test_raw_call(self):
             result = self.client.algo('quality/echo').set_options(output=OutputType.raw).pipe("foo")
             self.assertEquals("foo", result)
+
+        #TODO: add more coverage examples to check kwargs
+        def test_get_versions(self):
+            result = self.client.algo('quality/echo').versions()
+            self.assertTrue('results' in result)
+            self.assertTrue('version_info' in result['results'][0])
+            self.assertTrue('semantic_version' in result['results'][0]['version_info'])
+            self.assertEquals('0.1.0', result['results'][0]['version_info']['semantic_version'])
 
         def test_text_unicode(self):
             telephone = u"\u260E"
