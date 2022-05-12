@@ -317,11 +317,17 @@ class Client(object):
             headers['Authorization'] = 'Bearer ' + self.bearerToken
         if isJson(data):
             headers['Content-Type'] = 'application/json'
-
         response = self.requestSession.put(self.apiAddress + url, data=data, headers=headers)
         if response._content == b'':
             return response
-        return response.json()
+        if 200 <= response.status_code <= 299:
+            response = response.json()
+            if 'error' in response:
+                raise raiseAlgoApiError(response)
+            else:
+                return response
+        else:
+            raise raiseAlgoApiError(response)
 
     # Used internally to http delete a file
     def deleteHelper(self, url):

@@ -118,7 +118,6 @@ async def create_algorithm(request: Request, username):
 
 @regular_app.put('/v1/algorithms/{username}/{algoname}')
 async def update_algorithm(request: Request, username, algoname):
-    payload = await request.json()
     return {
         "id": "2938ca9f-54c8-48cd-b0d0-0fb7f2255cdc",
         "name": algoname,
