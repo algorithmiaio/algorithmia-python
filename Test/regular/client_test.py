@@ -114,13 +114,11 @@ if sys.version_info.major >= 3:
             self.assertEqual(0, len(response))
 
         def test_get_algorithm_errors(self):
-            response = self.client.get_algorithm_errors('hello')
-            self.assertTrue(response is not None)
-
-            if type(response) is dict:
-                self.assertTrue(u'error' in response)
-            else:
-                self.assertEqual(404, response.status_code)
+            try:
+                _ = self.client.get_algorithm_errors('hello')
+                self.assertFalse(True)
+            except AlgorithmException as e:
+                self.assertTrue(e.message == "No such algorithm")
 
 
         def test_no_auth_client(self):

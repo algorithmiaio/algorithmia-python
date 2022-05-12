@@ -1,6 +1,6 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, status
 from typing import Optional
-from fastapi.responses import Response
+from fastapi.responses import Response, JSONResponse
 import json
 import base64
 from multiprocessing import Process
@@ -49,7 +49,7 @@ async def process_algo_req(request: Request, username, algoname, output: Optiona
         return output
 
 
-@regular_app.post("/v1/algo/{username}/{algoname}/{githash}")
+@regular_app.post("/v1/algo/{username}/{algoname}/{githash}", status_code=status.HTTP_200_OK)
 async def process_hello_world(request: Request, username, algoname, githash):
     metadata = {"request_id": "req-55c0480d-6af3-4a21-990a-5c51d29f5725", "duration": 0.000306774,
                 'content_type': "text"}
@@ -61,7 +61,7 @@ async def process_hello_world(request: Request, username, algoname, githash):
 ### Algorithm Routes
 @regular_app.get('/v1/algorithms/{username}/{algoname}')
 async def process_get_algo(request: Request, username, algoname):
-    if algoname == "echo":
+    if algoname == "echo" and username == 'quality':
         return {"id": "21df7a38-eab8-4ac8-954c-41a285535e69", "name": "echo",
                 "details": {"summary": "", "label": "echo", "tagline": ""},
                 "settings": {"algorithm_callability": "public", "source_visibility": "closed",
@@ -78,8 +78,11 @@ async def process_get_algo(request: Request, username, algoname):
                 "compilation": {"successful": True, "output": ""},
                 "self_link": "https://api.algorithmia.com/v1/algorithms/quality/echo/versions/0cfd7a6600f1fa05f9fe93016e661a9332c4ded2",
                 "resource_type": "algorithm"}
+    elif algoname == "echo":
+        return JSONResponse(content={"error": {"id": "1cfb98c5-532e-4cbf-9192-fdd45b86969c", "code": 2001,
+                                   "message": "Caller is not authorized to perform the operation"}}, status_code=403)
     else:
-        return {"error": "No such algorithm"}
+        return JSONResponse(content={"error": "No such algorithm"}, status_code=404)
 
 
 @regular_app.get("/v1/algorithms/{username}/{algoname}/builds/{buildid}")
@@ -101,7 +104,7 @@ async def get_scm_status(username, algoname):
 
 @regular_app.get("/v1/algorithms/{algo_id}/errors")
 async def get_algo_errors(algo_id):
-    return {"error": {"message": "not found"}}
+    return JSONResponse(content={"error": {"message": "not found"}}, status_code=404)
 
 
 @regular_app.post("/v1/algorithms/{username}")
@@ -115,6 +118,7 @@ async def create_algorithm(request: Request, username):
                          "algorithm_environment": "fd980f4f-1f1c-4b2f-a128-d60b40c6567a"},
             "source": {"scm": {"id": "internal", "provider": "internal", "default": True, "enabled": True}},
             "resource_type": "algorithm"}
+
 
 @regular_app.put('/v1/algorithms/{username}/{algoname}')
 async def update_algorithm(request: Request, username, algoname):
@@ -255,7 +259,7 @@ async def get_algorithm_info(username, algoname, algohash):
                 "source": {"scm": {"id": "internal", "provider": "internal", "default": True, "enabled": True}},
                 "compilation": {"successful": True, "output": ""}, "resource_type": "algorithm"}
     else:
-        return {"error": {"message": "not found"}}
+        return JSONResponse(content={"error": {"message": "not found"}}, status_code=404)
 
 
 ### Admin Routes

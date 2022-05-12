@@ -214,8 +214,7 @@ class Client(object):
         """
 
         url = '/v1/algorithms/%s/errors' % algorithm_id
-        response = self.getHelper(url)
-        return response.json()
+        return self.getJsonHelper(url)
 
     # Used to send insight data to Algorithm Queue Reader in cluster
     def report_insights(self, insights):
@@ -280,6 +279,8 @@ class Client(object):
             else:
                 return response
         else:
+            if response.content is not None:
+                response = response.json()
             raise raiseAlgoApiError(response)
 
 

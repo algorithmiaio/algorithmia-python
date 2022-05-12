@@ -104,8 +104,12 @@ class Algorithm(object):
             _ = self.client.getJsonHelper(url)
             return True
         except AlgorithmException as e:
-            print(e)
-            return False
+            if "404" in str(e) or "No such algorithm" in str(e):
+                return False
+            elif "403" in str(e):
+                raise Exception("unable to check exists on algorithms you don't own.")
+            else:
+                raise e
 
     # Get all versions of the algorithm, with the given filters
     def versions(self, limit=None, marker=None, published=None, callable=None):
