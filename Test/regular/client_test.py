@@ -28,7 +28,6 @@ if sys.version_info.major >= 3:
             self.admin_username = self.admin_username + str(int(random() * 10000))
             self.admin_org_name = self.admin_org_name + str(int(random() * 10000))
 
-            self.environment_id = "abcd-123"
 
         def test_create_user(self):
             response = self.client.create_user(
@@ -123,66 +122,6 @@ if sys.version_info.major >= 3:
             else:
                 self.assertEqual(404, response.status_code)
 
-        def test_algorithm_programmatic_create_process(self):
-            algorithm_name = "algo_e2d_test"
-            payload = "John"
-            expected_response = "hello John"
-            full_path = "a_Mrtest/" + algorithm_name
-            details = {
-                "summary": "Example Summary",
-                "label": "QA",
-                "tagline": "Example Tagline"
-            }
-            settings = {
-                "source_visibility": "open",
-                "algorithm_environment": self.environment_id,
-                "license": "apl",
-                "network_access": "isolated",
-                "pipeline_enabled": False
-            }
-            version_info = {
-                "sample_input": "hello"
-            }
-            created_algo = self.client.algo(full_path)
-            print("about to create algo")
-            response = created_algo.create(details=details, settings=settings, version_info=version_info)
-            print("created algo")
-            self.assertEqual(response['name'], algorithm_name, "algorithm creation failed")
-
-            # --- Creation complete, compiling
-
-            response = created_algo.compile()
-            git_hash = response['version_info']['git_hash']
-            algo_with_build = self.client.algo(full_path + "/" + git_hash)
-            self.assertEqual(response['name'], created_algo.algoname)
-
-            # --- compiling complete, now testing algorithm request
-            response = algo_with_build.pipe(payload).result
-            self.assertEqual(response, expected_response, "compiling failed")
-
-            # --- testing complete, now publishing new release.
-
-            pub_settings = {"algorithm_callability": "private"}
-            pub_version_info = {
-                "release_notes": "created programmatically",
-                "sample_input": payload,
-                "version_type": "minor"
-            }
-            pub_details = {"label": "testing123"}
-
-            response = algo_with_build.publish(
-                details=pub_details,
-                settings=pub_settings,
-                version_info=pub_version_info
-            )
-            self.assertEqual(response["version_info"]["semantic_version"], "0.1.0",
-                             "Publishing failed, semantic version is not correct.")
-
-            # --- publishing complete, getting additional information
-
-            response = created_algo.info(git_hash)
-
-            self.assertEqual(response['version_info']['semantic_version'], "0.1.0", "information is incorrect")
 
         def test_no_auth_client(self):
 

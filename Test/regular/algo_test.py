@@ -16,6 +16,7 @@ if sys.version_info.major >= 3:
         @classmethod
         def setUpClass(cls):
             cls.client = Algorithmia.client(api_address="http://localhost:8080", api_key="simabcd123")
+            cls.environment_id = "abcd-123"
 
         def test_call_customCert(self):
             result = self.client.algo('quality/echo').pipe(bytearray('foo', 'utf-8'))
@@ -75,6 +76,26 @@ if sys.version_info.major >= 3:
             self.assertTrue('resource_type' in result['results'][0])
             self.assertTrue(result['results'][0]['resource_type'] == "algorithm")
 
+        def test_update_algo(self):
+            details = {
+                "summary": "Example Summary",
+                "label": "QA",
+                "tagline": "Example Tagline"
+            }
+            settings = {
+                "source_visibility": "open",
+                "algorithm_environment": self.environment_id,
+                "license": "apl",
+                "network_access": "isolated",
+                "pipeline_enabled": False
+            }
+            version_info = {
+                "sample_input": "hello"
+            }
+            result = self.client.algo('quality/echo').update(details=details, settings=settings, version_info=version_info)
+            self.assertTrue('id' in result)
+
+
         def test_get_build_by_id(self):
             result = self.client.algo("quality/echo").get_build("1a392e2c-b09f-4bae-a616-56c0830ac8e5")
             self.assertTrue('commit_sha' in result)
@@ -92,6 +113,67 @@ if sys.version_info.major >= 3:
                 result = self.client.algo('zeryx/raise_exception').pipe("")
             except AlgorithmException as e:
                 self.assertEqual(e.message, "This is an exception")
+
+        def test_algorithm_programmatic_create_process(self):
+            algorithm_name = "hello"
+            payload = "John"
+            expected_response = "hello John"
+            full_path = "quality/" + algorithm_name
+            details = {
+                "summary": "Example Summary",
+                "label": "QA",
+                "tagline": "Example Tagline"
+            }
+            settings = {
+                "source_visibility": "open",
+                "algorithm_environment": self.environment_id,
+                "license": "apl",
+                "network_access": "isolated",
+                "pipeline_enabled": False
+            }
+            version_info = {
+                "sample_input": "hello"
+            }
+            created_algo = self.client.algo(full_path)
+            print("about to create algo")
+            response = created_algo.create(details=details, settings=settings, version_info=version_info)
+            print("created algo")
+            self.assertEqual(response['name'], algorithm_name, "algorithm creation failed")
+
+            # --- Creation complete, compiling
+
+            response = created_algo.compile()
+            git_hash = response['version_info']['git_hash']
+            algo_with_build = self.client.algo(full_path + "/" + git_hash)
+            self.assertEqual(response['name'], created_algo.algoname)
+
+            # --- compiling complete, now testing algorithm request
+            response = algo_with_build.pipe(payload).result
+            self.assertEqual(response, expected_response, "compiling failed")
+
+            # --- testing complete, now publishing new release.
+
+            pub_settings = {"algorithm_callability": "private"}
+            pub_version_info = {
+                "release_notes": "created programmatically",
+                "sample_input": payload,
+                "version_type": "minor"
+            }
+            pub_details = {"label": "testing123"}
+
+            response = algo_with_build.publish(
+                details=pub_details,
+                settings=pub_settings,
+                version_info=pub_version_info
+            )
+            self.assertEqual(response["version_info"]["semantic_version"], "0.1.0",
+                             "Publishing failed, semantic version is not correct.")
+
+            # --- publishing complete, getting additional information
+
+            response = created_algo.info(git_hash)
+
+            self.assertEqual(response['version_info']['semantic_version'], "0.1.0", "information is incorrect")
 
 else:
     class AlgoTest(unittest.TestCase):

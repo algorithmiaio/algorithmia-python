@@ -116,6 +116,47 @@ async def create_algorithm(request: Request, username):
             "source": {"scm": {"id": "internal", "provider": "internal", "default": True, "enabled": True}},
             "resource_type": "algorithm"}
 
+@regular_app.put('/v1/algorithms/{username}/{algoname}')
+async def update_algorithm(request: Request, username, algoname):
+    payload = await request.json()
+    return {
+        "id": "2938ca9f-54c8-48cd-b0d0-0fb7f2255cdc",
+        "name": algoname,
+        "details": {
+            "summary": "Example Summary",
+            "label": "QA",
+            "tagline": "Example Tagline"
+        },
+        "settings": {
+            "algorithm_callability": "private",
+            "source_visibility": "open",
+            "package_set": "tensorflow-gpu-2.3-python38",
+            "license": "apl",
+            "network_access": "isolated",
+            "pipeline_enabled": False,
+            "insights_enabled": False,
+            "algorithm_environment": "fd980f4f-1f1c-4b2f-a128-d60b40c6567a"
+        },
+        "version_info": {
+            "git_hash": "e85db9bca2fad519f540b445f30d12523e4dec9c",
+            "version_uuid": "1d9cb91d-11ca-49cb-a7f4-28f67f277654"
+        },
+        "source": {
+            "scm": {
+                "id": "internal",
+                "provider": "internal",
+                "default": True,
+                "enabled": True
+            }
+        },
+        "compilation": {
+            "successful": True,
+            "output": ""
+        },
+        "self_link": f"http://localhost:8080/v1/algorithms/{username}/{algoname}/versions/e85db9bca2fad519f540b445f30d12523e4dec9c",
+        "resource_type": "algorithm"
+    }
+
 
 @regular_app.post("/v1/algorithms/{username}/{algoname}/compile")
 async def compile_algorithm(username, algoname):
