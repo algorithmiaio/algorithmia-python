@@ -36,7 +36,7 @@ def raiseAlgoApiError(result):
         if 'message' in result['error']:
             message = result['error']['message']
         else:
-            message = None
+            message = result['error']
         if 'error_type' in result['error']:
             err_type = result['error']['error_type']
         else:
