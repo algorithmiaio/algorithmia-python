@@ -2,6 +2,7 @@
 
 import Algorithmia
 from Algorithmia.insights import Insights
+from Algorithmia.errors import raiseAlgoApiError
 from Algorithmia.algorithm import Algorithm
 from Algorithmia.datafile import DataFile, LocalDataFile, AdvancedDataFile
 from Algorithmia.datadirectory import DataDirectory, LocalDataDirectory, AdvancedDataDirectory
@@ -13,6 +14,7 @@ import json, re, requests, six, certifi
 import tarfile
 import os
 from time import time
+
 
 
 class Client(object):
@@ -243,10 +245,17 @@ class Client(object):
 
         response = self.requestSession.post(self.apiAddress + url, data=input_json, headers=headers,
                                             params=query_parameters)
-
-        if parse_response_as_json and response.status_code == 200:
-            return response.json()
-        return response
+        if 200 <= response.status_code <= 299:
+            if parse_response_as_json:
+                response = response.json()
+                if 'error' in response:
+                    raise raiseAlgoApiError(response)
+                else:
+                    return response
+            else:
+                return response
+        else:
+            raise raiseAlgoApiError(response)
 
     # Used internally to http get a file
     def getHelper(self, url, **query_parameters):
@@ -256,6 +265,23 @@ class Client(object):
         elif self.bearerToken is not None:
             headers['Authorization'] = 'Bearer ' + self.bearerToken
         return self.requestSession.get(self.apiAddress + url, headers=headers, params=query_parameters)
+
+    def getJsonHelper(self, url, **query_parameters):
+        headers = {}
+        if self.apiKey is not None:
+            headers['Authorization'] = self.apiKey
+        elif self.bearerToken is not None:
+            headers['Authorization'] = 'Bearer ' + self.bearerToken
+        response = self.requestSession.get(self.apiAddress + url, headers=headers, params=query_parameters)
+        if 200 <= response.status_code <= 299:
+            response = response.json()
+            if 'error' in response:
+                raise raiseAlgoApiError(response)
+            else:
+                return response
+        else:
+            raise raiseAlgoApiError(response)
+
 
     def getStreamHelper(self, url, **query_parameters):
         headers = {}
@@ -291,11 +317,17 @@ class Client(object):
             headers['Authorization'] = 'Bearer ' + self.bearerToken
         if isJson(data):
             headers['Content-Type'] = 'application/json'
-
         response = self.requestSession.put(self.apiAddress + url, data=data, headers=headers)
         if response._content == b'':
             return response
-        return response.json()
+        if 200 <= response.status_code <= 299:
+            response = response.json()
+            if 'error' in response:
+                raise raiseAlgoApiError(response)
+            else:
+                return response
+        else:
+            raise raiseAlgoApiError(response)
 
     # Used internally to http delete a file
     def deleteHelper(self, url):

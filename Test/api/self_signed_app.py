@@ -18,6 +18,7 @@ def start_webserver_self_signed():
     p.start()
     return p
 
+
 @self_signed_app.post("/v1/algo/{username}/{algoname}")
 async def process_algo_req(request: Request, username, algoname, output: Optional[str] = None):
     metadata = {"request_id": "req-55c0480d-6af3-4a21-990a-5c51d29f5725", "duration": 0.000306774}
@@ -59,6 +60,29 @@ async def process_hello_world(request: Request, username, algoname, githash):
 
 
 ### Algorithm Routes
+@self_signed_app.get('/v1/algorithms/{username}/{algoname}')
+async def process_get_algo(request: Request, username, algoname):
+    if algoname == "echo":
+        return {"id": "21df7a38-eab8-4ac8-954c-41a285535e69", "name": "echo",
+                "details": {"summary": "", "label": "echo", "tagline": ""},
+                "settings": {"algorithm_callability": "public", "source_visibility": "closed",
+                             "package_set": "python36", "license": "apl", "royalty_microcredits": 0,
+                             "network_access": "full", "pipeline_enabled": True, "insights_enabled": False,
+                             "algorithm_environment": "067110e7-8969-4441-b3d6-5333f18a3db3"},
+                "version_info": {"semantic_version": "0.1.0", "git_hash": "0cfd7a6600f1fa05f9fe93016e661a9332c4ded2",
+                                 "version_uuid": "e06d2808-bb5e-46ae-b7bc-f3d9968e3c6b"},
+                "build": {"build_id": "a9ae2c93-6f4e-42c0-ac54-baa4a66e53d3", "status": "succeeded",
+                          "commit_sha": "0cfd7a6600f1fa05f9fe93016e661a9332c4ded2",
+                          "started_at": "2022-05-08T22:43:09.050Z", "finished_at": "2022-05-08T22:43:28.646Z",
+                          "version_info": {"semantic_version": "0.1.0"}, "resource_type": "algorithm_build"},
+                "source": {"scm": {"id": "internal", "provider": "internal", "default": True, "enabled": True}},
+                "compilation": {"successful": True, "output": ""},
+                "self_link": "https://api.algorithmia.com/v1/algorithms/quality/echo/versions/0cfd7a6600f1fa05f9fe93016e661a9332c4ded2",
+                "resource_type": "algorithm"}
+    else:
+        return {"error": "No such algorithm"}
+
+
 @self_signed_app.get("/v1/algorithms/{username}/{algoname}/builds/{buildid}")
 async def get_build_id(username, algoname, buildid):
     return {"status": "succeeded", "build_id": buildid, "commit_sha": "bcdadj",
@@ -69,6 +93,7 @@ async def get_build_id(username, algoname, buildid):
 @self_signed_app.get("/v1/algorithms/{username}/{algoname}/builds/{buildid}/logs")
 async def get_build_log(username, algoname, buildid):
     return {"logs": "This is a log"}
+
 
 @self_signed_app.get("/v1/algorithms/{username}/{algoname}/scm/status")
 async def get_scm_status(username, algoname):
@@ -151,50 +176,47 @@ async def publish_algorithm(request: Request, username, algoname):
             "resource_type": "algorithm"}
 
 
+@self_signed_app.get("/v1/algorithms/{username}/{algoname}/versions")
+async def versions_of_algorithm(request: Request, username, algoname):
+    return {"marker": None, "next_link": None, "results": [
+        {"id": "21df7a38-eab8-4ac8-954c-41a285535e69", "name": algoname,
+         "details": {"summary": "", "label": algoname, "tagline": ""},
+         "settings": {"algorithm_callability": "public", "source_visibility": "closed", "package_set": "python36",
+                      "license": "apl", "royalty_microcredits": 0, "network_access": "full", "pipeline_enabled": True,
+                      "insights_enabled": False, "algorithm_environment": "067110e7-8969-4441-b3d6-5333f18a3db3"},
+         "version_info": {"semantic_version": "0.1.0", "git_hash": "0cfd7a6600f1fa05f9fe93016e661a9332c4ded2",
+                          "version_uuid": "e06d2808-bb5e-46ae-b7bc-f3d9968e3c6b"},
+         "build": {"build_id": "a9ae2c93-6f4e-42c0-ac54-baa4a66e53d3", "status": "succeeded",
+                   "commit_sha": "0cfd7a6600f1fa05f9fe93016e661a9332c4ded2", "started_at": "2022-05-08T22:43:09.050Z",
+                   "finished_at": "2022-05-08T22:43:28.646Z", "version_info": {"semantic_version": "0.1.0"},
+                   "resource_type": "algorithm_build"},
+         "source": {"scm": {"id": "internal", "provider": "internal", "default": True, "enabled": True}},
+         "compilation": {"successful": True},
+         "self_link": f"https://api.algorithmia.com/v1/algorithms/{username}/{algoname}/versions"
+                      "/0cfd7a6600f1fa05f9fe93016e661a9332c4ded2",
+         "resource_type": "algorithm"}]}
+
+
 @self_signed_app.get("/v1/algorithms/{username}/{algoname}/versions/{algohash}")
 async def get_algorithm_info(username, algoname, algohash):
-    return {
-        "id": "2938ca9f-54c8-48cd-b0d0-0fb7f2255cdc",
-        "name": algoname,
-        "details": {
-            "summary": "Example Summary",
-            "label": "QA",
-            "tagline": "Example Tagline"
-        },
-        "settings": {
-            "algorithm_callability": "private",
-            "source_visibility": "open",
-            "language": "python3",
-            "environment": "gpu",
-            "package_set": "tensorflow-gpu-2.3-python38",
-            "license": "apl",
-            "network_access": "isolated",
-            "pipeline_enabled": False,
-            "insights_enabled": False,
-            "algorithm_environment": "fd980f4f-1f1c-4b2f-a128-d60b40c6567a"
-        },
-        "version_info": {
-            "semantic_version": "0.1.0",
-            "git_hash": algohash,
-            "release_notes": "created programmatically",
-            "sample_input": "\"payload\"",
-            "sample_output": "Exception encountered while running sample input",
-            "version_uuid": "1d9cb91d-11ca-49cb-a7f4-28f67f277654"
-        },
-        "source": {
-            "scm": {
-                "id": "internal",
-                "provider": "internal",
-                "default": True,
-                "enabled": True
-            }
-        },
-        "compilation": {
-            "successful": True,
-            "output": ""
-        },
-        "resource_type": "algorithm"
-    }
+    if algohash == "e85db9bca2fad519f540b445f30d12523e4dec9c":
+        return {"id": "21df7a38-eab8-4ac8-954c-41a285535e69", "name": algoname,
+                "details": {"summary": "", "label": algoname, "tagline": ""},
+                "settings": {"algorithm_callability": "public", "source_visibility": "closed", "language": "python3",
+                             "environment": "cpu", "package_set": "python36", "license": "apl",
+                             "royalty_microcredits": 0, "network_access": "full", "pipeline_enabled": True,
+                             "insights_enabled": False,
+                             "algorithm_environment": "067110e7-8969-4441-b3d6-5333f18a3db3"},
+                "version_info": {"semantic_version": "0.1.0", "git_hash": "0cfd7a6600f1fa05f9fe93016e661a9332c4ded2",
+                                 "version_uuid": "e06d2808-bb5e-46ae-b7bc-f3d9968e3c6b"},
+                "build": {"build_id": "a9ae2c93-6f4e-42c0-ac54-baa4a66e53d3", "status": "succeeded",
+                          "commit_sha": "0cfd7a6600f1fa05f9fe93016e661a9332c4ded2",
+                          "started_at": "2022-05-08T22:43:09.050Z", "finished_at": "2022-05-08T22:43:28.646Z",
+                          "version_info": {"semantic_version": "0.1.0"}, "resource_type": "algorithm_build"},
+                "source": {"scm": {"id": "internal", "provider": "internal", "default": True, "enabled": True}},
+                "compilation": {"successful": True, "output": ""}, "resource_type": "algorithm"}
+    else:
+        return {"error": {"message": "not found"}}
 
 
 ### Admin Routes
@@ -285,6 +307,7 @@ async def get_org_by_name(org_name):
         "resource_type": "organization",
         "self_link": "http://localhost:8080/v1/organizations/a_myOrg1542"
     }
+
 
 @self_signed_app.get("/v1/algorithms/{username}/{algoname}/builds/{buildid}/logs")
 async def get_build_log(username, algoname, buildid):
