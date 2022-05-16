@@ -127,7 +127,7 @@ class Algorithm(object):
             kwargs["callable"] = str(c).lower() if str(c) in bools else c
         # Get Algorithm versions
         url = '/v1/algorithms/' + self.username + '/' + self.algoname + '/versions'
-        response = self.client.getJsonHelper(url)
+        response = self.client.getJsonHelper(url, **kwargs)
         return response
 
     # Compile an algorithm
