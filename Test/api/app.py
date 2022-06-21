@@ -80,7 +80,8 @@ async def process_get_algo(request: Request, username, algoname):
                 "resource_type": "algorithm"}
     elif algoname == "echo":
         return JSONResponse(content={"error": {"id": "1cfb98c5-532e-4cbf-9192-fdd45b86969c", "code": 2001,
-                                   "message": "Caller is not authorized to perform the operation"}}, status_code=403)
+                                               "message": "Caller is not authorized to perform the operation"}},
+                            status_code=403)
     else:
         return JSONResponse(content={"error": "No such algorithm"}, status_code=404)
 
@@ -100,6 +101,34 @@ async def get_build_log(username, algoname, buildid):
 @regular_app.get("/v1/algorithms/{username}/{algoname}/scm/status")
 async def get_scm_status(username, algoname):
     return {"scm_connection_status": "active"}
+
+
+@regular_app.get("/v1/scms")
+async def get_scms():
+    return {'results': [{'default': True, 'enabled': True, 'id': 'internal', 'name': '', 'provider': 'internal'},
+                        {'default': False, 'enabled': True, 'id': 'github', 'name': 'https://github.com',
+                         'provider': 'github', 'scm': {'client_id': '0ff25ba21ec67dbed6e2'},
+                         'oauth': {'client_id': '0ff25ba21ec67dbed6e2'},
+                         'urls': {'web': 'https://github.com', 'api': 'https://api.github.com',
+                                  'ssh': 'ssh://git@github.com'}},
+                        {'default': False, 'enabled': True, 'id': 'aadebe70-007f-48ff-ba38-49007c6e0377',
+                         'name': 'https://gitlab.com', 'provider': 'gitlab',
+                         'scm': {'client_id': 'ca459576279bd99ed480236a267cc969f8322caad292fa5147cc7fdf7b530a7e'},
+                         'oauth': {'client_id': 'ca459576279bd99ed480236a267cc969f8322caad292fa5147cc7fdf7b530a7e'},
+                         'urls': {'web': 'https://gitlab.com', 'api': 'https://gitlab.com',
+                                  'ssh': 'ssh://git@gitlab.com'}},
+                        {'default': False, 'enabled': True, 'id': '24ad1496-5a1d-43e2-9d96-42fce8e5484f',
+                         'name': 'IQIVA Public GitLab', 'provider': 'gitlab',
+                         'scm': {'client_id': '3341c989f9d28043d2597388aa4f43ce60a74830b981c4b7d79becf641959376'},
+                         'oauth': {'client_id': '3341c989f9d28043d2597388aa4f43ce60a74830b981c4b7d79becf641959376'},
+                         'urls': {'web': 'https://gitlab.com', 'api': 'https://gitlab.com',
+                                  'ssh': 'ssh://git@gitlab.com'}},
+                        {'default': False, 'enabled': False, 'id': '83cd96ae-b1f4-4bd9-b9ca-6f7f25c37708',
+                         'name': 'GitlabTest', 'provider': 'gitlab',
+                         'scm': {'client_id': '5e257d6e168d579d439b7d38cdfa647e16573ae1dace6d93a30c5c60b4e5dd32'},
+                         'oauth': {'client_id': '5e257d6e168d579d439b7d38cdfa647e16573ae1dace6d93a30c5c60b4e5dd32'},
+                         'urls': {'web': 'https://gitlab.com', 'api': 'https://gitlab.com',
+                                  'ssh': 'ssh://git@gitlab.com'}}]}
 
 
 @regular_app.get("/v1/algorithms/{algo_id}/errors")
