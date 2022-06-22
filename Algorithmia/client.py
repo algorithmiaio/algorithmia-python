@@ -71,6 +71,11 @@ class Client(object):
         username = next(self.dir("").list()).path
         return username
 
+    def scms(self):
+        url = "/v1/scms"
+        response = self.getJsonHelper(url)
+        return response
+
     def file(self, dataUrl, cleanup=False):
         if dataUrl.startswith('file://'):
             return LocalDataFile(self, dataUrl)

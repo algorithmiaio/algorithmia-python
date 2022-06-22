@@ -20,6 +20,7 @@ if sys.version_info.major >= 3:
         @classmethod
         def setUpClass(cls):
             cls.client = Algorithmia.client(api_address="http://localhost:8080", api_key="simabcd123")
+
         admin_username = "a_Mrtest"
         admin_org_name = "a_myOrg"
         environment_name = "Python 3.9"
@@ -27,7 +28,6 @@ if sys.version_info.major >= 3:
         def setUp(self):
             self.admin_username = self.admin_username + str(int(random() * 10000))
             self.admin_org_name = self.admin_org_name + str(int(random() * 10000))
-
 
         def test_create_user(self):
             response = self.client.create_user(
@@ -59,6 +59,12 @@ if sys.version_info.major >= 3:
 
             if u'error' not in response:
                 self.assertTrue(response is not None and u'environments' in response)
+
+        def test_get_scms(self):
+            response = self.client.scms()
+            results = response['results']
+            internal = [result for result in results if result['id'] == 'internal']
+            self.assertTrue(len(internal) == 1)
 
         def test_edit_org(self):
             org_name = "a_myOrg84"
@@ -120,7 +126,6 @@ if sys.version_info.major >= 3:
             except AlgorithmException as e:
                 self.assertTrue(e.message == "No such algorithm")
 
-
         def test_no_auth_client(self):
 
             key = os.environ.get('ALGORITHMIA_API_KEY', "")
@@ -135,6 +140,7 @@ if sys.version_info.major >= 3:
                 error = e
             finally:
                 os.environ['ALGORITHMIA_API_KEY'] = key
-                self.assertEqual(str(error), str(AlgorithmException(message="authorization required", stack_trace=None, error_type=None)))
+                self.assertEqual(str(error), str(AlgorithmException(message="authorization required", stack_trace=None,
+                                                                    error_type=None)))
 if __name__ == '__main__':
     unittest.main()

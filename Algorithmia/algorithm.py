@@ -39,10 +39,15 @@ class Algorithm(object):
         return self
 
     # Create a new algorithm
-    def create(self, details={}, settings={}, version_info={}, source={}, scmsCredentials={}):
+    def create(self, details, settings, version_info=None, source=None, scmsCredentials=None):
         url = "/v1/algorithms/" + self.username
-        create_parameters = {"name": self.algoname, "details": details, "settings": settings,
-                             "version_info": version_info, "source": source, "scmsCredentials": scmsCredentials}
+        create_parameters = {"name": self.algoname, "details": details, "settings": settings}
+        if version_info:
+            create_parameters['version_info'] = version_info
+        if source:
+            create_parameters['source'] = source
+        if scmsCredentials:
+            create_parameters['scmsCredentials'] = scmsCredentials
 
         api_response = self.client.postJsonHelper(url, create_parameters, parse_response_as_json=True)
         return api_response
