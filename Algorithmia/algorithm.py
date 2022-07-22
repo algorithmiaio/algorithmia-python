@@ -39,7 +39,8 @@ class Algorithm(object):
         return self
 
     def get_algorithm_id(self):
-        url = "/v1/algorithms/" + self.username + "/" + self.algoname
+        url = '/v1/algorithms/' + self.username + '/' + self.algoname
+        print(url)
         api_response = self.client.getJsonHelper(url)
         if 'id' in api_response:
             return api_response['id']
@@ -76,7 +77,6 @@ class Algorithm(object):
         print(create_parameters)
         api_response = self.client.postJsonHelper(url, create_parameters, parse_response_as_json=True)
         return api_response
-
 
 
     # Create a new algorithm

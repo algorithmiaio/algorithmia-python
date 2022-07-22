@@ -60,7 +60,7 @@ async def process_hello_world(request: Request, username, algoname, githash):
 
 ### Algorithm Routes
 @regular_app.get('/v1/algorithms/{username}/{algoname}')
-async def process_get_algo(request: Request, username, algoname):
+async def process_get_algo(username, algoname):
     if algoname == "echo" and username == 'quality':
         return {"id": "21df7a38-eab8-4ac8-954c-41a285535e69", "name": "echo",
                 "details": {"summary": "", "label": "echo", "tagline": ""},

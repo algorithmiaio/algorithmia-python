@@ -20,15 +20,15 @@ if sys.version_info.major >= 3:
 
         def test_call_customCert(self):
             result = self.client.algo('quality/echo').pipe(bytearray('foo', 'utf-8'))
-            self.assertEquals('binary', result.metadata.content_type)
-            self.assertEquals(bytearray('foo', 'utf-8'), result.result)
+            self.assertEqual('binary', result.metadata.content_type)
+            self.assertEqual(bytearray('foo', 'utf-8'), result.result)
 
 
 
         def test_normal_call(self):
             result = self.client.algo('quality/echo').pipe("foo")
-            self.assertEquals("text", result.metadata.content_type)
-            self.assertEquals("foo", result.result)
+            self.assertEqual("text", result.metadata.content_type)
+            self.assertEqual("foo", result.result)
 
         def test_async_call(self):
             result = self.client.algo('quality/echo').set_options(output=OutputType.void).pipe("foo")
@@ -37,20 +37,20 @@ if sys.version_info.major >= 3:
 
         def test_raw_call(self):
             result = self.client.algo('quality/echo').set_options(output=OutputType.raw).pipe("foo")
-            self.assertEquals("foo", result)
+            self.assertEqual("foo", result)
 
         def test_dict_call(self):
             result = self.client.algo('quality/echo').pipe({"foo": "bar"})
-            self.assertEquals("json", result.metadata.content_type)
-            self.assertEquals({"foo": "bar"}, result.result)
+            self.assertEqual("json", result.metadata.content_type)
+            self.assertEqual({"foo": "bar"}, result.result)
 
         def test_algo_exists(self):
             result = self.client.algo('quality/echo').exists()
-            self.assertEquals(True, result)
+            self.assertEqual(True, result)
 
         def test_algo_no_exists(self):
             result = self.client.algo('quality/not_echo').exists()
-            self.assertEquals(False, result)
+            self.assertEqual(False, result)
 
         #TODO: add more coverage examples to check kwargs
         def test_get_versions(self):
@@ -58,19 +58,19 @@ if sys.version_info.major >= 3:
             self.assertTrue('results' in result)
             self.assertTrue('version_info' in result['results'][0])
             self.assertTrue('semantic_version' in result['results'][0]['version_info'])
-            self.assertEquals('0.1.0', result['results'][0]['version_info']['semantic_version'])
+            self.assertEqual('0.1.0', result['results'][0]['version_info']['semantic_version'])
 
         def test_text_unicode(self):
             telephone = u"\u260E"
             # Unicode input to pipe()
             result1 = self.client.algo('quality/echo').pipe(telephone)
-            self.assertEquals('text', result1.metadata.content_type)
-            self.assertEquals(telephone, result1.result)
+            self.assertEqual('text', result1.metadata.content_type)
+            self.assertEqual(telephone, result1.result)
 
             # Unicode return in .result
             result2 = self.client.algo('quality/echo').pipe(result1.result)
-            self.assertEquals('text', result2.metadata.content_type)
-            self.assertEquals(telephone, result2.result)
+            self.assertEqual('text', result2.metadata.content_type)
+            self.assertEqual(telephone, result2.result)
             
         def test_algo_info(self):
             result = self.client.algo('quality/echo').info()
@@ -177,9 +177,6 @@ if sys.version_info.major >= 3:
 
             self.assertEqual(response['version_info']['semantic_version'], "0.1.0", "information is incorrect")
 
-        def test_get_secrets(self):
-            response = self.client.algo("quality/echo").get_secrets()
-            self.assertEquals(len(response['secrets']), 5)
 
         def test_set_secret(self):
             short_name = "tst"
@@ -199,8 +196,8 @@ else:
             open("./test.pem", 'w')
             c = Algorithmia.client(ca_cert="./test.pem")
             result = c.algo('quality/echo').pipe(bytearray('foo', 'utf-8'))
-            self.assertEquals('binary', result.metadata.content_type)
-            self.assertEquals(bytearray('foo', 'utf-8'), result.result)
+            self.assertEqual('binary', result.metadata.content_type)
+            self.assertEqual(bytearray('foo', 'utf-8'), result.result)
             try:
                 os.remove("./test.pem")
             except OSError as e:
@@ -208,8 +205,8 @@ else:
 
         def test_call_binary(self):
             result = self.client.algo('quality/echo').pipe(bytearray('foo', 'utf-8'))
-            self.assertEquals('binary', result.metadata.content_type)
-            self.assertEquals(bytearray('foo', 'utf-8'), result.result)
+            self.assertEqual('binary', result.metadata.content_type)
+            self.assertEqual(bytearray('foo', 'utf-8'), result.result)
 
         def test_async_call(self):
             result = self.client.algo('quality/echo').set_options(output=OutputType.void).pipe("foo")
@@ -218,7 +215,7 @@ else:
 
         def test_raw_call(self):
             result = self.client.algo('quality/echo').set_options(output=OutputType.raw).pipe("foo")
-            self.assertEquals("foo", result)
+            self.assertEqual("foo", result)
 
         #TODO: add more coverage examples to check kwargs
         def test_get_versions(self):
@@ -226,20 +223,20 @@ else:
             self.assertTrue('results' in result)
             self.assertTrue('version_info' in result['results'][0])
             self.assertTrue('semantic_version' in result['results'][0]['version_info'])
-            self.assertEquals('0.1.0', result['results'][0]['version_info']['semantic_version'])
+            self.assertEqual('0.1.0', result['results'][0]['version_info']['semantic_version'])
 
         def test_text_unicode(self):
             telephone = u"\u260E"
 
             # Unicode input to pipe()
             result1 = self.client.algo('quality/echo').pipe(telephone)
-            self.assertEquals('text', result1.metadata.content_type)
-            self.assertEquals(telephone, result1.result)
+            self.assertEqual('text', result1.metadata.content_type)
+            self.assertEqual(telephone, result1.result)
 
             # Unicode return in .result
             result2 = self.client.algo('quality/echo').pipe(result1.result)
-            self.assertEquals('text', result2.metadata.content_type)
-            self.assertEquals(telephone, result2.result)
+            self.assertEqual('text', result2.metadata.content_type)
+            self.assertEqual(telephone, result2.result)
 
 
         def test_get_scm_status(self):
