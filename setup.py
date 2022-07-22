@@ -22,7 +22,7 @@ setup(
         'toml',
         'argparse',
         'algorithmia-api-client==1.5.1',
-        'algorithmia-adk>=1.2,<1.3'
+        'algorithmia-adk>=1.2,<1.4'
     ],
     include_package_data=True,
     classifiers=[
