@@ -60,7 +60,7 @@ async def process_hello_world(request: Request, username, algoname, githash):
 
 ### Algorithm Routes
 @regular_app.get('/v1/algorithms/{username}/{algoname}')
-async def process_get_algo(request: Request, username, algoname):
+async def process_get_algo(username, algoname):
     if algoname == "echo" and username == 'quality':
         return {"id": "21df7a38-eab8-4ac8-954c-41a285535e69", "name": "echo",
                 "details": {"summary": "", "label": "echo", "tagline": ""},
@@ -444,3 +444,99 @@ async def get_environments_by_lang(language):
             }
         ]
     }
+
+
+@regular_app.get("/v1/secret-provider")
+async def get_service_providers():
+    return [
+        {
+            "id": "dee00b6c-05c4-4de7-98d8-e4a3816ed75f",
+            "name": "algorithmia_internal_secret_provider",
+            "description": "Internal Secret Provider",
+            "moduleName": "module",
+            "factoryClassName": "com.algorithmia.plugin.sqlsecretprovider.InternalSecretProviderFactory",
+            "interfaceVersion": "1.0",
+            "isEnabled": True,
+            "isDefault": True,
+            "created": "2021-03-11T20:42:23Z",
+            "modified": "2021-03-11T20:42:23Z"
+        }
+    ]
+
+
+@regular_app.get("/v1/algorithms/{algorithm_id}/secrets")
+async def get_secrets_for_algorithm(algorithm_id):
+    return {
+        "secrets": [
+            {
+                "id": "45e97c47-3ae6-46be-87ee-8ab23746706b",
+                "short_name": "MLOPS_SERVICE_URL",
+                "description": "",
+                "secret_key": "MLOPS_SERVICE_URL",
+                "owner_type": "algorithm",
+                "owner_id": "fa2cd80b-d22a-4548-b16a-45dbad2d3499",
+                "provider_id": "dee00b6c-05c4-4de7-98d8-e4a3816ed75f",
+                "created": "2022-07-22T14:36:01Z",
+                "modified": "2022-07-22T14:36:01Z"
+            },
+            {
+                "id": "50dca60e-317f-4582-8854-5b83b4d182d0",
+                "short_name": "deploy_id",
+                "description": "",
+                "secret_key": "DEPLOYMENT_ID",
+                "owner_type": "algorithm",
+                "owner_id": "fa2cd80b-d22a-4548-b16a-45dbad2d3499",
+                "provider_id": "dee00b6c-05c4-4de7-98d8-e4a3816ed75f",
+                "created": "2022-07-21T19:04:31Z",
+                "modified": "2022-07-21T19:04:31Z"
+            },
+            {
+                "id": "5a75cdc8-ecc8-4715-8c4b-8038991f1608",
+                "short_name": "model_path",
+                "description": "",
+                "secret_key": "MODEL_PATH",
+                "owner_type": "algorithm",
+                "owner_id": "fa2cd80b-d22a-4548-b16a-45dbad2d3499",
+                "provider_id": "dee00b6c-05c4-4de7-98d8-e4a3816ed75f",
+                "created": "2022-07-21T19:04:31Z",
+                "modified": "2022-07-21T19:04:31Z"
+            },
+            {
+                "id": "80e51ed3-f6db-419d-9349-f59f4bbfdcbb",
+                "short_name": "model_id",
+                "description": "",
+                "secret_key": "MODEL_ID",
+                "owner_type": "algorithm",
+                "owner_id": "fa2cd80b-d22a-4548-b16a-45dbad2d3499",
+                "provider_id": "dee00b6c-05c4-4de7-98d8-e4a3816ed75f",
+                "created": "2022-07-21T19:04:30Z",
+                "modified": "2022-07-21T19:04:30Z"
+            },
+            {
+                "id": "8773c654-ea2f-4ac5-9ade-55dfc47fec9d",
+                "short_name": "datarobot_api_token",
+                "description": "",
+                "secret_key": "DATAROBOT_MLOPS_API_TOKEN",
+                "owner_type": "algorithm",
+                "owner_id": "fa2cd80b-d22a-4548-b16a-45dbad2d3499",
+                "provider_id": "dee00b6c-05c4-4de7-98d8-e4a3816ed75f",
+                "created": "2022-07-21T19:04:31Z",
+                "modified": "2022-07-21T19:04:31Z"
+            }
+        ]
+    }
+
+
+@regular_app.post("/v1/algorithms/{algorithm_id}/secrets")
+async def set_algorithm_secret(algorithm_id):
+    return {
+   "id":"959af771-7cd8-4981-91c4-70def15bbcdc",
+   "short_name":"tst",
+   "description":"",
+   "secret_key":"test",
+   "owner_type":"algorithm",
+   "owner_id":"fa2cd80b-d22a-4548-b16a-45dbad2d3499",
+   "provider_id":"dee00b6c-05c4-4de7-98d8-e4a3816ed75f",
+   "created":"2022-07-22T18:28:42Z",
+   "modified":"2022-07-22T18:28:42Z"
+}

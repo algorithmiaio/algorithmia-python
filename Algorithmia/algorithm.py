@@ -38,6 +38,47 @@ class Algorithm(object):
         self.query_parameters.update(query_parameters)
         return self
 
+    def get_algorithm_id(self):
+        url = '/v1/algorithms/' + self.username + '/' + self.algoname
+        print(url)
+        api_response = self.client.getJsonHelper(url)
+        if 'id' in api_response:
+            return api_response['id']
+        else:
+            raise Exception("field 'id' not found in response: ", api_response)
+
+
+    def get_secrets(self):
+        algorithm_id = self.get_algorithm_id()
+        url = "/v1/algorithms/" + algorithm_id + "/secrets"
+        api_response = self.client.getJsonHelper(url)
+        return api_response
+
+
+    def set_secret(self, short_name, secret_key, secret_value, description=None):
+        algorithm_id = self.get_algorithm_id()
+        url = "/v1/algorithms/" + algorithm_id + "/secrets"
+        secret_providers = self.client.get_secret_providers()
+        provider_id = secret_providers[0]['id']
+
+        create_parameters = {
+            "owner_type": "algorithm",
+            "owner_id": algorithm_id,
+            "short_name": short_name,
+            "provider_id": provider_id,
+            "secret_key": secret_key,
+            "secret_value": secret_value,
+        }
+        if description:
+            create_parameters['description'] = description
+        else:
+            create_parameters['description'] = " "
+
+        print(create_parameters)
+        api_response = self.client.postJsonHelper(url, create_parameters, parse_response_as_json=True)
+        return api_response
+
+
     # Create a new algorithm
     def create(self, details, settings, version_info=None, source=None, scmsCredentials=None):
         url = "/v1/algorithms/" + self.username
