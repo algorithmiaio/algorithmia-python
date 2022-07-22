@@ -23,6 +23,8 @@ if sys.version_info.major >= 3:
             self.assertEquals('binary', result.metadata.content_type)
             self.assertEquals(bytearray('foo', 'utf-8'), result.result)
 
+
+
         def test_normal_call(self):
             result = self.client.algo('quality/echo').pipe("foo")
             self.assertEquals("text", result.metadata.content_type)
@@ -174,6 +176,19 @@ if sys.version_info.major >= 3:
             response = created_algo.info(git_hash)
 
             self.assertEqual(response['version_info']['semantic_version'], "0.1.0", "information is incorrect")
+
+        def test_get_secrets(self):
+            response = self.client.algo("quality/echo").get_secrets()
+            self.assertEquals(len(response['secrets']), 5)
+
+        def test_set_secret(self):
+            short_name = "tst"
+            secret_key = "test_key"
+            secret_value = "test_value"
+            description = "loreum epsum"
+            response = self.client.algo("quality/echo").set_secret(short_name, secret_key, secret_value, description)
+            self.assertEqual(response['id'], "959af771-7cd8-4981-91c4-70def15bbcdc", "invalid ID for created secret")
+
 
 else:
     class AlgoTest(unittest.TestCase):

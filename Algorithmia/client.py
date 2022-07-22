@@ -177,6 +177,11 @@ class Client(object):
         response = self.getHelper(url)
         return response.json()
 
+    def get_secret_providers(self):
+        url = "/v1/secret-provider"
+        api_response = self.getJsonHelper(url)
+        return api_response
+
     def get_organization_errors(self, org_name):
         """Gets the errors for the organization.
 
