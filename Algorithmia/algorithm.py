@@ -70,6 +70,10 @@ class Algorithm(object):
         }
         if description:
             create_parameters['description'] = description
+        else:
+            create_parameters['description'] = " "
+
+        print(create_parameters)
         api_response = self.client.postJsonHelper(url, create_parameters, parse_response_as_json=True)
         return api_response
 
