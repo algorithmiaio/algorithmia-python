@@ -106,7 +106,7 @@ class Algorithm(object):
         url = "/v1/algorithms/" + self.username + "/" + self.algoname + "/versions"
         publish_parameters = {"details": details, "settings": settings,
                               "version_info": version_info, "source": source, "scmsCredentials": scmsCredentials}
-        api_response = self.client.postJsonHelper(url, publish_parameters, parse_response_as_json=True)
+        api_response = self.client.postJsonHelper(url, publish_parameters, parse_response_as_json=True, retry=True)
         return api_response
 
     def get_builds(self, limit=56, marker=None):
@@ -180,7 +180,7 @@ class Algorithm(object):
     def compile(self):
         # Compile algorithm
         url = '/v1/algorithms/' + self.username + '/' + self.algoname + '/compile'
-        response = self.client.postJsonHelper(url, {}, parse_response_as_json=True)
+        response = self.client.postJsonHelper(url, {}, parse_response_as_json=True, retry=True)
         return response
 
     # Pipe an input into this algorithm

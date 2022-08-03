@@ -16,7 +16,6 @@ import os
 from time import time
 
 
-
 class Client(object):
     'Algorithmia Common Library'
 
@@ -231,7 +230,7 @@ class Client(object):
         return Insights(insights)
 
     # Used internally to post json to the api and parse json response
-    def postJsonHelper(self, url, input_object, parse_response_as_json=True, **query_parameters):
+    def postJsonHelper(self, url, input_object, parse_response_as_json=True, retry=False, **query_parameters):
         headers = {}
         if self.apiKey is not None:
             headers['Authorization'] = self.apiKey
@@ -263,6 +262,8 @@ class Client(object):
                     return response
             else:
                 return response
+        elif retry:
+            return self.postJsonHelper(url, input_object, parse_response_as_json, False, **query_parameters)
         else:
             raise raiseAlgoApiError(response)
 
@@ -292,7 +293,6 @@ class Client(object):
             if response.content is not None:
                 response = response.json()
             raise raiseAlgoApiError(response)
-
 
     def getStreamHelper(self, url, **query_parameters):
         headers = {}
