@@ -28,3 +28,15 @@ if sys.version_info[0] >= 3:
                 result = e
                 pass
             self.assertEqual(str(self.error_message), str(result))
+
+        def test_retry_on_400_error_publish(self):
+            result = self.client.algo("util/failonce").publish()
+            self.assertEqual(result['version_info']['semantic_version'], "0.1.0")
+
+        def test_throw_on_always_500_publish(self):
+            try:
+                result = self.client.algo("util/failalways").publish()
+            except Exception as e:
+                result = e
+                pass
+            self.assertEqual(str(self.error_message), str(result))

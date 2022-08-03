@@ -230,9 +230,16 @@ async def compile_algorithm(username, algoname):
         "resource_type": "algorithm"
     }
 
+fail_cnt = 0
 
 @regular_app.post("/v1/algorithms/{username}/{algoname}/versions")
 async def publish_algorithm(request: Request, username, algoname):
+    global fail_cnt
+    if "failonce" == algoname and fail_cnt == 0:
+        fail_cnt +=1
+        return JSONResponse(content="This is an expected failure mode, try again", status_code=400)
+    elif "failalways" == algoname:
+        return JSONResponse(status_code=500)
     return {"id": "2938ca9f-54c8-48cd-b0d0-0fb7f2255cdc", "name": algoname,
             "details": {"summary": "Example Summary", "label": "QA", "tagline": "Example Tagline"},
             "settings": {"algorithm_callability": "private", "source_visibility": "open",
