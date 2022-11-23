@@ -12,10 +12,10 @@ This package contains the [algorithmia-adk](https://github.com/algorithmiaio/alg
 ## Install from PyPi
 
 The official Algorithmia python client is [available on PyPi](https://pypi.python.org/pypi/algorithmia).
-Install it with pip:
+Install it with pip3:
 
 ```bash
-pip install algorithmia
+pip3 install algorithmia
 ```
 
 ## Install from source
